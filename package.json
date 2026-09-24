@@ -1,0 +1,21 @@
+{
+  "name": "weathergpt-sih-suite",
+  "version": "2.1.0",
+  "description": "WeatherGPT — AI Meteorological Intelligence & Early Warning System (SIH26068)",
+  "type": "module",
+  "scripts": {
+    "start": "node WEATHER-GPT/src/server.js",
+    "web": "node WEATHER-GPT/src/server.js",
+    "web:dev": "node --watch WEATHER-GPT/src/server.js",
+    "build": "node -e \"import fs from 'node:fs'; if (!fs.existsSync('public')) fs.cpSync('WEATHER-GPT/public', 'public', { recursive: true });\"",
+    "mobile": "cd WeatherGPT-Flutter && flutter run -d edge --web-port 8090",
+    "mobile:windows": "cd WeatherGPT-Flutter && flutter run -d windows"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "ioredis": "^6.0.0",
+    "mongodb": "^7.6.0"
+  }
+}

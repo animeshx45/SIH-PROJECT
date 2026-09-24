@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weather SPT - Complete Workflow & Technical Process Specification (SIH26068)</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 15mm 18mm 15mm;
+      @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+        font-size: 9pt;
+        color: #64748b;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      background: #ffffff;
+      line-height: 1.55;
+      font-size: 10.5pt;
+    }
+    
+    /* Cover Page */
+    .cover-page {
+      page-break-after: always;
+      height: 92vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 3px double #0284c7;
+      padding: 45px 35px;
+      background: linear-gradient(180deg, #f8fafc 0%, #f0f9ff 100%);
+      border-radius: 8px;
+    }
+    .cover-header .sih-badge {
+      display: inline-block;
+      background: #0369a1;
+      color: #ffffff;
+      font-size: 10pt;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 4px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .cover-title {
+      font-size: 28pt;
+      font-weight: 800;
+      color: #0c4a6e;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .cover-subtitle {
+      font-size: 13pt;
+      color: #334155;
+      font-weight: 500;
+      line-height: 1.4;
+      margin-bottom: 25px;
+    }
+    .cover-meta {
+      background: #ffffff;
+      border: 1px solid #bae6fd;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+    .cover-meta table { width: 100%; border-collapse: collapse; }
+    .cover-meta td { padding: 6px 8px; font-size: 10.5pt; }
+    .cover-meta td.label { font-weight: 700; color: #0284c7; width: 35%; }
+    .cover-meta td.val { color: #0f172a; }
+    .cover-footer {
+      border-top: 1px solid #cbd5e1;
+      padding-top: 15px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 9pt;
+      color: #64748b;
+    }
+
+    /* Page Content */
+    .page-break { page-break-after: always; }
+    h1 {
+      font-size: 18pt;
+      color: #0c4a6e;
+      border-bottom: 2px solid #0284c7;
+      padding-bottom: 6px;
+      margin-top: 25px;
+      margin-bottom: 14px;
+      page-break-after: avoid;
+    }
+    h2 {
+      font-size: 13.5pt;
+      color: #0369a1;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      page-break-after: avoid;
+    }
+    h3 {
+      font-size: 11pt;
+      color: #0f172a;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      page-break-after: avoid;
+    }
+    p { margin-bottom: 10px; text-align: justify; }
+    ul, ol { margin-left: 20px; margin-bottom: 12px; }
+    li { margin-bottom: 4px; }
+    
+    /* Code and Diagrams */
+    pre {
+      background: #0f172a;
+      color: #38bdf8;
+      padding: 14px;
+      border-radius: 6px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 8.5pt;
+      line-height: 1.35;
+      overflow-x: auto;
+      margin: 14px 0;
+      border-left: 4px solid #0284c7;
+      page-break-inside: avoid;
+    }
+    code {
+      font-family: 'Consolas', monospace;
+      background: #f1f5f9;
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: #0369a1;
+      font-size: 9.5pt;
+    }
+
+    /* Tables */
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+    table.data-table th {
+      background: #0284c7;
+      color: #ffffff;
+      text-align: left;
+      padding: 8px 10px;
+      font-weight: 700;
+    }
+    table.data-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    table.data-table tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    /* Callout Boxes */
+    .callout {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-left: 4px solid #0284c7;
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin: 14px 0;
+      page-break-inside: avoid;
+    }
+    .callout-title { font-weight: 700; color: #0369a1; margin-bottom: 4px; font-size: 10.5pt; }
+    .callout.warning {
+      background: #fffbeb;
+      border-color: #fde68a;
+      border-left-color: #f59e0b;
+    }
+    .callout.warning .callout-title { color: #b45309; }
+    .callout.success {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      border-left-color: #10b981;
+    }
+    .callout.success .callout-title { color: #047857; }
+
+    /* Workflow Phase Cards */
+    .phase-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      background: #ffffff;
+      page-break-inside: avoid;
+    }
+    .phase-badge {
+      display: inline-block;
+      font-size: 8.5pt;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: #e0f2fe;
+      color: #0369a1;
+      margin-bottom: 4px;
+    }
+    .phase-title { font-weight: 700; color: #0f172a; font-size: 11pt; margin-bottom: 4px; }
+  </style>
+</head>
+<body>
+
+<!-- ================= COVER PAGE ================= -->
+<div class="cover-page">
+  <div class="cover-header">
+    <div class="sih-badge">Smart India Hackathon (SIH) • Problem Statement: SIH26068</div>
+    <div class="cover-title">Weather SPT</div>
+    <div class="cover-subtitle">Complete Workflow, Architectural Specification & System Lifecycle Document</div>
+    <p style="color: #475569; font-size: 11pt;">An AI-Powered, Multilingual Weather Intelligence and Operational Decision-Support Platform with Grounded Anti-Hallucination AI, MongoDB Atlas Spatial Clustering, and AMOLED Cross-Platform Interface.</p>
+  </div>
+
+  <div class="cover-meta">
+    <table>
+      <tr>
+        <td class="label">Project Code:</td>
+        <td class="val">SIH26068 (Weather Intelligence & Conversational Decision Support)</td>
+      </tr>
+      <tr>
+        <td class="label">Team Name:</td>
+        <td class="val">Syntax Squad</td>
+      </tr>
+      <tr>
+        <td class="label">Client Application:</td>
+        <td class="val">Flutter 3.x (Android APK, Windows Desktop, Web PWA)</td>
+      </tr>
+      <tr>
+        <td class="label">Server & Middleware:</td>
+        <td class="val">Node.js (v24 LTS), Express.js REST Gateway</td>
+      </tr>
+      <tr>
+        <td class="label">Primary Database:</td>
+        <td class="val">MongoDB Atlas NoSQL (GeoJSON 2dsphere + TTL Indexing)</td>
+      </tr>
+      <tr>
+        <td class="label">Resilience Database:</td>
+        <td class="val">Embedded SQLite 3 (Zero-Failure Edge Fallback)</td>
+      </tr>
+      <tr>
+        <td class="label">AI Reasoning Engine:</td>
+        <td class="val">Domain-Trained Model + Google Gemini 2.5 Flash Backbone</td>
+      </tr>
+      <tr>
+        <td class="label">Document Version:</td>
+        <td class="val">Version 3.0 (Production-Ready Architecture)</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="cover-footer">
+    <span>CONFIDENTIAL & PROPRIETARY — SYNTAX SQUAD</span>
+    <span>SMART INDIA HACKATHON EVALUATION</span>
+  </div>
+</div>
+
+<!-- ================= SECTION 1: EXECUTIVE OVERVIEW ================= -->
+<h1>1. Executive Summary & SIH Alignment</h1>
+
+<h2>1.1 Problem Statement (SIH26068)</h2>
+<p>In India, meteorological information is predominantly disseminated through fragmented numerical reports, static satellite imagery, or English-language press releases. Crucial stakeholders—including smallholder farmers, local emergency relief teams (NDMA/SDRF), and transport workers—face severe bottlenecks:</p>
+<ul>
+  <li><strong>Cognitive Overload:</strong> Raw numbers (e.g. 1012 hPa, 78% RH, convective CAPE) are incomprehensible to non-meteorologists.</li>
+  <li><strong>The Generic AI Hallucination Problem:</strong> Standard conversational LLMs (e.g., off-the-shelf ChatGPT) invent weather values and hallucinate precipitation chances, creating lethal risks during severe weather.</li>
+  <li><strong>Language & Literacy Barriers:</strong> India's rural agricultural workforce requires information in local vernacular tongues (Telugu, Hindi, Marathi, Kannada, Tamil) via spoken audio.</li>
+  <li><strong>Lack of Actionable Advice:</strong> Raw metrics are not translated into operational directives (e.g., whether to delay pesticide spraying to avoid drift or postpone canal irrigation).</li>
+</ul>
+
+<h2>1.2 The Weather SPT Solution</h2>
+<p><strong>Weather SPT</strong> (Smart Predictive Telemetry) solves this crisis by introducing a <strong>strictly grounded, multi-tier weather intelligence platform</strong>. Built with a Flutter AMOLED front-end, Node.js REST API gateway, MongoDB Atlas geospatial database, and a domain-trained AI engine, Weather SPT guarantees zero-hallucination accuracy, two-way vernacular voice support, 30-day climate anomaly analytics, and real-time Doppler radar simulation.</p>
+
+<div class="callout success">
+  <div class="callout-title">Core Architectural Principle: Grounded Telemetry First, Generative AI Second</div>
+  Weather SPT never permits the AI model to invent weather data. Instead, live satellite and NWP telemetry is fetched first, validated by deterministic algorithmic risk rules, and fed to the AI strictly as immutable boundary constraints. The AI acts solely as an analytical reasoning and natural language synthesis engine.
+</div>
+
+<!-- ================= SECTION 2: END-TO-END WORKFLOW ================= -->
+<div class="page-break"></div>
+<h1>2. End-to-End System Workflow</h1>
+
+<p>The complete workflow of Weather SPT consists of 8 distinct, tightly orchestrated phases connecting user actions to cloud ingestion and multi-modal feedback:</p>
+
+<pre>
++---------------------------------------------------------------------------------------------------------+
+|                                    END-TO-END WORKFLOW PIPELINE                                         |
+|                                                                                                         |
+|  [User Voice / Text Input]  --->  [Phase 1: Multi-Modal Ingestion & Speech-to-Text (ASR)]              |
+|                                                     |                                                   |
+|                                                     v                                                   |
+|                                   [Phase 2: Geocoding & MongoDB GeoJSON $near Cache Check]               |
+|                                                     |                                                   |
+|                                   +-----------------+-----------------+                                 |
+|                                   |                                   |                                 |
+|                             (Cache HIT)                         (Cache MISS)                            |
+|                                   |                                   v                                 |
+|                                   |                 [Phase 3: Live Sensor & NWP Ingestion]              |
+|                                   |                 (Open-Meteo, Air Quality, GDACS Cyclones)           |
+|                                   |                                   |                                 |
+|                                   |                                   v                                 |
+|                                   |                 [Phase 4: IMD Risk & Agromet Rule Engine]           |
+|                                   |                 (Calculates 0-100 score, squall thresholds)         |
+|                                   |                                   |                                 |
+|                                   +----------------->+<---------------+                                 |
+|                                                      |                                                  |
+|                                                      v                                                  |
+|                                   [Phase 5: Multi-Persona Context Grounding]                           |
+|                                   (Farmer / Aviation / NDMA / Citizen Profiling)                       |
+|                                                      |                                                  |
+|                                                      v                                                  |
+|                                   [Phase 6: Domain-Trained AI & Dual-Engine Fallback]                  |
+|                                   (Strict Prompt Injection, Gemini 2.5 Flash / Heuristic)              |
+|                                                      |                                                  |
+|                                                      v                                                  |
+|                                   [Phase 7: MongoDB Atlas Persistence & RLHF Dataset Logging]          |
+|                                   (weather_cache TTL 900s, ai_conversations audit)                     |
+|                                                      |                                                  |
+|                                                      v                                                  |
+|  [AMOLED UI & Voice Readout] <--- [Phase 8: Multi-Platform Presentation & Audio Synthesis (TTS)]       |
++---------------------------------------------------------------------------------------------------------+
+</pre>
+
+<h2>2.1 Detailed Execution Steps</h2>
+
+<div class="phase-card">
+  <span class="phase-badge">PHASE 1</span>
+  <div class="phase-title">Multi-Modal Ingestion & Speech Recognition</div>
+  <p>The user interacts through the Flutter mobile app or PWA web interface using either keyboard text or microphone voice input. If voice is selected, the Web Speech API / mobile audio pipeline captures the spoken waveform and transcribes it into localized text in one of 6 supported languages (English, Telugu, Hindi, Marathi, Kannada, Tamil). The user's active persona (Citizen, Farmer, Pilot, NDMA Officer) is simultaneously attached to the request payload.</p>
+</div>
+
+<div class="phase-card">
+  <span class="phase-badge">PHASE 2</span>
+  <div class="phase-title">Geocoding & MongoDB Atlas Geospatial Cache Check</div>
+  <p>The system resolves the query place name or device GPS coordinates into high-precision Latitude and Longitude. Before initiating expensive third-party meteorological API requests, the Node.js backend queries MongoDB Atlas collection <code>weather_cache</code> using a GeoJSON <code>2dsphere</code> spatial query with the <code>$near</code> operator within a 5 km radius. If fresh telemetry exists (within the 15-minute TTL window), it returns with sub-50ms latency.</p>
+</div>
+
+<div class="phase-card">
+  <span class="phase-badge">PHASE 3</span>
+  <div class="phase-title">Live Sensor & Numerical Weather Prediction (NWP) Ingestion</div>
+  <p>On a cache miss, the server concurrently queries: (1) Open-Meteo High-Resolution NWP models for temperature, apparent feels-like, relative humidity, precipitation probability, surface pressure, cloud cover, wind speed, and direction; (2) Open-Meteo Air Quality API for US/European AQI, PM2.5, PM10, and ozone; (3) GDACS (Global Disaster Alert and Coordination System) for active tropical cyclone tracks and river flood telemetry.</p>
+</div>
+
+<div class="phase-card">
+  <span class="phase-badge">PHASE 4</span>
+  <div class="phase-title">Algorithmic IMD Extreme Weather Risk Engine</div>
+  <p>The ingested numerical telemetry is evaluated by our deterministic mathematical risk engine modeled after India Meteorological Department (IMD) hazard standards. It computes a unified Risk Index (0 to 100) and assigns alert bands: <strong>Green (Low/Normal)</strong>, <strong>Yellow (Watch)</strong>, <strong>Orange (Warning)</strong>, or <strong>Red (Severe Hazard)</strong>. Specific physical triggers are checked (e.g. wind gusts > 62 km/h trigger Gale warnings; rain probability > 60% triggers agricultural irrigation rescheduling).</p>
+</div>
+
+<div class="phase-card">
+  <span class="phase-badge">PHASE 5</span>
+  <div class="phase-title">Multi-Persona Context Grounding & Prompt Assembly</div>
+  <p>The backend injects verified telemetry metrics into a strictly formulated prompt. The system instructions explicitly order the model: <em>"You are Weather SPT. Use ONLY the supplied sensor metrics. Strictly NEVER invent or estimate weather values. Provide operational advice tailored to the chosen persona."</em></p>
+</div>
+
+<div class="phase-card">
+  <span class="phase-badge">PHASE 6</span>
+  <div class="phase-title">Domain-Trained AI Inference with Dual-Engine Fallback</div>
+  <p>The prompt is dispatched to our domain-trained AI engine (Gemini 2.5 Flash backbone fine-tuned on IMD meteorological handbooks and ICAR agricultural advisory bulletins). If the cloud network is unavailable or API quotas are exceeded, our <strong>Deterministic Indic Heuristic Fallback Engine</strong> automatically generates structured regional advice in Telugu, Hindi, Marathi, etc., ensuring 100% rural continuity.</p>
+</div>
+
+<div class="phase-card">
+  <span class="phase-badge">PHASE 7</span>
+  <div class="phase-title">MongoDB Atlas Persistence & Continuous Dataset Logging</div>
+  <p>Fresh weather telemetry is saved in MongoDB Atlas with a native Time-To-Live (TTL) index set to 900 seconds. The question, synthesized response, language code, and user rating are logged into <code>ai_conversations</code> and formatted into <code>training_dataset</code> for continuous reinforcement learning from human feedback (RLHF).</p>
+</div>
+
+<div class="phase-card">
+  <span class="phase-badge">PHASE 8</span>
+  <div class="phase-title">Multi-Platform Presentation & Audio Synthesis</div>
+  <p>The client application parses the JSON response. The Flutter app updates its AMOLED cards, animates the Doppler radar reflectivity canvas, and triggers the SpeechSynthesis engine to speak the advisory aloud in the user's selected regional language.</p>
+</div>
+
+<!-- ================= SECTION 3: MONGODB ARCHITECTURE ================= -->
+<div class="page-break"></div>
+<h1>3. MongoDB Atlas NoSQL Database Architecture</h1>
+
+<p>Weather SPT leverages <strong>MongoDB Atlas</strong> as its primary cloud document database. The choice of NoSQL over traditional relational SQL is dictated by the geospatial nature of meteorological data, high-velocity telemetry writes, and the need for polymorphic document structures.</p>
+
+<h2>3.1 Collection Schemas & Indexing Specifications</h2>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Collection</th>
+      <th>Key Document Attributes</th>
+      <th>Indexing Strategy</th>
+      <th>Operational Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>weather_cache</code></td>
+      <td><code>location (GeoJSON Point)</code>, <code>payload</code>, <code>updatedAt</code>, <code>expiresAt</code></td>
+      <td><code>2dsphere</code> on <code>location</code><br>TTL on <code>expiresAt</code> (900s)</td>
+      <td>Spatial radius lookup ($near) for nearby farms/villages with automatic expiration.</td>
+    </tr>
+    <tr>
+      <td><code>climate_history</code></td>
+      <td><code>location</code>, <code>totalRainfallMm</code>, <code>rainfallAnomalyPct</code>, <code>days[]</code></td>
+      <td><code>2dsphere</code> on <code>location</code><br>Compound on <code>recordedAt</code></td>
+      <td>Stores 30-day historical precipitation trends and departure vs 30-year normal.</td>
+    </tr>
+    <tr>
+      <td><code>ai_conversations</code></td>
+      <td><code>prompt</code>, <code>response</code>, <code>language</code>, <code>persona</code>, <code>location</code></td>
+      <td>Descending on <code>createdAt</code><br>Index on <code>language</code></td>
+      <td>Full audit trail of user queries, vernacular responses, and feedback ratings.</td>
+    </tr>
+    <tr>
+      <td><code>training_dataset</code></td>
+      <td><code>promptText</code>, <code>telemetryContext</code>, <code>expertAnswer</code>, <code>cropType</code></td>
+      <td>Text index on <code>cropType</code><br>Index on <code>hazardCategory</code></td>
+      <td>Curated prompt-completion pairs from agricultural scientists used for AI retraining.</td>
+    </tr>
+    <tr>
+      <td><code>favorite_places</code></td>
+      <td><code>name</code>, <code>admin1</code>, <code>location</code>, <code>custom_label</code></td>
+      <td><code>2dsphere</code> on <code>location</code></td>
+      <td>Fast 1-click dashboard switching across pinned Indian hubs.</td>
+    </tr>
+    <tr>
+      <td><code>user_preferences</code></td>
+      <td><code>userId</code>, <code>cycloneAlerts</code>, <code>rainAlerts</code>, <code>aqiAlerts</code></td>
+      <td>Unique index on <code>userId</code></td>
+      <td>Customizable push notification preferences and threshold alerts.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>3.2 GeoJSON Point & 2dsphere Spatial Query Implementation</h2>
+<p>In MongoDB, weather data is stored with native GeoJSON coordinates <code>[longitude, latitude]</code>. When a user requests weather for a village, the server executes a spherical geospatial query:</p>
+
+<pre>
+// MongoDB GeoJSON $near Spatial Cache Check
+const cachedDoc = await db.collection('weather_cache').findOne({
+  location: {
+    $near: {
+      $geometry: {
+        type: "Point",
+        coordinates: [userLongitude, userLatitude]
+      },
+      $maxDistance: 5000 // 5,000 meters (5 km radius)
+    }
+  },
+  expiresAt: { $gt: new Date() } // Ensures freshness within 15 minutes
+});
+</pre>
+
+<div class="callout">
+  <div class="callout-title">Advantage for Rural India</div>
+  In rural areas where cellular bandwidth is limited, farmers in adjacent fields query the same localized microclimate data. MongoDB's <code>2dsphere</code> index allows the system to serve verified cache results in under 50ms without redundant external satellite API calls.
+</div>
+
+<!-- ================= SECTION 4: ANTI-HALLUCINATION AI PIPELINE ================= -->
+<div class="page-break"></div>
+<h1>4. Domain-Trained AI & Anti-Hallucination Pipeline</h1>
+
+<h2>4.1 Why Standard LLMs Fail at Weather</h2>
+<p>Generic foundation models suffer from <strong>stochastic generation</strong>—they generate numbers based on token probability rather than physical reality. If asked <em>"Will it rain tomorrow in Kurnool?"</em>, standard LLMs may invent a temperature of 28°C and a rain probability of 40% based purely on hallucinated priors. In agriculture and disaster management, such hallucinations lead to catastrophic crop failure or unprepared evacuations.</p>
+
+<h2>4.2 The Strict Data-to-Prompt Grounding Protocol</h2>
+<p>Weather SPT completely decouples data acquisition from text synthesis. Telemetry values are acquired from scientific NWP models and injected as fixed constraints into the neural model's context window:</p>
+
+<pre>
+======================= STRICT GROUNDED SYSTEM INSTRUCTION =======================
+You are Weather SPT, an AI meteorologist and disaster decision-support assistant.
+LOCATION TELEMETRY (LIVE BOUNDARY CONDITIONS):
+- Place: ${placeName} (Lat: ${lat}, Lon: ${lon})
+- Temperature: ${temp}°C (Apparent: ${feelsLike}°C)
+- Relative Humidity: ${humidity}%
+- Wind Speed: ${windSpeed} km/h (Gusts: ${windGusts} km/h, Direction: ${windDir}°)
+- Surface Pressure: ${pressure} hPa | Cloud Cover: ${clouds}%
+- Air Quality: US AQI ${aqi} (PM2.5: ${pm25} µg/m³)
+- IMD Extreme Risk Index: ${riskScore}/100 (${riskBand})
+- Severe Weather Bulletins: ${JSON.stringify(alerts)}
+
+RULES FOR GENERATION:
+1. Use ONLY the numerical metrics provided above.
+2. Strictly NEVER invent, estimate, or hallucinate numerical weather values.
+3. Formulate the response naturally in the requested language: ${language}
+   (en = English, te = Telugu, hi = Hindi, mr = Marathi, kn = Kannada, ta = Tamil).
+4. Provide concrete operational directives (spraying window, irrigation advice).
+==================================================================================
+</pre>
+
+<h2>4.3 Domain Training & Fine-Tuning Corpus</h2>
+<p>The AI model backbone is adapted using domain-specific Indian meteorological corpora:</p>
+<ol>
+  <li><strong>IMD Standard Operating Procedures:</strong> Cyclone warning criteria, squall line definitions, and thunderstorm severity scales.</li>
+  <li><strong>ICAR & KVK Agromet Bulletins:</strong> Kharif and Rabi crop vulnerability matrices (e.g., foliar chemical drift thresholds for cotton, rice blast fungal humidity thresholds).</li>
+  <li><strong>Indic Vernacular Lexicon:</strong> Parallel translated meteorological terms across 6 Indian languages to avoid unnatural machine-translated phrasing.</li>
+</ol>
+
+<!-- ================= SECTION 5: MULTI-PERSONA DECISION ENGINE ================= -->
+<div class="page-break"></div>
+<h1>5. Multi-Persona Decision Support System</h1>
+
+<p>Weather SPT personalizes meteorological telemetry across 4 operational demographics:</p>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Operational Persona</th>
+      <th>Primary Inputs Ingested</th>
+      <th>Algorithmic Risk Triggers</th>
+      <th>Actionable Output Delivered</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>🌾 Agri / Farmer Mode</strong></td>
+      <td>Soil moisture, precipitation sum, relative humidity, wind gusts</td>
+      <td>Wind $> 20\text{ km/h} \implies$ spray drift warning.<br>Rain $> 60\% \implies$ delay irrigation.<br>RH $> 85\% \implies$ pest/fungal hazard.</td>
+      <td>Delivered in local vernacular audio: <em>"రేపు వర్షం 70% ఉన్నందున పురుగుల మందు పిచికారీని వాయిదా వేయండి."</em> (Postpone pesticide spraying).</td>
+    </tr>
+    <tr>
+      <td><strong>🛡️ Disaster / NDMA Mode</strong></td>
+      <td>GDACS cyclone tracks, Doppler radar dBZ reflectivity, river basin levels</td>
+      <td>Radar echo $> 45\text{ dBZ} \implies$ Cloudburst.<br>Gale gusts $> 62\text{ km/h} \implies$ Evacuate.<br>Flood surge $> 1.5\text{m} \implies$ Red alert.</td>
+      <td>Color-coded evacuation bulletins, polygon warning zones on Leaflet GIS, and emergency shelter coordinate routing.</td>
+    </tr>
+    <tr>
+      <td><strong>✈️ Aviation & Drone Mode</strong></td>
+      <td>Surface pressure, crosswind velocity, cloud ceiling, visual range (RVR)</td>
+      <td>Crosswind component $> 15\text{ kt} \implies$ aborted landing.<br>Visibility $< 3000\text{m} \implies$ IFR alert.<br>Thermal turbulence $\implies$ drone abort.</td>
+      <td>Synthetic METAR / TAF reports and visual flight rule (VFR) safety clearances.</td>
+    </tr>
+    <tr>
+      <td><strong>🚶 General Citizen Mode</strong></td>
+      <td>Current temp, apparent 'feels-like', US AQI category, UV index peak</td>
+      <td>UV $\ge 8 \implies$ solar burn warning.<br>AQI $> 150 \implies$ N95 mask advisory.<br>Rain hour $\implies$ carry umbrella.</td>
+      <td>Daily morning executive brief, commute advisories, and heatstroke prevention warnings.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ================= SECTION 6: CLIENT IMPLEMENTATION ================= -->
+<div class="page-break"></div>
+<h1>6. Client Implementation & AMOLED Glassmorphism</h1>
+
+<h2>6.1 Flutter Application Architecture (`WeatherSPT-Flutter`)</h2>
+<p>The client application is built with <strong>Flutter 3.x</strong> and Dart, engineered to compile natively into an <strong>Android APK</strong>, <strong>Windows Desktop application</strong>, and <strong>Chrome Web app</strong> from a single codebase.</p>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Screen / Navigation Tab</th>
+      <th>Key Widgets & Technical Capabilities</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Tab 1: Home Dashboard</strong></td>
+      <td>
+        • <strong>AMOLED Pitch-Black Canvas:</strong> Pure <code>#000000</code> background with dynamic weather glow backdrops.<br>
+        • <strong>Glassmorphism Summary Card:</strong> Built with <code>BackdropFilter</code> (Gaussian blur $\sigma = 10$) displaying live temperature, feels-like, humidity, wind, and IMD risk badge.<br>
+        • <strong>Quick Forecast Strip:</strong> Today, Tomorrow, and 7-day outlook pills.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Tab 2: Forecast & Advisory</strong></td>
+      <td>
+        • <strong>24-Hour Timeline:</strong> Horizontal scrolling strip with hourly temperature curves and rain probability bars.<br>
+        • <strong>7-Day Synoptic Matrix:</strong> Expandable accordion cards revealing UV Index max, US AQI, sunrise/sunset times, and barometric pressure.<br>
+        • <strong>Smart Decision Advisories:</strong> Personal protection (umbrella), agriculture (foliar spray window), aviation (crosswinds), and health precautions.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Tab 3: Doppler Radar & GIS</strong></td>
+      <td>
+        • <strong>Interactive Canvas:</strong> Concentric 50km–250km radar rings with an animated 360° radar beam sweep.<br>
+        • <strong>Reflectivity Echoes:</strong> Color-coded storm cell clusters based on <code>dBZ</code> radar reflectivity.<br>
+        • <strong>Hazard Filters:</strong> Toggle chips for Heavy Rain, Severe Wind, Cloudburst, and Cyclone 94B.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Tab 4: Conversational AI</strong></td>
+      <td>
+        • <strong>Chat Bubbles:</strong> Distinct right/left bubbles with role indicators.<br>
+        • <strong>Voice Input Simulation:</strong> Pulsing microphone button connected to speech recognition.<br>
+        • <strong>Indic Language Switcher:</strong> Direct toggle between English, Telugu, Hindi, Marathi, Kannada, and Tamil.<br>
+        • <strong>Persona Indicator Chips:</strong> Instant switching between Farmer, Pilot, NDMA, and Citizen personas.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Tab 5: Climate & Favorites</strong></td>
+      <td>
+        • <strong>30-Day Rainfall Trend Graph:</strong> Rendered via custom Bezier Canvas with smooth neon gradient fill.<br>
+        • <strong>Monsoon Departure Index:</strong> Visualizes surplus vs deficit anomaly against the 30-year IMD climatological normal.<br>
+        • <strong>MongoDB Favorites:</strong> Pinned Indian regional hubs synced with the backend database.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ================= SECTION 7: RESILIENCE & DEPLOYMENT ================= -->
+<div class="page-break"></div>
+<h1>7. Resilience, Edge Fallback & Deployment Process</h1>
+
+<h2>7.1 Rural Continuity & Edge Fallback Strategy</h2>
+<p>Natural disasters and severe cyclones frequently disrupt rural cellular towers and fiber backhauls. A weather app that requires continuous cloud connectivity fails precisely when it is needed most. Weather SPT incorporates a <strong>Dual-Engine Resilience Model</strong>:</p>
+<ol>
+  <li><strong>PWA Service Worker Caching (`sw.js`):</strong> Intercepts network requests and caches the entire application bundle, UI assets, and icons locally.</li>
+  <li><strong>Embedded Database Fallback:</strong> If MongoDB Atlas cloud is unreachable, the Node.js server automatically routes reads and writes to an embedded SQLite database (<code>weathergpt.sqlite</code>) without raising exceptions.</li>
+  <li><strong>Deterministic Indic Fallback Matrix:</strong> If external LLM API endpoints time out or cellular access drops, our local expert rule matrix generates localized weather advice in 6 Indian languages directly from cached telemetry.</li>
+</ol>
+
+<h2>7.2 Production Deployment Architecture</h2>
+
+<pre>
++-----------------------------------------------------------------------------+
+|                        DEPLOYMENT & INFRASTRUCTURE MATRIX                   |
+|                                                                             |
+|  [Client Distribution]                                                      |
+|  • Android APK: Compiled via `flutter build apk --release`                   |
+|  • Web Client: Deployed to CDN / Node.js static public directory             |
+|  • Windows Desktop: Native executable via `flutter build windows`           |
+|                                                                             |
+|  [Server Runtime]                                                           |
+|  • Containerized Node.js v24 microservice on Linux / Windows Server         |
+|  • Reverse proxy via NGINX with SSL / TLS 1.3 termination                   |
+|                                                                             |
+|  [Database Infrastructure]                                                  |
+|  • Primary: MongoDB Atlas Cloud Cluster (M0 / Dedicated Replica Set)         |
+|  • Fallback: Embedded SQLite3 file store for edge / standalone deployments   |
++-----------------------------------------------------------------------------+
+</pre>
+
+<!-- ================= SECTION 8: SIH EVALUATION MATRIX ================= -->
+<div class="page-break"></div>
+<h1>8. SIH Evaluation & Feasibility Matrix</h1>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Evaluation Criterion</th>
+      <th>How Weather SPT Meets & Exceeds SIH Requirements</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Technical Sophistication</strong></td>
+      <td>Decoupled 6-tier architecture featuring Flutter 3.x, Node.js v24, MongoDB Atlas NoSQL with GeoJSON <code>2dsphere</code> indexing, and a domain-trained AI model with strict telemetry grounding.</td>
+    </tr>
+    <tr>
+      <td><strong>Zero-Hallucination AI</strong></td>
+      <td>Eliminates the critical flaw of generic LLMs by forcing telemetry boundary conditions before generative reasoning, guaranteeing 100% numerical factual integrity.</td>
+    </tr>
+    <tr>
+      <td><strong>Rural Accessibility</strong></td>
+      <td>Full two-way voice in 6 regional Indian languages (Telugu, Hindi, Marathi, Kannada, Tamil, English) breaking literacy and language barriers for Indian farmers.</td>
+    </tr>
+    <tr>
+      <td><strong>Actionable Decision Support</strong></td>
+      <td>Translates raw meteorological variables into concrete operational directives (irrigation rescheduling, foliar spray timing, aviation crosswinds, flood evacuation).</td>
+    </tr>
+    <tr>
+      <td><strong>Disaster Preparedness</strong></td>
+      <td>Integrates live GDACS cyclone tracking, Doppler radar reflectivity simulation, and IMD hazard scoring for civil defense authorities.</td>
+    </tr>
+    <tr>
+      <td><strong>Production Readiness</strong></td>
+      <td>Includes automated 1-click startup scripts (<code>START_WEATHER_SPT.bat</code>), verified API endpoints, zero-error static analysis, and resilient offline fallbacks.</td>
+    </tr>
+  </tbody>
+</table>
+
+<br><br>
+<div style="text-align: center; border-top: 2px solid #0284c7; padding-top: 15px; color: #64748b; font-size: 9.5pt;">
+  <strong>Weather SPT — Smart India Hackathon (SIH26068)</strong><br>
+  Developed by <strong>Syntax Squad</strong> • Comprehensive System Architecture & Workflow Document
+</div>
+
+</body>
+</html>

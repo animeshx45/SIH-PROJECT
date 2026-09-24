@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1280" width="720" height="1280">
+      
+    <defs>
+      <linearGradient id="bgGrad" x1="0%" y1="0%" x2="50%" y2="100%">
+        <stop offset="0%" stop-color="hsl(219.36170212765958, 46.276595744680854%, 5.297872340425532%)" />
+        <stop offset="60%" stop-color="hsl(237.87234042553192, 46.276595744680854%, 2.1702127659574466%)" />
+        <stop offset="100%" stop-color="#040914" />
+      </linearGradient>
+      <radialGradient id="satelliteGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#58c7ff" stop-opacity="0.8" />
+        <stop offset="60%" stop-color="#58c7ff" stop-opacity="0.15" />
+        <stop offset="100%" stop-color="#58c7ff" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id="stormGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#48e09a" stop-opacity="0.6" />
+        <stop offset="45%" stop-color="#58c7ff" stop-opacity="0.4" />
+        <stop offset="85%" stop-color="#ff5e6c" stop-opacity="0.2" />
+        <stop offset="100%" stop-color="#040914" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+        <stop offset="25%" stop-color="#58c7ff" stop-opacity="0.85" />
+        <stop offset="65%" stop-color="#145374" stop-opacity="0.4" />
+        <stop offset="100%" stop-color="#040914" stop-opacity="0" />
+      </radialGradient>
+      <filter id="bloom" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="8" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    </defs>
+  
+      <rect width="720" height="1280" fill="url(#bgGrad)" />
+
+    <g opacity="0.45">
+      <circle cx="0.0" cy="7.7" r="1.8" fill="#c5e3f6" opacity="0.50" /><circle cx="137.5" cy="101.0" r="1.1" fill="#c5e3f6" opacity="0.88" /><circle cx="275.0" cy="194.3" r="1.1" fill="#c5e3f6" opacity="0.73" /><circle cx="412.5" cy="287.6" r="1.8" fill="#c5e3f6" opacity="0.18" /><circle cx="550.0" cy="380.9" r="1.1" fill="#c5e3f6" opacity="-0.26" /><circle cx="687.5" cy="474.2" r="1.1" fill="#c5e3f6" opacity="-0.19" /><circle cx="105.0" cy="567.5" r="1.8" fill="#c5e3f6" opacity="0.33" /><circle cx="242.5" cy="660.8" r="1.1" fill="#c5e3f6" opacity="0.82" /><circle cx="380.0" cy="754.1" r="1.1" fill="#c5e3f6" opacity="0.83" /><circle cx="517.5" cy="847.4" r="1.8" fill="#c5e3f6" opacity="0.35" /><circle cx="655.0" cy="940.7" r="1.1" fill="#c5e3f6" opacity="-0.18" /><circle cx="72.5" cy="1034.0" r="1.1" fill="#c5e3f6" opacity="-0.26" /><circle cx="210.0" cy="1127.3" r="1.8" fill="#c5e3f6" opacity="0.17" /><circle cx="347.5" cy="1220.6" r="1.1" fill="#c5e3f6" opacity="0.72" /><circle cx="485.0" cy="33.9" r="1.1" fill="#c5e3f6" opacity="0.89" /><circle cx="622.5" cy="127.2" r="1.8" fill="#c5e3f6" opacity="0.52" /><circle cx="40.0" cy="220.5" r="1.1" fill="#c5e3f6" opacity="-0.05" /><circle cx="177.5" cy="313.8" r="1.1" fill="#c5e3f6" opacity="-0.30" /><circle cx="315.0" cy="407.1" r="1.8" fill="#c5e3f6" opacity="0.01" /><circle cx="452.5" cy="500.4" r="1.1" fill="#c5e3f6" opacity="0.58" /><circle cx="590.0" cy="593.7" r="1.1" fill="#c5e3f6" opacity="0.90" /><circle cx="7.5" cy="687.0" r="1.8" fill="#c5e3f6" opacity="0.66" /><circle cx="145.0" cy="780.3" r="1.1" fill="#c5e3f6" opacity="0.09" /><circle cx="282.5" cy="873.6" r="1.1" fill="#c5e3f6" opacity="-0.29" />
+    </g>
+  
+
+        <g opacity="1.00">
+          <ellipse cx="360" cy="2045.1229179331308" rx="1152" ry="979.1999999999999" fill="#0a2240" />
+          <ellipse cx="360" cy="2045.1229179331308" rx="1140.48" ry="967.68" fill="none" stroke="#58c7ff" stroke-width="6" opacity="0.6" filter="url(#bloom)" />
+          <ellipse cx="360" cy="2045.1229179331308" rx="1117.44" ry="944.64" fill="none" stroke="#48e09a" stroke-width="3" opacity="0.4" />
+        </g>
+      
+
+        <g opacity="1.00" transform="translate(292.1580547112462, 478.3975683890578) scale(1.2127659574468086) rotate(-10.896656534954406)">
+          <!-- Satellite Body -->
+          <circle cx="0" cy="0" r="32" fill="url(#satelliteGlow)" />
+          <rect x="-14" y="-12" width="28" height="24" rx="4" fill="#1b3a5b" stroke="#58c7ff" stroke-width="1.5" />
+          <!-- Solar Panels Left & Right -->
+          <rect x="-56" y="-8" width="38" height="16" rx="2" fill="#0d233a" stroke="#48e09a" stroke-width="1" />
+          <line x1="-37" y1="-8" x2="-37" y2="8" stroke="#48e09a" stroke-width="0.7" />
+          <line x1="-18" y1="-8" x2="-18" y2="8" stroke="#48e09a" stroke-width="0.7" />
+          <rect x="18" y="-8" width="38" height="16" rx="2" fill="#0d233a" stroke="#48e09a" stroke-width="1" />
+          <line x1="37" y1="-8" x2="37" y2="8" stroke="#48e09a" stroke-width="0.7" />
+          <!-- Radar Dish & Telemetry Beam -->
+          <path d="M -8 12 Q 0 20 8 12" fill="none" stroke="#ffd166" stroke-width="2" />
+          <polygon points="0,18 -32,120 32,120" fill="url(#satelliteGlow)" opacity="0.4" />
+          <!-- SIH26068 Marker -->
+          <circle cx="0" cy="0" r="3" fill="#ffd166" />
+        </g>
+      
+    </svg>

@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://localhost:3000/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="Production-ready AI Weather Intelligence and Decision Support System">
+  <title>WeatherGPT — AI Weather Intelligence &amp; Decision Platform</title>
+  <link rel="manifest" href="http://localhost:3000/manifest.webmanifest">
+  <link rel="stylesheet" href="./WeatherGPT — AI Weather Intelligence &amp; Decision Platform_files/leaflet.css">
+  <link rel="stylesheet" href="./WeatherGPT — AI Weather Intelligence &amp; Decision Platform_files/style.css">
+</head>
+<body>
+<div class="app">
+  <!-- Desktop Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      🌦️ <span>WeatherGPT</span>
+    </div>
+    <nav class="nav">
+      <button class="active" data-page="home" data-i18n="navDashboard">🏠 Dashboard</button>
+      <button data-page="map" data-i18n="navMap">🗺️ Radar &amp; GIS Map</button>
+      <button data-page="forecast" data-i18n="navForecast">📅 Forecast &amp; Timeline</button>
+      <button data-page="ask" data-i18n="navAsk">🤖 Ask Gemini AI</button>
+      <button data-page="risk" data-i18n="navRisk">🛡️ Risk &amp; Early Warning</button>
+      <button data-page="travel" data-i18n="navTravel">✈️ Travel Hazard Planner</button>
+      <button data-page="farmer" data-i18n="navFarmer">🌾 Farmer Decision Mode</button>
+      <button data-page="ideas" data-i18n="navIdeas">💡 Daily Activity Ideas</button>
+      <button data-page="settings" data-i18n="navSettings">⚙️ Settings &amp; Keys</button>
+    </nav>
+    <div class="sidebar-footer">
+      <div data-i18n="sidebarTech">sidebarTech</div>
+      <div data-i18n="sidebarEngines" style="margin-top:4px;opacity:0.7">sidebarEngines</div>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main">
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="page-title">
+        <h1 id="pageHeaderTitle" data-i18n="navDashboard">🏠 Dashboard</h1>
+        <div class="status-badge">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="serverStatus" data-i18n="serverLoading">Server Connected (SQLite + AI Active)</span>
+        </div>
+      </div>
+
+      <div class="header-tools">
+        <!-- Top Header Language Switcher -->
+        <select id="headerLangSelect" class="select-input" style="font-weight:700;border-color:rgba(88,199,255,0.3)">
+          <option value="en">English</option>
+          <option value="te">తెలుగు (Telugu)</option>
+          <option value="hi">हिन्दी (Hindi)</option>
+          <option value="mr">मराठी (Marathi)</option>
+          <option value="kn">ಕನ್ನಡ (Kannada)</option>
+          <option value="ta">தமிழ் (Tamil)</option>
+        </select>
+
+        <div class="search-box">
+          <input id="cityInput" class="search-input" data-i18n-ph="searchPlaceholder" placeholder="Search city or village..." value="Hyderabad" autocomplete="off">
+          <div id="suggestionsBox" class="suggestions"></div>
+        </div>
+
+        <button class="btn favorite-btn" id="favBtn" data-i18n="saveBtn" title="Save to Favorites">☆ Save</button>
+        <button class="btn" id="voiceBtn" data-i18n="speakBtn" title="Voice Input">🎙️ Speak</button>
+        <button class="btn" id="myLocationBtn" data-i18n="myLocationBtn" title="Detect GPS Location">📍 My Location</button>
+      </div>
+    </header>
+
+    <!-- Quick Favorites Pill Bar -->
+    <div id="favoritesStrip" class="favorites-strip">
+    <div class="fav-pill " data-lat="15.123" data-lon="75.456" data-name="TestCity">
+      ⭐ TestCity
+    </div>
+  
+    <div class="fav-pill " data-lat="28.6139" data-lon="77.209" data-name="Delhi">
+      ⭐ Delhi
+    </div>
+  
+    <div class="fav-pill " data-lat="19.076" data-lon="72.8777" data-name="Mumbai">
+      ⭐ Mumbai
+    </div>
+  
+    <div class="fav-pill " data-lat="12.9716" data-lon="77.5946" data-name="Bengaluru">
+      ⭐ Bengaluru
+    </div>
+  
+    <div class="fav-pill " data-lat="13.0827" data-lon="80.2707" data-name="Chennai">
+      ⭐ Chennai
+    </div>
+  </div>
+
+    <!-- Emergency Severe Alerts Banner -->
+    <div id="alertsContainer" class="alerts-container" style="display:none"></div>
+
+    <!-- 1. Home Dashboard -->
+    <section id="home" class="page active">
+      <div class="grid">
+        <!-- Hero Weather Card -->
+        <div class="card col-8">
+          <div class="hero-place" id="heroPlace">Cape Town, Western Cape, South Africa</div>
+          <div class="hero-temp-row">
+            <div class="big-temp" id="bigTemp">16°C</div>
+            <div>
+              <div class="condition-tag" id="heroCondition" data-i18n="loadingWeather">☀️ Clear Sky • Feels like 16°C</div>
+              <div id="metricAqi">Normal</div>
+            </div>
+          </div>
+
+          <div class="metrics-grid">
+            <div class="metric-item">
+              <span class="lbl" data-i18n="humidity">💧 Humidity</span>
+              <span class="val" id="metricHumidity">96%</span>
+            </div>
+            <div class="metric-item">
+              <span class="lbl" data-i18n="windSpeed">💨 Wind Speed</span>
+              <span class="val" id="metricWind">10 km/h</span>
+            </div>
+            <div class="metric-item">
+              <span class="lbl" data-i18n="rainChance">🌧️ Rain Chance</span>
+              <span class="val" id="metricRain">0%</span>
+            </div>
+            <div class="metric-item">
+              <span class="lbl" data-i18n="disasterRisk">🛡️ Disaster Risk</span>
+              <span class="val risk-big-score low" id="riskHome" style="font-size: 17px;">0/100 • LOW RISK</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Executive Brief Card -->
+        <div class="card col-4">
+          <div class="card-title">
+            <span data-i18n="aiBriefTitle">✨ Gemini AI Brief</span>
+            <button class="btn btn-icon" id="speakBriefBtn" title="Listen Audio">🔊</button>
+          </div>
+          <div id="aiBrief" class="response-card" style="min-height:160px">Cape Town: Expect 16°C today with a 0% chance of rain. Conditions are favorable for normal outdoor activities. Overall risk rating is 0/100.</div>
+        </div>
+
+        <!-- 24-Hour Timeline -->
+        <div class="card col-12">
+          <div class="card-title" data-i18n="timelineTitle">🕒 24-Hour Forecast Timeline</div>
+          <div id="hourlyStrip" class="hourly-strip">
+      <div class="hour-card">
+        <div class="time">12:00 AM</div>
+        <div class="ico">☀️</div>
+        <div class="temp">17°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">01:00 AM</div>
+        <div class="ico">☀️</div>
+        <div class="temp">17°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">02:00 AM</div>
+        <div class="ico">☀️</div>
+        <div class="temp">16°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">03:00 AM</div>
+        <div class="ico">☀️</div>
+        <div class="temp">16°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">04:00 AM</div>
+        <div class="ico">☀️</div>
+        <div class="temp">16°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">05:00 AM</div>
+        <div class="ico">☀️</div>
+        <div class="temp">16°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">06:00 AM</div>
+        <div class="ico">☀️</div>
+        <div class="temp">16°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">07:00 AM</div>
+        <div class="ico">☀️</div>
+        <div class="temp">15°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">08:00 AM</div>
+        <div class="ico">☀️</div>
+        <div class="temp">17°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">09:00 AM</div>
+        <div class="ico">☀️</div>
+        <div class="temp">19°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">10:00 AM</div>
+        <div class="ico">☀️</div>
+        <div class="temp">20°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">11:00 AM</div>
+        <div class="ico">☀️</div>
+        <div class="temp">22°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">12:00 PM</div>
+        <div class="ico">☀️</div>
+        <div class="temp">22°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">01:00 PM</div>
+        <div class="ico">☀️</div>
+        <div class="temp">23°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">02:00 PM</div>
+        <div class="ico">☀️</div>
+        <div class="temp">22°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">03:00 PM</div>
+        <div class="ico">☀️</div>
+        <div class="temp">21°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">04:00 PM</div>
+        <div class="ico">🌤️</div>
+        <div class="temp">20°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">05:00 PM</div>
+        <div class="ico">🌤️</div>
+        <div class="temp">18°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">06:00 PM</div>
+        <div class="ico">🌤️</div>
+        <div class="temp">17°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">07:00 PM</div>
+        <div class="ico">⛅</div>
+        <div class="temp">16°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">08:00 PM</div>
+        <div class="ico">⛅</div>
+        <div class="temp">16°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">09:00 PM</div>
+        <div class="ico">☁️</div>
+        <div class="temp">16°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">10:00 PM</div>
+        <div class="ico">🌤️</div>
+        <div class="temp">15°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    
+      <div class="hour-card">
+        <div class="time">11:00 PM</div>
+        <div class="ico">🌤️</div>
+        <div class="temp">15°C</div>
+        <div class="pop">🌧️ 0%</div>
+      </div>
+    </div>
+        </div>
+
+        <!-- 7-Day Forecast -->
+        <div class="card col-12">
+          <div class="card-title" data-i18n="outlookTitle">📅 7-Day Meteorological Outlook</div>
+          <div id="forecastGrid" class="forecast-grid">
+      <div class="forecast-day">
+        <div class="day-name">Today</div>
+        <div class="day-icon">☁️</div>
+        <div class="day-temps">23°C <span>/ 15°C</span></div>
+        <div class="day-pop">🌧️ 0% rain</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Overcast</div>
+      </div>
+    
+      <div class="forecast-day">
+        <div class="day-name">Thu, Sep 10</div>
+        <div class="day-icon">☁️</div>
+        <div class="day-temps">19°C <span>/ 15°C</span></div>
+        <div class="day-pop">🌧️ 2% rain</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Overcast</div>
+      </div>
+    
+      <div class="forecast-day">
+        <div class="day-name">Fri, Sep 11</div>
+        <div class="day-icon">☁️</div>
+        <div class="day-temps">21°C <span>/ 15°C</span></div>
+        <div class="day-pop">🌧️ 6% rain</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Overcast</div>
+      </div>
+    
+      <div class="forecast-day">
+        <div class="day-name">Sat, Sep 12</div>
+        <div class="day-icon">🌦️</div>
+        <div class="day-temps">17°C <span>/ 15°C</span></div>
+        <div class="day-pop">🌧️ 51% rain</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Rain Showers</div>
+      </div>
+    
+      <div class="forecast-day">
+        <div class="day-name">Sun, Sep 13</div>
+        <div class="day-icon">☁️</div>
+        <div class="day-temps">23°C <span>/ 16°C</span></div>
+        <div class="day-pop">🌧️ 20% rain</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Overcast</div>
+      </div>
+    
+      <div class="forecast-day">
+        <div class="day-name">Mon, Sep 14</div>
+        <div class="day-icon">🌦️</div>
+        <div class="day-temps">19°C <span>/ 14°C</span></div>
+        <div class="day-pop">🌧️ 35% rain</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Light Drizzle</div>
+      </div>
+    
+      <div class="forecast-day">
+        <div class="day-name">Tue, Sep 15</div>
+        <div class="day-icon">🌦️</div>
+        <div class="day-temps">16°C <span>/ 14°C</span></div>
+        <div class="day-pop">🌧️ 62% rain</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Rain Showers</div>
+      </div>
+    </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Interactive Map -->
+    <section id="map" class="page">
+      <div class="card col-12">
+        <div class="card-title">
+          <div>
+            <b data-i18n="mapTitle">🗺️ India Radar &amp; Meteorological Intelligence Map</b>
+            <div data-i18n="mapSubtitle" style="font-size:12px;color:var(--muted);font-weight:400">Live Doppler Radar frames • GIS Risk Zones • Precipitation overlay</div>
+          </div>
+        </div>
+
+        <div class="map-wrapper">
+          <div id="weatherMap" class="map-element"></div>
+
+          <div class="map-controls-floating">
+            <button class="btn active" data-layer="radar" data-i18n="layerRadar">🌧️ Doppler Radar</button>
+            <button class="btn" data-layer="rain" data-i18n="layerRain">☔ Rain Heatmap</button>
+            <button class="btn" data-layer="sunny" data-i18n="layerSunny">layerSunny</button>
+            <button class="btn" data-layer="cyclone" data-i18n="layerCyclone">layerCyclone</button>
+            <button class="btn" data-layer="wind" data-i18n="layerWind">💨 Wind Vectors</button>
+            <button class="btn" data-layer="satellite" data-i18n="layerSatellite">🛰️ Satellite</button>
+            <button class="btn" id="mapIndiaBtn" data-i18n="btnPanIndia">🇮🇳 Pan India</button>
+            <button class="btn" id="mapLocateBtn" data-i18n="btnCenterMarker">📍 Center Marker</button>
+          </div>
+
+          <!-- Color Scales Legend Floating Box -->
+          <div class="map-legend-floating" id="mapLegendBox">
+            <b data-i18n="mapLegendTitle">mapLegendTitle</b>
+            <div class="legend-scale-row" style="margin-top:6px">
+              <span class="legend-badge heat-normal" data-i18n="legendHeatNormal">legendHeatNormal</span>
+              <span class="legend-badge heat-high" data-i18n="legendHeatHigh">legendHeatHigh</span>
+              <span class="legend-badge heat-wave" data-i18n="legendHeatWave">legendHeatWave</span>
+            </div>
+            <div class="legend-scale-row" style="margin-top:5px">
+              <span class="legend-badge cyclone-dep" data-i18n="legendCycloneDep">legendCycloneDep</span>
+              <span class="legend-badge cyclone-storm" data-i18n="legendCycloneStorm">legendCycloneStorm</span>
+            </div>
+          </div>
+
+          <div class="map-info-floating">
+            <b id="mapPlaceName">Hyderabad</b>
+            <div id="mapMiniStats" style="font-size:12px;color:var(--muted);margin-top:3px">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Forecast Page -->
+    <section id="forecast" class="page">
+      <div class="grid">
+        <div class="card col-12">
+          <div class="card-title" data-i18n="forecastDetailTitle">forecastDetailTitle</div>
+          <div id="forecastDetailGrid" class="forecast-grid">
+      <div class="forecast-day">
+        <div class="day-name">Today</div>
+        <div class="day-icon">☁️</div>
+        <div class="day-temps">23°C <span>/ 15°C</span></div>
+        <div class="day-pop">🌧️ 0% rain</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Overcast</div>
+      </div>
+    
+      <div class="forecast-day">
+        <div class="day-name">Thu, Sep 10</div>
+        <div class="day-icon">☁️</div>
+        <div class="day-temps">19°C <span>/ 15°C</span></div>
+        <div class="day-pop">🌧️ 2% rain</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Overcast</div>
+      </div>
+    
+      <div class="forecast-day">
+        <div class="day-name">Fri, Sep 11</div>
+        <div class="day-icon">☁️</div>
+        <div class="day-temps">21°C <span>/ 15°C</span></div>
+        <div class="day-pop">🌧️ 6% rain</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Overcast</div>
+      </div>
+    
+      <div class="forecast-day">
+        <div class="day-name">Sat, Sep 12</div>
+        <div class="day-icon">🌦️</div>
+        <div class="day-temps">17°C <span>/ 15°C</span></div>
+        <div class="day-pop">🌧️ 51% rain</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Rain Showers</div>
+      </div>
+    
+      <div class="forecast-day">
+        <div class="day-name">Sun, Sep 13</div>
+        <div class="day-icon">☁️</div>
+        <div class="day-temps">23°C <span>/ 16°C</span></div>
+        <div class="day-pop">🌧️ 20% rain</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Overcast</div>
+      </div>
+    
+      <div class="forecast-day">
+        <div class="day-name">Mon, Sep 14</div>
+        <div class="day-icon">🌦️</div>
+        <div class="day-temps">19°C <span>/ 14°C</span></div>
+        <div class="day-pop">🌧️ 35% rain</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Light Drizzle</div>
+      </div>
+    
+      <div class="forecast-day">
+        <div class="day-name">Tue, Sep 15</div>
+        <div class="day-icon">🌦️</div>
+        <div class="day-temps">16°C <span>/ 14°C</span></div>
+        <div class="day-pop">🌧️ 62% rain</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Rain Showers</div>
+      </div>
+    </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Ask Gemini AI -->
+    <section id="ask" class="page">
+      <div class="grid">
+        <div class="card col-12">
+          <div class="card-title">
+            <span data-i18n="askTitle">🤖 WeatherGPT AI Assistant (Gemini 2.5 Flash)</span>
+            <span data-i18n="askBadge" style="font-size:12px;color:var(--cyan);font-weight:500">Live Weather Grounding</span>
+          </div>
+          <p data-i18n="askDesc" style="color:var(--muted);font-size:13.5px;margin-bottom:14px">Ask any question regarding rainfall likelihood, safe commute times, protective clothing, health alerts, or travel precautions.</p>
+
+          <div class="chat-container">
+            <div class="chat-quick-chips">
+              <span class="chat-chip" id="chip1" data-prompt="Will it rain today in my location?" data-i18n="chipRain">🌧️ Will it rain today?</span>
+              <span class="chat-chip" id="chip2" data-prompt="What clothes should I wear today based on temperature and humidity?" data-i18n="chipWear">👕 What should I wear?</span>
+              <span class="chat-chip" id="chip3" data-prompt="Is it safe for a highway road trip today?" data-i18n="chipTravel">🚗 Safe for travel?</span>
+              <span class="chat-chip" id="chip4" data-prompt="What is the air quality and should I wear an N95 mask?" data-i18n="chipAir">🌫️ Air Quality &amp; Mask?</span>
+            </div>
+
+            <div class="chat-input-bar">
+              <input id="chatInput" data-i18n-ph="chatPlaceholder" placeholder="Ask WeatherGPT anything...">
+              <button class="btn" id="chatVoiceBtn">🎙️</button>
+              <button class="btn primary" id="chatSendBtn" data-i18n="askAiBtn">Ask AI</button>
+            </div>
+
+            <div id="chatAnswer" class="response-card" data-i18n="chatDefaultAnswer">Ask a question above or tap a prompt chip. WeatherGPT is grounded in real-time sensor and satellite readings.</div>
+
+            <div class="response-actions">
+              <button class="btn" id="speakChatBtn" data-i18n="listenAudio">🔊 Listen</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Risk & Early Warning -->
+    <section id="risk" class="page">
+      <div class="grid">
+        <div class="card col-4">
+          <div class="card-title" data-i18n="riskTitle">🛡️ Disaster Risk Index</div>
+          <div class="risk-meter">
+            <div id="riskBigScore" class="risk-big-score low">0/100</div>
+            <b id="riskBandLabel" style="font-size:16px;letter-spacing:0.05em">LOW RISK</b>
+          </div>
+        </div>
+
+        <div class="card col-8">
+          <div class="card-title" data-i18n="riskFactorsTitle">⚠️ Detected Atmospheric Risk Factors</div>
+          <div id="riskFactorsList"><div class="severe-alert-card warning" style="margin-bottom:8px;padding:10px 14px">🟢 LOW RISK</div></div>
+        </div>
+
+        <div class="card col-12">
+          <div class="card-title" data-i18n="riskSafetyTitle">🚨 Safety Protocol &amp; Emergency Actions</div>
+          <p data-i18n="riskSafetyDesc" style="color:var(--muted);font-size:13.5px">WeatherGPT calculations integrate standard IMD (India Meteorological Department) thresholds. For extreme flash floods, cyclones, or severe thunderstorm red alerts, always follow local municipal and state disaster management protocols.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Smart Travel Planner -->
+    <section id="travel" class="page">
+      <div class="grid">
+        <div class="card col-12">
+          <div class="card-title" data-i18n="travelTitle">✈️ Route Weather &amp; Travel Hazard Analyzer</div>
+          <p data-i18n="travelDesc" style="color:var(--muted);font-size:13.5px">Evaluate road weather hazards, rain intervals, and visibility across your journey.</p>
+
+          <div class="grid" style="margin-top:14px">
+            <div class="card col-3" style="background:transparent;border:0;padding:0">
+              <label data-i18n="travelStartPlace" style="font-size:12px;color:var(--muted)">Starting Place</label>
+              <input id="travelFrom" class="search-input" style="width:100%;margin-top:4px" placeholder="e.g. Hyderabad" value="Hyderabad">
+            </div>
+            <div class="card col-3" style="background:transparent;border:0;padding:0">
+              <label data-i18n="travelDest" style="font-size:12px;color:var(--muted)">Destination</label>
+              <input id="travelTo" class="search-input" style="width:100%;margin-top:4px" placeholder="e.g. Mumbai" value="Mumbai">
+            </div>
+            <div class="card col-3" style="background:transparent;border:0;padding:0">
+              <label data-i18n="travelStartDate" style="font-size:12px;color:var(--muted)">Start Date</label>
+              <input id="travelStart" type="date" class="search-input" style="width:100%;margin-top:4px">
+            </div>
+            <div class="card col-3" style="background:transparent;border:0;padding:0">
+              <label data-i18n="travelEndDate" style="font-size:12px;color:var(--muted)">End Date</label>
+              <input id="travelEnd" type="date" class="search-input" style="width:100%;margin-top:4px">
+            </div>
+          </div>
+
+          <button class="btn primary" id="travelPlanBtn" data-i18n="travelBtn" style="margin-top:16px">Analyze Journey Hazards</button>
+
+          <div id="travelOutput" class="response-card" data-i18n="travelDefault" style="margin-top:16px">Enter travel points above to get AI route hazard and destination weather intelligence.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Farmer Decision Mode -->
+    <section id="farmer" class="page">
+      <div class="grid">
+        <div class="card col-4">
+          <div class="card-title" data-i18n="farmerCropTitle">🌾 Crop Selection</div>
+          <label data-i18n="farmerTargetCrop" style="font-size:12px;color:var(--muted)">Target Crop</label>
+          <select id="farmerCropSelect" class="select-input" style="width:100%;margin:6px 0 14px">
+            <option value="Rice" data-i18n="farmerCropRice">Rice (Paddy)</option>
+            <option value="Cotton" data-i18n="farmerCropCotton">Cotton</option>
+            <option value="Maize" data-i18n="farmerCropMaize">Maize</option>
+            <option value="Chilli" data-i18n="farmerCropChilli">Chilli</option>
+            <option value="Sugarcane" data-i18n="farmerCropSugarcane">Sugarcane</option>
+            <option value="Vegetables" data-i18n="farmerCropVeg">Vegetables</option>
+          </select>
+
+          <div id="farmQuickSummary" style="font-size:12px;color:var(--muted);margin-bottom:12px">🌧️ Rain Chance: 0% • 💨 Wind Speed: 10 km/h • Temp: 16°C</div>
+
+          <div class="farm-actions">
+            <button class="farm-action-btn" onclick="triggerFarmerAI(&#39;irrigation&#39;)" data-i18n="farmerBtnIrrigation">💧 Irrigation AI</button>
+            <button class="farm-action-btn" onclick="triggerFarmerAI(&#39;spray&#39;)" data-i18n="farmerBtnSpray">🧴 Spray Window</button>
+            <button class="farm-action-btn" onclick="triggerFarmerAI(&#39;harvest&#39;)" data-i18n="farmerBtnHarvest">🌾 Harvest Window</button>
+            <button class="farm-action-btn" onclick="triggerFarmerAI(&#39;heat&#39;)" data-i18n="farmerBtnHeat">🔥 Heat Stress</button>
+          </div>
+        </div>
+
+        <div class="card col-8">
+          <div class="card-title" data-i18n="farmerAdvisoryTitle">🚜 AI Agronomy Advisory</div>
+          <div id="farmerAdvisoryBox" class="response-card" data-i18n="farmerDefault" style="min-height:160px">Select a crop and click an AI decision module on the left.</div>
+
+          <div class="grid" style="margin-top:14px">
+            <div class="card col-4" style="background:rgba(255,255,255,0.03);padding:12px">
+              <b data-i18n="farmerSubIrrigation">💧 Irrigation</b>
+              <div id="irrigationCard" style="font-size:12px;color:var(--muted);margin-top:4px">Soil irrigation can proceed normally during cooler hours.</div>
+            </div>
+            <div class="card col-4" style="background:rgba(255,255,255,0.03);padding:12px">
+              <b data-i18n="farmerSubSpray">🧴 Spraying</b>
+              <div id="sprayCard" style="font-size:12px;color:var(--muted);margin-top:4px">Favorable spray window under low wind conditions.</div>
+            </div>
+            <div class="card col-4" style="background:rgba(255,255,255,0.03);padding:12px">
+              <b data-i18n="farmerSubHeat">🌡️ Thermal Stress</b>
+              <div id="heatStressCard" style="font-size:12px;color:var(--muted);margin-top:4px">Thermal conditions are optimal for regular field work.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Daily Ideas -->
+    <section id="ideas" class="page">
+      <div class="grid">
+        <div class="card col-12">
+          <div class="card-title" data-i18n="ideasTitle">💡 Personalized Weather-Aware Ideas</div>
+          <div id="dailyIdeasCards" class="grid">
+    <div class="card col-4" style="background:rgba(255,255,255,0.03)">
+      <b style="color:var(--cyan)">Best Time Outdoors</b>
+      <p style="font-size:13px;color:var(--muted);margin-top:6px">Midday to late afternoon is comfortable.</p>
+    </div>
+  
+    <div class="card col-4" style="background:rgba(255,255,255,0.03)">
+      <b style="color:var(--cyan)">Packing Recommendation</b>
+      <p style="font-size:13px;color:var(--muted);margin-top:6px">Sunglasses, SPF sunscreen, hydration.</p>
+    </div>
+  
+    <div class="card col-4" style="background:rgba(255,255,255,0.03)">
+      <b style="color:var(--cyan)">Exercise Window</b>
+      <p style="font-size:13px;color:var(--muted);margin-top:6px">Outdoor jogging / brisk walking is ideal.</p>
+    </div>
+  </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. Settings & Database -->
+    <section id="settings" class="page">
+      <div class="grid">
+        <div class="card col-6">
+          <div class="card-title" data-i18n="settingsPrefTitle">⚙️ Application Preferences</div>
+
+          <div style="margin-bottom:14px">
+            <label data-i18n="tempUnitLabel" style="font-size:13px;color:var(--muted);display:block;margin-bottom:4px">Temperature Unit</label>
+            <select id="unitSelect" class="select-input" style="width:100%">
+              <option value="c" data-i18n="tempUnitC">Celsius (°C)</option>
+              <option value="f" data-i18n="tempUnitF">Fahrenheit (°F)</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom:14px">
+            <label data-i18n="langLabel" style="font-size:13px;color:var(--muted);display:block;margin-bottom:4px">Regional Language</label>
+            <select id="langSelect" class="select-input" style="width:100%">
+              <option value="en">English</option>
+              <option value="te">తెలుగు (Telugu)</option>
+              <option value="hi">हिन्दी (Hindi)</option>
+              <option value="mr">मराठी (Marathi)</option>
+              <option value="kn">ಕನ್ನಡ (Kannada)</option>
+              <option value="ta">தமிழ் (Tamil)</option>
+            </select>
+          </div>
+
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+            <input type="checkbox" id="autoSpeakCheck">
+            <span data-i18n="autoSpeakLabel">Automatically speak AI responses (Voice Synthesis)</span>
+          </label>
+        </div>
+
+        <div class="card col-6">
+          <div class="card-title" data-i18n="geminiConfigTitle">✨ Google Gemini AI Configuration</div>
+          <p data-i18n="geminiConfigDesc" style="color:var(--muted);font-size:13px;margin-bottom:10px">The backend securely stores your Gemini API key in SQLite. Keys are never exposed to browser clients.</p>
+
+          <input id="geminiKeyInput" type="password" class="search-input" style="width:100%" data-i18n-ph="geminiKeyPlaceholder" placeholder="Enter Gemini API Key (Optional)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px">
+            <button class="btn primary" id="saveGeminiBtn" data-i18n="saveGeminiBtn">Save to Database</button>
+            <span id="geminiKeyStatus" style="font-size:12px;color:var(--muted)">Checking status...</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Mobile Bottom Bar -->
+  <div class="mobile-nav">
+    <button class="active" data-page="home">🏠<span data-i18n="mobHome">Home</span></button>
+    <button data-page="map">🗺️<span data-i18n="mobMap">Map</span></button>
+    <button data-page="ask">🤖<span data-i18n="mobAI">AI</span></button>
+    <button data-page="travel">✈️<span data-i18n="mobTravel">Travel</span></button>
+    <button data-page="farmer">🌾<span data-i18n="mobFarmer">Farmer</span></button>
+    <button data-page="settings">⚙️<span data-i18n="mobSettings">Settings</span></button>
+  </div>
+</div>
+
+<script src="./WeatherGPT — AI Weather Intelligence &amp; Decision Platform_files/leaflet.js.download"></script>
+<script type="module" src="./WeatherGPT — AI Weather Intelligence &amp; Decision Platform_files/app.js.download"></script>
+
+
+<span id="PING_CONTENT_PUSH_NOTIFICATION" style="display: none;"></span></body></html>

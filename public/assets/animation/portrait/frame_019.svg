@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1280" width="720" height="1280">
+      
+    <defs>
+      <linearGradient id="bgGrad" x1="0%" y1="0%" x2="50%" y2="100%">
+        <stop offset="0%" stop-color="hsl(213.93617021276594, 57.12765957446808%, 7.829787234042553%)" />
+        <stop offset="60%" stop-color="hsl(219.7872340425532, 57.12765957446808%, 3.617021276595745%)" />
+        <stop offset="100%" stop-color="#040914" />
+      </linearGradient>
+      <radialGradient id="satelliteGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#58c7ff" stop-opacity="0.8" />
+        <stop offset="60%" stop-color="#58c7ff" stop-opacity="0.15" />
+        <stop offset="100%" stop-color="#58c7ff" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id="stormGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#48e09a" stop-opacity="0.6" />
+        <stop offset="45%" stop-color="#58c7ff" stop-opacity="0.4" />
+        <stop offset="85%" stop-color="#ff5e6c" stop-opacity="0.2" />
+        <stop offset="100%" stop-color="#040914" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+        <stop offset="25%" stop-color="#58c7ff" stop-opacity="0.85" />
+        <stop offset="65%" stop-color="#145374" stop-opacity="0.4" />
+        <stop offset="100%" stop-color="#040914" stop-opacity="0" />
+      </radialGradient>
+      <filter id="bloom" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="8" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    </defs>
+  
+      <rect width="720" height="1280" fill="url(#bgGrad)" />
+
+    <g opacity="0.3050354609929079">
+      <circle cx="0.0" cy="72.8" r="1.8" fill="#c5e3f6" opacity="0.24" /><circle cx="137.5" cy="166.1" r="1.1" fill="#c5e3f6" opacity="-0.23" /><circle cx="275.0" cy="259.4" r="1.1" fill="#c5e3f6" opacity="-0.22" /><circle cx="412.5" cy="352.7" r="1.8" fill="#c5e3f6" opacity="0.27" /><circle cx="550.0" cy="446.0" r="1.1" fill="#c5e3f6" opacity="0.79" /><circle cx="687.5" cy="539.3" r="1.1" fill="#c5e3f6" opacity="0.86" /><circle cx="105.0" cy="632.6" r="1.8" fill="#c5e3f6" opacity="0.41" /><circle cx="242.5" cy="725.9" r="1.1" fill="#c5e3f6" opacity="-0.13" /><circle cx="380.0" cy="819.2" r="1.1" fill="#c5e3f6" opacity="-0.28" /><circle cx="517.5" cy="912.5" r="1.8" fill="#c5e3f6" opacity="0.10" /><circle cx="655.0" cy="1005.8" r="1.1" fill="#c5e3f6" opacity="0.67" /><circle cx="72.5" cy="1099.1" r="1.1" fill="#c5e3f6" opacity="0.90" /><circle cx="210.0" cy="1192.4" r="1.8" fill="#c5e3f6" opacity="0.57" /><circle cx="347.5" cy="5.7" r="1.1" fill="#c5e3f6" opacity="-0.00" /><circle cx="485.0" cy="99.0" r="1.1" fill="#c5e3f6" opacity="-0.30" /><circle cx="622.5" cy="192.3" r="1.8" fill="#c5e3f6" opacity="-0.05" /><circle cx="40.0" cy="285.6" r="1.1" fill="#c5e3f6" opacity="0.53" /><circle cx="177.5" cy="378.9" r="1.1" fill="#c5e3f6" opacity="0.89" /><circle cx="315.0" cy="472.2" r="1.8" fill="#c5e3f6" opacity="0.71" /><circle cx="452.5" cy="565.5" r="1.1" fill="#c5e3f6" opacity="0.16" /><circle cx="590.0" cy="658.8" r="1.1" fill="#c5e3f6" opacity="-0.27" /><circle cx="7.5" cy="752.1" r="1.8" fill="#c5e3f6" opacity="-0.17" /><circle cx="145.0" cy="845.4" r="1.1" fill="#c5e3f6" opacity="0.36" /><circle cx="282.5" cy="938.7" r="1.1" fill="#c5e3f6" opacity="0.84" />
+    </g>
+  
+
+        <g opacity="0.08">
+          <ellipse cx="360" cy="1943.3600000000001" rx="1152" ry="979.1999999999999" fill="#0a2240" />
+          <ellipse cx="360" cy="1943.3600000000001" rx="1140.48" ry="967.68" fill="none" stroke="#58c7ff" stroke-width="6" opacity="0.6" filter="url(#bloom)" />
+          <ellipse cx="360" cy="1943.3600000000001" rx="1117.44" ry="944.64" fill="none" stroke="#48e09a" stroke-width="3" opacity="0.4" />
+        </g>
+      
+
+        <g opacity="0.08" transform="translate(360, 563.2) scale(2.4) rotate(12)">
+          <!-- Satellite Body -->
+          <circle cx="0" cy="0" r="32" fill="url(#satelliteGlow)" />
+          <rect x="-14" y="-12" width="28" height="24" rx="4" fill="#1b3a5b" stroke="#58c7ff" stroke-width="1.5" />
+          <!-- Solar Panels Left & Right -->
+          <rect x="-56" y="-8" width="38" height="16" rx="2" fill="#0d233a" stroke="#48e09a" stroke-width="1" />
+          <line x1="-37" y1="-8" x2="-37" y2="8" stroke="#48e09a" stroke-width="0.7" />
+          <line x1="-18" y1="-8" x2="-18" y2="8" stroke="#48e09a" stroke-width="0.7" />
+          <rect x="18" y="-8" width="38" height="16" rx="2" fill="#0d233a" stroke="#48e09a" stroke-width="1" />
+          <line x1="37" y1="-8" x2="37" y2="8" stroke="#48e09a" stroke-width="0.7" />
+          <!-- Radar Dish & Telemetry Beam -->
+          <path d="M -8 12 Q 0 20 8 12" fill="none" stroke="#ffd166" stroke-width="2" />
+          <polygon points="0,18 -32,120 32,120" fill="url(#satelliteGlow)" opacity="0.4" />
+          <!-- SIH26068 Marker -->
+          <circle cx="0" cy="0" r="3" fill="#ffd166" />
+        </g>
+      
+
+      <g opacity="0.69" transform="translate(360, 563.2)">
+        <circle cx="0" cy="0" r="221.3647641803571" fill="url(#stormGlow)" />
+        <g transform="rotate(261.9574468085106)">
+          <!-- Spiral Radar Arms -->
+          <path d="M 0 0 Q 60 40 120 120 Q 180 200 240 180" fill="none" stroke="#48e09a" stroke-width="6" stroke-linecap="round" opacity="0.75" />
+          <path d="M 0 0 Q -60 -40 -120 -120 Q -180 -200 -240 -180" fill="none" stroke="#58c7ff" stroke-width="7" stroke-linecap="round" opacity="0.8" />
+          <path d="M 0 0 Q 50 -70 140 -130 Q 220 -160 280 -100" fill="none" stroke="#ff5e6c" stroke-width="5" stroke-linecap="round" opacity="0.6" />
+          <path d="M 0 0 Q -50 70 -140 130 Q -220 160 -280 100" fill="none" stroke="#ffd166" stroke-width="5" stroke-linecap="round" opacity="0.6" />
+        </g>
+        <!-- Concentric Radar Isobar Rings -->
+        <circle cx="0" cy="0" r="77.47766746312497" fill="none" stroke="#58c7ff" stroke-width="1.5" stroke-dasharray="8 6" opacity="0.6" />
+        <circle cx="0" cy="0" r="143.8870967172321" fill="none" stroke="#48e09a" stroke-width="1.5" stroke-dasharray="12 8" opacity="0.5" />
+        <circle cx="0" cy="0" r="210.29652597133924" fill="none" stroke="#58c7ff" stroke-width="1" stroke-dasharray="4 4" opacity="0.4" />
+        <!-- Lightning flash arc -->
+        
+      </g>
+    
+    </svg>

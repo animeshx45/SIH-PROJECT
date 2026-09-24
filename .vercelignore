@@ -1,0 +1,8 @@
+.git
+.vscode
+.temp_edge
+WeatherGPT-Flutter
+*.bat
+docs
+data/*.sqlite*
+node_modules

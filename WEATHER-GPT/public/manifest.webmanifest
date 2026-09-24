@@ -1,0 +1,16 @@
+{
+  "name": "WeatherGPT Intelligence Platform",
+  "short_name": "WeatherGPT",
+  "description": "Production-grade AI Weather Intelligence, Early Warning & Agronomy System",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌦️</text></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

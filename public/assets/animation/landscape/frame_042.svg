@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+      
+    <defs>
+      <linearGradient id="bgGrad" x1="0%" y1="0%" x2="50%" y2="100%">
+        <stop offset="0%" stop-color="hsl(206.59574468085106, 71.80851063829788%, 11.25531914893617%)" />
+        <stop offset="60%" stop-color="hsl(195.31914893617022, 71.80851063829788%, 5.574468085106383%)" />
+        <stop offset="100%" stop-color="#040914" />
+      </linearGradient>
+      <radialGradient id="satelliteGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#58c7ff" stop-opacity="0.8" />
+        <stop offset="60%" stop-color="#58c7ff" stop-opacity="0.15" />
+        <stop offset="100%" stop-color="#58c7ff" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id="stormGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#48e09a" stop-opacity="0.29013539651837544" />
+        <stop offset="45%" stop-color="#58c7ff" stop-opacity="0.19342359767891698" />
+        <stop offset="85%" stop-color="#ff5e6c" stop-opacity="0.09671179883945849" />
+        <stop offset="100%" stop-color="#040914" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+        <stop offset="25%" stop-color="#58c7ff" stop-opacity="0.85" />
+        <stop offset="65%" stop-color="#145374" stop-opacity="0.4" />
+        <stop offset="100%" stop-color="#040914" stop-opacity="0" />
+      </radialGradient>
+      <filter id="bloom" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="8" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    </defs>
+  
+      <rect width="1280" height="720" fill="url(#bgGrad)" />
+
+    <g opacity="0.13500000000000004">
+      <circle cx="0.0" cy="160.9" r="1.8" fill="#c5e3f6" opacity="0.76" /><circle cx="137.5" cy="254.2" r="1.1" fill="#c5e3f6" opacity="0.87" /><circle cx="275.0" cy="347.5" r="1.1" fill="#c5e3f6" opacity="0.46" /><circle cx="412.5" cy="440.8" r="1.8" fill="#c5e3f6" opacity="-0.10" /><circle cx="550.0" cy="534.1" r="1.1" fill="#c5e3f6" opacity="-0.29" /><circle cx="687.5" cy="627.4" r="1.1" fill="#c5e3f6" opacity="0.06" /><circle cx="825.0" cy="0.7" r="1.8" fill="#c5e3f6" opacity="0.63" /><circle cx="962.5" cy="94.0" r="1.1" fill="#c5e3f6" opacity="0.90" /><circle cx="1100.0" cy="187.3" r="1.1" fill="#c5e3f6" opacity="0.62" /><circle cx="1237.5" cy="280.6" r="1.8" fill="#c5e3f6" opacity="0.04" /><circle cx="95.0" cy="373.9" r="1.1" fill="#c5e3f6" opacity="-0.29" /><circle cx="232.5" cy="467.2" r="1.1" fill="#c5e3f6" opacity="-0.09" /><circle cx="370.0" cy="560.5" r="1.8" fill="#c5e3f6" opacity="0.48" /><circle cx="507.5" cy="653.8" r="1.1" fill="#c5e3f6" opacity="0.88" /><circle cx="645.0" cy="27.1" r="1.1" fill="#c5e3f6" opacity="0.75" /><circle cx="782.5" cy="120.4" r="1.8" fill="#c5e3f6" opacity="0.21" /><circle cx="920.0" cy="213.7" r="1.1" fill="#c5e3f6" opacity="-0.25" /><circle cx="1057.5" cy="307.0" r="1.1" fill="#c5e3f6" opacity="-0.20" /><circle cx="1195.0" cy="400.3" r="1.8" fill="#c5e3f6" opacity="0.31" /><circle cx="52.5" cy="493.6" r="1.1" fill="#c5e3f6" opacity="0.81" /><circle cx="190.0" cy="586.9" r="1.1" fill="#c5e3f6" opacity="0.84" /><circle cx="327.5" cy="680.2" r="1.8" fill="#c5e3f6" opacity="0.38" /><circle cx="465.0" cy="53.5" r="1.1" fill="#c5e3f6" opacity="-0.16" /><circle cx="602.5" cy="146.8" r="1.1" fill="#c5e3f6" opacity="-0.27" />
+    </g>
+  
+
+      <g opacity="0.97" transform="translate(640, 360) scale(2.2)">
+        <!-- Telemetry Data Grid Nodes -->
+        
+            <line x1="0" y1="0" x2="-17.4" y2="79.0" stroke="#58c7ff" stroke-width="1" opacity="0.4" stroke-dasharray="4 4" />
+            <circle cx="-17.4" cy="79.0" r="7" fill="#0d2744" stroke="#48e09a" stroke-width="2" />
+            <circle cx="-17.4" cy="79.0" r="3" fill="#ffffff" />
+          
+            <line x1="0" y1="0" x2="-74.3" y2="47.5" stroke="#58c7ff" stroke-width="1" opacity="0.4" stroke-dasharray="4 4" />
+            <circle cx="-74.3" cy="47.5" r="7" fill="#0d2744" stroke="#48e09a" stroke-width="2" />
+            <circle cx="-74.3" cy="47.5" r="3" fill="#ffffff" />
+          
+            <line x1="0" y1="0" x2="-112.8" y2="-24.8" stroke="#58c7ff" stroke-width="1" opacity="0.4" stroke-dasharray="4 4" />
+            <circle cx="-112.8" cy="-24.8" r="7" fill="#0d2744" stroke="#48e09a" stroke-width="2" />
+            <circle cx="-112.8" cy="-24.8" r="3" fill="#ffffff" />
+          
+            <line x1="0" y1="0" x2="-74.2" y2="-116.1" stroke="#58c7ff" stroke-width="1" opacity="0.4" stroke-dasharray="4 4" />
+            <circle cx="-74.2" cy="-116.1" r="7" fill="#0d2744" stroke="#48e09a" stroke-width="2" />
+            <circle cx="-74.2" cy="-116.1" r="3" fill="#ffffff" />
+          
+            <line x1="0" y1="0" x2="28.9" y2="-131.4" stroke="#58c7ff" stroke-width="1" opacity="0.4" stroke-dasharray="4 4" />
+            <circle cx="28.9" cy="-131.4" r="7" fill="#0d2744" stroke="#48e09a" stroke-width="2" />
+            <circle cx="28.9" cy="-131.4" r="3" fill="#ffffff" />
+          
+            <line x1="0" y1="0" x2="91.6" y2="-58.6" stroke="#58c7ff" stroke-width="1" opacity="0.4" stroke-dasharray="4 4" />
+            <circle cx="91.6" cy="-58.6" r="7" fill="#0d2744" stroke="#48e09a" stroke-width="2" />
+            <circle cx="91.6" cy="-58.6" r="3" fill="#ffffff" />
+          
+            <line x1="0" y1="0" x2="82.1" y2="18.1" stroke="#58c7ff" stroke-width="1" opacity="0.4" stroke-dasharray="4 4" />
+            <circle cx="82.1" cy="18.1" r="7" fill="#0d2744" stroke="#48e09a" stroke-width="2" />
+            <circle cx="82.1" cy="18.1" r="3" fill="#ffffff" />
+          
+            <line x1="0" y1="0" x2="44.9" y2="70.2" stroke="#58c7ff" stroke-width="1" opacity="0.4" stroke-dasharray="4 4" />
+            <circle cx="44.9" cy="70.2" r="7" fill="#0d2744" stroke="#48e09a" stroke-width="2" />
+            <circle cx="44.9" cy="70.2" r="3" fill="#ffffff" />
+          
+        
+        <!-- Moisture Aerosol Floating Spheres -->
+        <circle cx="-60" cy="-45" r="28" fill="url(#coreGlow)" opacity="0.6" />
+        <circle cx="70" cy="40" r="36" fill="url(#coreGlow)" opacity="0.5" />
+        <circle cx="-40" cy="65" r="20" fill="url(#coreGlow)" opacity="0.7" />
+        <circle cx="50" cy="-60" r="22" fill="url(#coreGlow)" opacity="0.65" />
+        
+        <!-- Telemetry Floating Badges -->
+        <g transform="translate(-100, -110)" opacity="0.85">
+          <rect width="90" height="24" rx="6" fill="rgba(8,20,38,0.85)" stroke="#58c7ff" stroke-width="1" />
+          <text x="45" y="16" text-anchor="middle" fill="#58c7ff" font-size="10.5" font-family="sans-serif" font-weight="bold">💧 84% HUMID</text>
+        </g>
+        <g transform="translate(18, 95)" opacity="0.85">
+          <rect width="90" height="24" rx="6" fill="rgba(8,20,38,0.85)" stroke="#48e09a" stroke-width="1" />
+          <text x="45" y="16" text-anchor="middle" fill="#48e09a" font-size="10.5" font-family="sans-serif" font-weight="bold">💨 14 km/h S</text>
+        </g>
+      </g>
+    
+
+      <g opacity="0.72" transform="translate(640, 360) scale(0.8190875815326133)">
+        <!-- Giant Radiant Orb Aura -->
+        <circle cx="0" cy="0" r="160" fill="url(#coreGlow)" />
+        
+        <!-- Rotating Gyroscope Rings -->
+        <ellipse cx="0" cy="0" rx="140" ry="46" fill="none" stroke="#58c7ff" stroke-width="3" transform="rotate(214.46808510638297)" opacity="0.85" filter="url(#bloom)" />
+        <ellipse cx="0" cy="0" rx="130" ry="52" fill="none" stroke="#48e09a" stroke-width="2.5" transform="rotate(-268.0851063829787)" opacity="0.8" />
+        <ellipse cx="0" cy="0" rx="110" ry="110" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-dasharray="10 6" />
+        
+        <!-- Central Glassmorphic Hologram Orb -->
+        <circle cx="0" cy="0" r="75" fill="#081c33" stroke="#58c7ff" stroke-width="3" />
+        <circle cx="-20" cy="-25" r="24" fill="rgba(255,255,255,0.25)" opacity="0.7" />
+        
+        <!-- WeatherGPT Emblem & Live Pulse -->
+        <text x="0" y="-12" text-anchor="middle" font-size="34" font-family="sans-serif">🌦️</text>
+        <text x="0" y="24" text-anchor="middle" fill="#ffffff" font-size="15" font-family="sans-serif" font-weight="800" letter-spacing="0.08em">WeatherGPT</text>
+        <text x="0" y="42" text-anchor="middle" fill="#48e09a" font-size="11" font-family="sans-serif" font-weight="700">SIH26068 • AI ENGINE</text>
+        
+        <!-- Orbiting Satellite Node around Product -->
+        <g transform="rotate(214.46808510638297) translate(140, 0)">
+          <circle cx="0" cy="0" r="7" fill="#ffd166" filter="url(#bloom)" />
+          <circle cx="0" cy="0" r="12" fill="none" stroke="#ffd166" stroke-width="1" opacity="0.6" />
+        </g>
+      </g>
+    
+    </svg>

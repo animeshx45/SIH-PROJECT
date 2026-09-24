@@ -1,0 +1,30 @@
+{
+  "name": "weathergpt-fullstack",
+  "version": "2.0.0",
+  "description": "Production-ready AI Weather Intelligence, Risk Advisory & Full-Stack Platform",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node test/test-server.js"
+  },
+  "keywords": [
+    "weather",
+    "ai",
+    "gemini",
+    "gis",
+    "radar",
+    "sqlite",
+    "multilingual"
+  ],
+  "author": "sunilkumawatcodes",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "ioredis": "^6.0.0",
+    "mongodb": "^7.6.0"
+  }
+}
