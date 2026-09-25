@@ -171,19 +171,10 @@ html, body {
 }
 
 /* ==========================================================================
-   0. ANDROID SYSTEM STATUS BAR
+   0. ANDROID SYSTEM STATUS BAR (Hidden: native mobile OS provides its own status bar)
    ========================================================================== */
 .android-status-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 20px 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #FFFFFF;
-  background: var(--amoled-black);
-  z-index: 100;
-  letter-spacing: -0.2px;
+  display: none !important;
 }
 
 .status-time {
@@ -767,11 +758,14 @@ html, body {
 /* 1. TOP APP BAR */
 .android-top-app-bar {
   position: relative;
-  height: 54px;
+  min-height: 54px;
+  height: calc(54px + env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 14px;
+  padding-left: 14px;
+  padding-right: 14px;
   background: var(--amoled-black);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   z-index: 50;
@@ -799,6 +793,18 @@ html, body {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.top-brand-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: rgba(0, 223, 130, 0.08);
+  border: 1px solid rgba(0, 223, 130, 0.25);
+  box-shadow: 0 0 10px rgba(0, 223, 130, 0.25);
 }
 
 .top-brand-text {
@@ -2976,12 +2982,20 @@ html, body {
 /* ==========================================================================
    4. FLOATING AMOLED BOTTOM NAVIGATION (5 TABS)
    ========================================================================== */
+body.keyboard-open .android-bottom-nav,
+body.keyboard-open .android-gesture-bar,
+.keyboard-open .android-bottom-nav,
+.keyboard-open .android-gesture-bar {
+  display: none !important;
+}
+
 .android-bottom-nav {
   position: absolute;
   bottom: 12px;
   left: 14px;
   right: 14px;
   z-index: 800;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .nav-pill-container {

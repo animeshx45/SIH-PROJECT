@@ -2156,3 +2156,33 @@ function escapeHtml(text) {
   const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
   return String(text).replace(/[&<>"']/g, m => map[m]);
 }
+
+// ── 18. MOBILE KEYBOARD RESILIENCE ──────────────────────────────────
+function setupKeyboardListeners() {
+  document.addEventListener('focusin', (e) => {
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+      document.body.classList.add('keyboard-open');
+    }
+  });
+
+  document.addEventListener('focusout', (e) => {
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+      setTimeout(() => {
+        const active = document.activeElement;
+        if (!active || (active.tagName !== 'INPUT' && active.tagName !== 'TEXTAREA')) {
+          document.body.classList.remove('keyboard-open');
+        }
+      }, 100);
+    }
+  });
+
+  if (window.visualViewport) {
+    const initialHeight = window.visualViewport.height;
+    window.visualViewport.addEventListener('resize', () => {
+      const isSmaller = window.visualViewport.height < initialHeight * 0.78;
+      document.body.classList.toggle('keyboard-open', isSmaller);
+    });
+  }
+}
+setupKeyboardListeners();
+
