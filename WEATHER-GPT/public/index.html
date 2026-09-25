@@ -503,6 +503,25 @@
       </button>
     </div>
 
+    <!-- Floating Voice Listening Status Overlay -->
+    <div class="voice-listening-overlay hidden" id="voiceListeningOverlay">
+      <div class="vlo-content">
+        <div class="vlo-mic-icon">🎙️</div>
+        <div class="vlo-text-wrap">
+          <div class="vlo-title">Listening... Speak now</div>
+          <div class="vlo-subtitle">Ask e.g. "Temperature of Delhi" or "Will it rain today?"</div>
+        </div>
+        <div class="vlo-soundwave">
+          <span class="vlo-bar"></span>
+          <span class="vlo-bar"></span>
+          <span class="vlo-bar"></span>
+          <span class="vlo-bar"></span>
+          <span class="vlo-bar"></span>
+        </div>
+        <button class="vlo-cancel-btn" id="voiceListeningCancelBtn" title="Cancel voice input">✕</button>
+      </div>
+    </div>
+
     <!-- 2. NATIVE ANDROID DRAWER BACKDROP & MENU (SCREEN 8) -->
     <div class="drawer-backdrop" id="androidDrawerBackdrop"></div>
     <aside class="android-drawer" id="androidDrawer" role="dialog" aria-modal="true" aria-hidden="true">

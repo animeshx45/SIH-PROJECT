@@ -5,37 +5,72 @@ import { getWeatherWithRisk } from './weatherService.js';
 import { searchLocations } from './geocodeService.js';
 
 const KNOWN_CITIES = [
-  'hyderabad', 'delhi', 'mumbai', 'bengaluru', 'bangalore', 'chennai',
-  'kolkata', 'pune', 'ahmedabad', 'jaipur', 'lucknow', 'visakhapatnam',
-  'vizag', 'vijayawada', 'warangal', 'chandigarh', 'bhopal', 'patna',
-  'kochi', 'surat', 'nagpur', 'indore', 'shimla', 'srinagar', 'goa',
-  'agra', 'varanasi', 'kanpur', 'amritsar', 'guwahati', 'coimbatore',
-  'dehradun', 'bhubaneswar', 'ranchi', 'raipur', 'thiruvananthapuram',
-  'trivandrum', 'london', 'dubai', 'singapore', 'new york', 'tokyo', 'paris'
+  'hyderabad', 'delhi', 'new delhi', 'mumbai', 'bombay', 'bengaluru', 'bangalore',
+  'chennai', 'madras', 'kolkata', 'calcutta', 'pune', 'ahmedabad', 'jaipur',
+  'lucknow', 'visakhapatnam', 'vizag', 'vijayawada', 'warangal', 'chandigarh',
+  'bhopal', 'patna', 'kochi', 'cochin', 'surat', 'nagpur', 'indore', 'shimla',
+  'srinagar', 'goa', 'panaji', 'agra', 'varanasi', 'banaras', 'kashi', 'kanpur',
+  'amritsar', 'guwahati', 'coimbatore', 'dehradun', 'bhubaneswar', 'ranchi',
+  'raipur', 'thiruvananthapuram', 'trivandrum', 'noida', 'gurgaon', 'gurugram',
+  'ghaziabad', 'faridabad', 'meerut', 'bikramganj', 'nashik', 'aurangabad',
+  'mysore', 'mysuru', 'mangalore', 'mangaluru', 'madurai', 'trichy', 'salem',
+  'tirupati', 'guntur', 'nellore', 'kurnool', 'rajahmundry', 'jodhpur', 'udaipur',
+  'kota', 'ajmer', 'bikaner', 'gwalior', 'jabalpur', 'ujjain', 'bareilly',
+  'aligarh', 'moradabad', 'gorakhpur', 'ayodhya', 'jamshedpur', 'dhanbad',
+  'bokaro', 'cuttack', 'rourkela', 'puri', 'bilaspur', 'durg', 'bhilai',
+  'siliguri', 'asansol', 'durgapur', 'gangtok', 'shillong', 'imphal', 'agartala',
+  'aizawl', 'kohima', 'itanagar', 'leh', 'ladakh', 'jammu', 'haridwar',
+  'rishikesh', 'rohtak', 'panipat', 'karnal', 'hisar', 'bathinda', 'jalandhar',
+  'ludhiana', 'patiala', 'london', 'dubai', 'singapore', 'new york', 'tokyo', 'paris'
 ];
+
+const CITY_ALIASES = {
+  vizag: 'Visakhapatnam',
+  bangalore: 'Bengaluru',
+  trivandrum: 'Thiruvananthapuram',
+  bombay: 'Mumbai',
+  madras: 'Chennai',
+  calcutta: 'Kolkata',
+  banaras: 'Varanasi',
+  kashi: 'Varanasi',
+  gurugram: 'Gurgaon',
+  mysuru: 'Mysore',
+  mangaluru: 'Mangalore',
+  panaji: 'Goa',
+  ladakh: 'Leh'
+};
 
 function extractCityFromPrompt(prompt) {
   if (!prompt || typeof prompt !== 'string') return null;
   const lower = prompt.toLowerCase();
   
-  // 1. Check known cities dictionary
+  // 1. Check known cities dictionary (exact word match)
   for (const city of KNOWN_CITIES) {
     const reg = new RegExp(`\\b${city}\\b`, 'i');
     if (reg.test(lower)) {
-      if (city === 'vizag') return 'Visakhapatnam';
-      if (city === 'bangalore') return 'Bengaluru';
-      if (city === 'trivandrum') return 'Thiruvananthapuram';
-      return city.charAt(0).toUpperCase() + city.slice(1);
+      if (CITY_ALIASES[city]) return CITY_ALIASES[city];
+      return city.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     }
   }
 
-  // 2. Pattern match: "in [City]", "at [City]", "for [City]", "near [City]"
-  const pattern = /\b(?:in|at|for|near|around)\s+([A-Za-z]{3,20}(?:\s+[A-Za-z]{3,20})?)\b/i;
+  // 2. Preposition match: "of [City]", "in [City]", "at [City]", "for [City]", "near [City]", "to [City]", "from [City]"
+  const pattern = /\b(?:of|in|at|for|near|around|from|to|about)\s+([A-Za-z]{3,20}(?:\s+[A-Za-z]{3,20})?)\b/i;
   const match = prompt.match(pattern);
   if (match && match[1]) {
     const candidate = match[1].trim();
-    // Exclude common temporal or meteorological words
-    const exclude = ['today', 'tomorrow', 'tonight', 'morning', 'afternoon', 'evening', 'night', 'india', 'celsius', 'fahrenheit', 'hour', 'hours', 'week', 'next', 'this', 'safe', 'good', 'monsoon', 'crop', 'crops'];
+    // Exclude common temporal, units or meteorological words
+    const exclude = ['today', 'tomorrow', 'tonight', 'morning', 'afternoon', 'evening', 'night', 'india', 'celsius', 'fahrenheit', 'hour', 'hours', 'week', 'next', 'this', 'safe', 'good', 'monsoon', 'crop', 'crops', 'weather', 'rain', 'temp', 'temperature', 'my', 'the', 'a', 'our', 'all', 'current', 'different', 'various'];
+    if (!exclude.includes(candidate.toLowerCase())) {
+      return candidate.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    }
+  }
+
+  // 3. Postfix match: "[City] temperature", "[City] weather", "[City] rain", "[City] forecast"
+  const postPattern = /\b([A-Za-z]{3,20})\s+(?:temperature|temp|weather|rain|forecast|climate|aqi|wind)\b/i;
+  const postMatch = prompt.match(postPattern);
+  if (postMatch && postMatch[1]) {
+    const candidate = postMatch[1].trim();
+    const exclude = ['today', 'tomorrow', 'current', 'live', 'hourly', 'daily', 'weekly', 'high', 'low', 'show', 'tell', 'check', 'what', 'whats', 'the', 'average', 'maximum', 'minimum'];
     if (!exclude.includes(candidate.toLowerCase())) {
       return candidate.charAt(0).toUpperCase() + candidate.slice(1);
     }

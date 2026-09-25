@@ -1200,10 +1200,51 @@ function setupChat() {
     bubble.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }
 
+  const CLIENT_CITIES = [
+    'hyderabad', 'delhi', 'new delhi', 'mumbai', 'bengaluru', 'bangalore', 'chennai',
+    'kolkata', 'pune', 'ahmedabad', 'jaipur', 'lucknow', 'visakhapatnam', 'vizag',
+    'vijayawada', 'warangal', 'chandigarh', 'bhopal', 'patna', 'kochi', 'surat',
+    'nagpur', 'indore', 'shimla', 'srinagar', 'goa', 'agra', 'varanasi', 'kanpur',
+    'amritsar', 'guwahati', 'coimbatore', 'dehradun', 'bhubaneswar', 'ranchi',
+    'raipur', 'thiruvananthapuram', 'trivandrum', 'noida', 'gurgaon', 'gurugram',
+    'ghaziabad', 'meerut', 'bikramganj', 'nashik', 'aurangabad', 'mysore', 'mysuru',
+    'mangalore', 'madurai', 'tirupati', 'guntur', 'jodhpur', 'udaipur', 'kota',
+    'gwalior', 'jabalpur', 'ujjain', 'ayodhya', 'jamshedpur', 'cuttack', 'puri'
+  ];
+
+  function extractCityClient(text) {
+    if (!text) return null;
+    const lower = text.toLowerCase();
+    for (const c of CLIENT_CITIES) {
+      if (new RegExp(`\\b${c}\\b`, 'i').test(lower)) {
+        if (c === 'vizag') return 'Visakhapatnam';
+        if (c === 'bangalore') return 'Bengaluru';
+        if (c === 'trivandrum') return 'Thiruvananthapuram';
+        return c.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      }
+    }
+    const match = lower.match(/\b(?:of|in|at|for|near|around|from|to|about)\s+([a-z]{3,20})\b/i);
+    if (match && match[1]) {
+      const ex = ['today', 'tomorrow', 'weather', 'temp', 'temperature', 'rain', 'current', 'different', 'india', 'my', 'the', 'crops'];
+      if (!ex.includes(match[1])) {
+        return match[1].charAt(0).toUpperCase() + match[1].slice(1);
+      }
+    }
+    const postMatch = lower.match(/\b([a-z]{3,20})\s+(?:temperature|temp|weather|rain|forecast|aqi)\b/i);
+    if (postMatch && postMatch[1]) {
+      const ex = ['today', 'tomorrow', 'what', 'check', 'show', 'tell', 'high', 'low', 'the'];
+      if (!ex.includes(postMatch[1])) {
+        return postMatch[1].charAt(0).toUpperCase() + postMatch[1].slice(1);
+      }
+    }
+    return null;
+  }
+
   function appendBotMessage(html, rawText = '') {
     if (!feed) return;
     const bubble = document.createElement('div');
     bubble.className = 'chat-bubble bot';
+    if (rawText) bubble.dataset.rawText = rawText;
     bubble.innerHTML = `
       <div class="bubble-content">
         ${html}
@@ -1220,22 +1261,31 @@ function setupChat() {
       </div>
     `;
 
+    // Single unified onclick handler - prevents duplicate event cancellations
     const listenBtn = bubble.querySelector('.listen-bubble-btn');
-    listenBtn?.addEventListener('click', () => {
-      const textToSpeak = rawText || bubble.querySelector('.bubble-content').textContent.trim();
-      speakText(textToSpeak);
-    });
+    if (listenBtn) {
+      listenBtn.onclick = (e) => {
+        e.stopPropagation();
+        const contentEl = bubble.querySelector('.bubble-content');
+        const textToSpeak = bubble.dataset.rawText || (contentEl ? contentEl.innerText || contentEl.textContent : '');
+        speakText(textToSpeak);
+      };
+    }
 
     const copyBtn = bubble.querySelector('.copy-bubble-btn');
-    copyBtn?.addEventListener('click', () => {
-      const textToCopy = rawText || bubble.querySelector('.bubble-content').textContent.trim();
-      navigator.clipboard?.writeText(textToCopy).then(() => {
-        copyBtn.innerHTML = '<span>✓ Copied</span>';
-        setTimeout(() => {
-          copyBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copy</span>';
-        }, 1800);
-      }).catch(() => {});
-    });
+    if (copyBtn) {
+      copyBtn.onclick = (e) => {
+        e.stopPropagation();
+        const contentEl = bubble.querySelector('.bubble-content');
+        const textToCopy = bubble.dataset.rawText || (contentEl ? contentEl.innerText || contentEl.textContent : '');
+        navigator.clipboard?.writeText(textToCopy).then(() => {
+          copyBtn.innerHTML = '<span>✓ Copied</span>';
+          setTimeout(() => {
+            copyBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copy</span>';
+          }, 1800);
+        }).catch(() => {});
+      };
+    }
 
     feed.appendChild(bubble);
     bubble.scrollIntoView({ behavior: 'smooth', block: 'end' });
@@ -1248,6 +1298,20 @@ function setupChat() {
     if (!promptText || !promptText.trim()) return;
     appendUserMessage(promptText);
 
+    // Instant client-side city extraction & weather switch
+    const detectedCity = extractCityClient(promptText);
+    if (detectedCity && detectedCity.toLowerCase() !== state.currentPlace.name.toLowerCase()) {
+      try {
+        const geo = await api.searchGeocode(detectedCity);
+        if (geo.results && geo.results[0]) {
+          const item = geo.results[0];
+          await loadWeather(item.latitude, item.longitude, item.name, true);
+        }
+      } catch (err) {
+        console.warn('[chat] Instant geocode notice:', err);
+      }
+    }
+
     const typingBubble = appendBotMessage('<p style="color:var(--accent-green)">⚡ WeatherGPT Neural Engine calculating atmospheric response...</p>');
 
     try {
@@ -1256,23 +1320,7 @@ function setupChat() {
 
       if (typingBubble) {
         typingBubble.querySelector('.bubble-content').innerHTML = renderMarkdown(state.lastAiAnswer);
-        const actionRow = typingBubble.querySelector('.bubble-action-bar');
-        if (actionRow) {
-          actionRow.style.display = 'flex';
-          const listenBtn = actionRow.querySelector('.listen-bubble-btn');
-          listenBtn?.addEventListener('click', () => {
-            speakText(state.lastAiAnswer);
-          });
-          const copyBtn = actionRow.querySelector('.copy-bubble-btn');
-          copyBtn?.addEventListener('click', () => {
-            navigator.clipboard?.writeText(state.lastAiAnswer).then(() => {
-              copyBtn.innerHTML = '<span>✓ Copied</span>';
-              setTimeout(() => {
-                copyBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copy</span>';
-              }, 1800);
-            }).catch(() => {});
-          });
-        }
+        typingBubble.dataset.rawText = state.lastAiAnswer;
         typingBubble.scrollIntoView({ behavior: 'smooth', block: 'end' });
       }
 
@@ -1368,12 +1416,50 @@ function setupBottomSheets() {
 // ── 13. VOICE SPEECH SYNTHESIS & RECOGNITION ─────────────────────────
 function setupVoice() {
   const voiceBtn = document.getElementById('msgVoiceBtn');
-  const homeMicBtn = document.getElementById('homeQuickMicBtn');
+  const homeMicBtn = document.getElementById('homeCapsuleMicBtn');
+  const homeQuickMicBtn = document.getElementById('homeQuickMicBtn');
+  const overlay = document.getElementById('voiceListeningOverlay');
+  const cancelBtn = document.getElementById('voiceListeningCancelBtn');
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  function setListeningState(isListening) {
+    state.isListening = isListening;
+    const chatInput = document.getElementById('chatMessageInput');
+    const homeInput = document.getElementById('homeCapsuleInput');
+
+    if (isListening) {
+      overlay?.classList.remove('hidden');
+      voiceBtn?.classList.add('listening');
+      homeMicBtn?.classList.add('listening');
+      if (chatInput) chatInput.placeholder = '🎙️ Listening... Speak now';
+      if (homeInput) homeInput.placeholder = '🎙️ Listening... Speak now';
+    } else {
+      overlay?.classList.add('hidden');
+      voiceBtn?.classList.remove('listening');
+      homeMicBtn?.classList.remove('listening');
+      if (chatInput) chatInput.placeholder = 'Ask anything about weather...';
+      if (homeInput) homeInput.placeholder = 'Ask anything about weather...';
+    }
+  }
+
+  cancelBtn?.addEventListener('click', () => {
+    if (state.recognition) {
+      try { state.recognition.stop(); } catch {}
+    }
+    setListeningState(false);
+  });
 
   const toggleRecording = () => {
     if (!SpeechRecognition) {
-      alert('Voice queries are supported in Chrome & Edge with microphone access. You can also type directly in the input bar.');
+      alert('Voice queries are supported in Chrome, Edge, and Android with microphone permissions.');
+      return;
+    }
+
+    if (state.isListening) {
+      if (state.recognition) {
+        try { state.recognition.stop(); } catch {}
+      }
+      setListeningState(false);
       return;
     }
 
@@ -1382,8 +1468,14 @@ function setupVoice() {
       state.recognition.continuous = false;
       state.recognition.interimResults = false;
 
+      state.recognition.onstart = () => {
+        setListeningState(true);
+      };
+
       state.recognition.onresult = (e) => {
-        const transcript = e.results[0][0].transcript;
+        setListeningState(false);
+        const transcript = e.results && e.results[0] && e.results[0][0] ? e.results[0][0].transcript : '';
+        if (!transcript) return;
         const input = document.getElementById('chatMessageInput');
         if (input) input.value = transcript;
         switchTab('tab-ai');
@@ -1392,22 +1484,33 @@ function setupVoice() {
 
       state.recognition.onerror = (e) => {
         console.warn('[speech] Recognition error:', e.error);
+        setListeningState(false);
         if (e.error === 'not-allowed') {
-          alert('Microphone permission was blocked. Please enable microphone permissions in your browser.');
+          alert('Microphone permission was denied. Please allow microphone access in your browser or Android settings.');
         }
+      };
+
+      state.recognition.onend = () => {
+        setListeningState(false);
       };
     }
 
     try {
       state.recognition.lang = getLangCode(state.language);
+      setListeningState(true);
       state.recognition.start();
     } catch (err) {
-      console.warn('[speech] Start recognition notice:', err);
+      console.warn('[speech] Start notice:', err);
+      setListeningState(false);
     }
   };
 
   voiceBtn?.addEventListener('click', toggleRecording);
   homeMicBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleRecording();
+  });
+  homeQuickMicBtn?.addEventListener('click', (e) => {
     e.stopPropagation();
     toggleRecording();
   });
@@ -1506,9 +1609,15 @@ function getLangCode(lang) {
   return map[lang] || 'en-IN';
 }
 
+let speechKeepAliveTimer = null;
+
 function stopSpeaking() {
   if (state.speechSynth) {
-    state.speechSynth.cancel();
+    try { state.speechSynth.cancel(); } catch {}
+  }
+  if (speechKeepAliveTimer) {
+    clearInterval(speechKeepAliveTimer);
+    speechKeepAliveTimer = null;
   }
   state.isSpeaking = false;
   updateSpeechUI(false);
@@ -1520,7 +1629,7 @@ function updateSpeechUI(isSpeaking, textPreview = '') {
   if (speechBar) {
     if (isSpeaking) {
       speechBar.classList.remove('hidden');
-      if (statusText) statusText.textContent = textPreview ? `Speaking: ${textPreview.slice(0, 34)}...` : 'WeatherGPT speaking...';
+      if (statusText) statusText.textContent = textPreview ? `Speaking: ${textPreview.slice(0, 32)}...` : 'WeatherGPT speaking...';
     } else {
       speechBar.classList.add('hidden');
     }
@@ -1550,32 +1659,76 @@ function updateSpeechUI(isSpeaking, textPreview = '') {
 }
 
 function speakText(text) {
-  if (!state.speechSynth) return;
-  if (state.isSpeaking) {
+  if (!('speechSynthesis' in window) || !state.speechSynth) {
+    alert('Voice speech synthesis is not supported on this device/browser.');
+    return;
+  }
+
+  // If already speaking, toggle STOP
+  if (state.isSpeaking || window.speechSynthesis.speaking) {
     stopSpeaking();
     return;
   }
 
-  state.speechSynth.cancel();
-  const clean = text.replace(/[*#_~`]/g, '');
+  stopSpeaking();
+
+  const clean = (text || '')
+    .replace(/[#*`_~]/g, '')
+    .replace(/https?:\/\/\S+/g, '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/•/g, '')
+    .trim();
+
+  if (!clean) return;
+
   const utterance = new SpeechSynthesisUtterance(clean);
-  utterance.lang = getLangCode(state.language);
+  const langCode = getLangCode(state.language);
+  utterance.lang = langCode;
   utterance.rate = 1.0;
+  utterance.pitch = 1.0;
+
+  // Pick matching voice if available
+  const voices = window.speechSynthesis.getVoices();
+  if (voices && voices.length > 0) {
+    const matchingVoice = voices.find(v => v.lang === langCode || v.lang.startsWith(langCode.slice(0, 2))) ||
+      voices.find(v => v.lang.includes('IN')) ||
+      voices.find(v => v.lang.startsWith('en'));
+    if (matchingVoice) utterance.voice = matchingVoice;
+  }
 
   state.isSpeaking = true;
   updateSpeechUI(true, clean);
 
   utterance.onend = () => {
     state.isSpeaking = false;
+    if (speechKeepAliveTimer) {
+      clearInterval(speechKeepAliveTimer);
+      speechKeepAliveTimer = null;
+    }
     updateSpeechUI(false);
   };
 
   utterance.onerror = (e) => {
+    console.warn('[speech] Utterance note:', e.error);
     state.isSpeaking = false;
+    if (speechKeepAliveTimer) {
+      clearInterval(speechKeepAliveTimer);
+      speechKeepAliveTimer = null;
+    }
     updateSpeechUI(false);
   };
 
-  state.speechSynth.speak(utterance);
+  window.speechSynthesis.speak(utterance);
+
+  // Chromium keepalive: periodically resume to prevent premature audio pause
+  speechKeepAliveTimer = setInterval(() => {
+    if (!state.isSpeaking) {
+      clearInterval(speechKeepAliveTimer);
+      speechKeepAliveTimer = null;
+    } else if (window.speechSynthesis.speaking && window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
+  }, 3500);
 }
 
 // ── 15. SIH OPERATIONAL PROFILE & SETUP GATE ─────────────────────────
