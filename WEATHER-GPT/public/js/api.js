@@ -51,7 +51,25 @@ const POPULAR_INDIAN_CITIES = [
   { name: 'Mangalore', admin1: 'Karnataka', country: 'India', latitude: 12.9141, longitude: 74.8560, aliases: ['mangalore', 'mangaluru'] }
 ];
 
+export function isNativeEnvironment() {
+  if (typeof window === 'undefined') return false;
+  return Boolean(
+    window.Capacitor ||
+    window.location.protocol === 'capacitor:' ||
+    window.location.protocol === 'ionic:' ||
+    window.location.protocol === 'file:' ||
+    (window.location.hostname === 'localhost' && !window.location.port) ||
+    window.navigator.userAgent.includes('Capacitor') ||
+    window.navigator.userAgent.includes('wv')
+  );
+}
+
 export async function fetchJson(endpoint, options = {}) {
+  // If running inside native mobile app (Capacitor/WebView), bypass non-existent local Node backend
+  if (isNativeEnvironment()) {
+    throw new Error('Native mobile environment - using direct autonomous provider');
+  }
+
   const url = `${API_BASE}${endpoint}`;
   try {
     const response = await fetch(url, {
@@ -62,17 +80,23 @@ export async function fetchJson(endpoint, options = {}) {
       ...options
     });
 
-    const contentType = response.headers.get('content-type') || '';
-    // If the server returns HTML (SPA fallback on Capacitor/Android or 404 HTML), reject to trigger fallback
-    if (contentType.includes('text/html')) {
+    const rawText = await response.text();
+    // If the server returns HTML (SPA fallback on Capacitor or 404 HTML), reject cleanly
+    if (!rawText || rawText.trim().startsWith('<') || rawText.includes('<!DOCTYPE') || rawText.includes('<html')) {
       throw new Error('Local serverless route returned HTML instead of API JSON');
     }
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+    let data;
+    try {
+      data = JSON.parse(rawText);
+    } catch {
+      throw new Error('Response is not valid JSON');
     }
-    return response.json();
+
+    if (!response.ok) {
+      throw new Error(data?.error || `HTTP ${response.status}: ${response.statusText}`);
+    }
+    return data;
   } catch (err) {
     throw err;
   }
@@ -262,6 +286,32 @@ async function clientGetWeather(lat, lon) {
 }
 
 async function clientAskAi(prompt, weatherContext, language = 'en', placeName = 'Local Area', persona = 'general') {
+  const cleanPrompt = (prompt || '').trim().toLowerCase();
+
+  // Instant greeting response
+  const isGreeting = /^(hi|hii|hiii|hello|hey|heyy|namaste|vanakkam|good\s*(morning|afternoon|evening|day))[\s!.,?]*$/i.test(cleanPrompt);
+  if (isGreeting) {
+    const temp = weatherContext?.current?.temperature_2m ?? 26;
+    const feels = weatherContext?.current?.apparent_temperature ?? (temp + 2);
+    const humidity = weatherContext?.current?.relative_humidity_2m ?? 60;
+    return {
+      answer: `### 👋 Namaste! I am WeatherGPT
+
+I am your AI meteorological intelligence assistant.
+Currently in **${placeName}**, it is **${temp}°C** (Feels like ${feels}°C) with ${humidity}% humidity.
+
+You can ask me:
+- *“Will it rain today in ${placeName}?”*
+- *“Shows temperature of Delhi, Mumbai, Srinagar, or any Indian city”*
+- *“Best time to spray crops or highway travel safety”*
+
+How may I assist you with weather intelligence today?`,
+      placeName,
+      persona,
+      language
+    };
+  }
+
   const apiKey = getAiApiKey();
 
   // Try direct Gemini 2.5 Flash API if key is present
@@ -358,6 +408,7 @@ export default {
   },
 
   getWeather: async (lat, lon, refresh = false) => {
+    if (isNativeEnvironment()) return clientGetWeather(lat, lon);
     try {
       return await fetchJson(`/weather?lat=${lat}&lon=${lon}&refresh=${refresh}`);
     } catch (err) {
@@ -445,6 +496,7 @@ export default {
   },
 
   searchGeocode: async (query) => {
+    if (isNativeEnvironment()) return clientSearchGeocode(query);
     try {
       return await fetchJson(`/geocode?q=${encodeURIComponent(query)}`);
     } catch (err) {
@@ -454,6 +506,7 @@ export default {
   },
 
   askAi: async (prompt, weatherContext, language, placeName, persona = 'general') => {
+    if (isNativeEnvironment()) return clientAskAi(prompt, weatherContext, language, placeName, persona);
     try {
       return await fetchJson('/ai/ask', {
         method: 'POST',
