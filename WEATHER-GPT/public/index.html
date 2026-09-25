@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#000000">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="description" content="WeatherGPT — Flagship AMOLED Android Conversational AI for Weather, Radar, Alerts and Agronomy">
-  <title>WeatherGPT — Conversational Meteorological AI</title>
+  <meta name="description" content="WeatherGPT — Flagship AMOLED Android AI Weather Intelligence Platform">
+  <title>WeatherGPT — AI Meteorological Intelligence</title>
   
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,27 +18,1579 @@
 </head>
 <body>
 
-<div class="android-shell">
+<div class="android-shell" id="androidShell">
 
   <!-- ================================================================= -->
-  <!-- SIH OPERATIONAL PROFILE & LOCATION SETUP GATE (Mobile Native)     -->
+  <!-- 0. ANDROID SYSTEM STATUS BAR                                      -->
   <!-- ================================================================= -->
-  <div class="sih-setup-gate" id="sihSetupGate">
-    <div class="setup-mobile-view">
+  <div class="android-status-bar" id="androidStatusBar">
+    <div class="status-time" id="statusClock">9:41</div>
+    <div class="status-notch-spacer"></div>
+    <div class="status-icons">
+      <svg class="status-svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+        <path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/>
+      </svg>
+      <span class="status-icon" title="VoNR Active">Vo<br>NR</span>
+      <span class="status-icon">5G<sup>+</sup></span>
+      <div class="battery-pill">
+        <div class="battery-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- SCREEN 1: SPLASH SCREEN (Glowing Green Orb + Branding)             -->
+  <!-- ================================================================= -->
+  <div class="flow-screen" id="screen-splash">
+    <div class="splash-inner">
+      <div class="splash-orb-container">
+        <div class="splash-glow-aura"></div>
+        <div class="splash-orb-core"></div>
+        <div class="splash-orb-ring ring-1"></div>
+        <div class="splash-orb-ring ring-2"></div>
+      </div>
+
+      <div class="splash-text-group">
+        <h1 class="splash-brand-title">Weather<span class="text-accent-green">GPT</span></h1>
+        <p class="splash-tagline-main">AI-Powered Weather Insights</p>
+        <p class="splash-tagline-sub">for a Safer Tomorrow</p>
+      </div>
+
+      <div class="splash-loader-bar">
+        <div class="splash-loader-progress"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- SCREEN 2, 3, 4: ONBOARDING FLOW (3 Slides with Gestures)          -->
+  <!-- ================================================================= -->
+  <div class="flow-screen hidden" id="screen-onboarding">
+    <div class="onboarding-top-bar">
+      <button class="onboard-skip-btn" id="onboardSkipBtn">Skip</button>
+    </div>
+
+    <!-- Slide Deck Container -->
+    <div class="onboard-slider" id="onboardSlider">
       
-      <!-- Top Branding & SIH Tag -->
+      <!-- ONBOARDING SLIDE 1: Everyday Weather & Nature -->
+      <div class="onboard-slide active" data-index="0">
+        <div class="onboard-visual-frame nature-bg">
+          <svg class="onboard-svg" viewBox="0 0 340 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="skyGrad1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#071b14"/>
+                <stop offset="60%" stop-color="#0d281f"/>
+                <stop offset="100%" stop-color="#143e30"/>
+              </linearGradient>
+              <linearGradient id="mountainGrad1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#2d4a3e"/>
+                <stop offset="100%" stop-color="#0a1913"/>
+              </linearGradient>
+              <linearGradient id="mountainGrad2" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#3d6354"/>
+                <stop offset="100%" stop-color="#08140f"/>
+              </linearGradient>
+              <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#144d3b"/>
+                <stop offset="100%" stop-color="#04120c"/>
+              </linearGradient>
+              <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#ffeaa7" stop-opacity="1"/>
+                <stop offset="40%" stop-color="#fdcb6e" stop-opacity="0.8"/>
+                <stop offset="100%" stop-color="#00DF82" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <!-- Sky Background -->
+            <rect width="340" height="380" rx="24" fill="url(#skyGrad1)"/>
+            <!-- Sun & Glow -->
+            <circle cx="210" cy="115" r="45" fill="url(#sunGlow)"/>
+            <circle cx="210" cy="115" r="18" fill="#fff7d6"/>
+            <!-- Distant Mountains -->
+            <polygon points="40,240 130,110 220,240" fill="url(#mountainGrad1)" opacity="0.9"/>
+            <polygon points="150,240 240,120 330,240" fill="url(#mountainGrad1)" opacity="0.8"/>
+            <!-- Snow / Ridge Highlights -->
+            <polyline points="130,110 135,140 145,160 130,180" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+            <polyline points="240,120 235,150 245,170" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+            <!-- Front Mountains -->
+            <polygon points="-20,260 70,160 180,260" fill="url(#mountainGrad2)"/>
+            <polygon points="200,260 280,170 360,260" fill="url(#mountainGrad2)"/>
+            <!-- Soft Clouds -->
+            <path d="M60,110 Q75,95 95,95 Q115,95 125,110 Q140,110 145,120 Q150,130 140,135 L60,135 Z" fill="rgba(255,255,255,0.22)"/>
+            <path d="M190,80 Q205,70 225,70 Q240,70 250,82 Q260,82 265,90 L185,90 Z" fill="rgba(255,255,255,0.18)"/>
+            <!-- Alpine Lake Water Body -->
+            <path d="M0,245 C90,235 250,235 340,245 L340,380 L0,380 Z" fill="url(#waterGrad)"/>
+            <!-- Lake Reflection -->
+            <ellipse cx="210" cy="275" rx="30" ry="4" fill="rgba(255,234,167,0.35)"/>
+            <ellipse cx="205" cy="285" rx="45" ry="3" fill="rgba(255,234,167,0.2)"/>
+            <!-- Pine Forest Silhouette -->
+            <path d="M10,260 L20,225 L30,260 L45,260 L55,220 L65,260 L80,260 L90,230 L100,260 L240,260 L250,225 L260,260 L280,260 L290,220 L300,260 L320,260 L330,235 L340,260" stroke="#06120b" stroke-width="22" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="onboard-content">
+          <h2 class="onboard-title">Smarter Weather<br>for Your Everyday</h2>
+          <p class="onboard-desc">Get accurate forecasts, real-time alerts,<br>and AI insights, all in one place.</p>
+        </div>
+      </div>
+
+      <!-- ONBOARDING SLIDE 2: AI Weather Understanding -->
+      <div class="onboard-slide" data-index="1">
+        <div class="onboard-visual-frame ai-bg">
+          <svg class="onboard-svg" viewBox="0 0 340 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="phoneGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#0a1813"/>
+                <stop offset="100%" stop-color="#030806"/>
+              </linearGradient>
+              <linearGradient id="cardGrad1" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#112920"/>
+                <stop offset="100%" stop-color="#07130e"/>
+              </linearGradient>
+            </defs>
+            <!-- Background Glow -->
+            <circle cx="170" cy="180" r="130" fill="rgba(0,223,130,0.08)"/>
+            <!-- Smartphone Silhouette Body -->
+            <rect x="85" y="45" width="170" height="290" rx="30" fill="url(#phoneGrad)" stroke="#1a3d2e" stroke-width="3"/>
+            <!-- Screen Notch / Speaker -->
+            <rect x="145" y="55" width="50" height="6" rx="3" fill="#1b382b"/>
+            <!-- Inner Screen Header -->
+            <rect x="100" y="75" width="70" height="8" rx="4" fill="rgba(255,255,255,0.3)"/>
+            <!-- Floating Weather Glass Cards around Phone -->
+            <!-- Card 1: Cloud & Rain (Top Right) -->
+            <g transform="translate(190, 60)">
+              <rect width="110" height="80" rx="16" fill="url(#cardGrad1)" stroke="rgba(0,223,130,0.3)" stroke-width="1.5"/>
+              <text x="55" y="45" font-size="28" text-anchor="middle">🌧️</text>
+              <rect x="25" y="58" width="60" height="6" rx="3" fill="rgba(255,255,255,0.2)"/>
+            </g>
+            <!-- Card 2: Sunny Orb (Middle Left) -->
+            <g transform="translate(30, 140)">
+              <rect width="90" height="75" rx="16" fill="url(#cardGrad1)" stroke="rgba(0,223,130,0.3)" stroke-width="1.5"/>
+              <text x="45" y="42" font-size="28" text-anchor="middle">☀️</text>
+              <rect x="20" y="54" width="50" height="6" rx="3" fill="#ffeaa7" fill-opacity="0.4"/>
+            </g>
+            <!-- Card 3: Mountains / Agronomy (Right Center) -->
+            <g transform="translate(200, 160)">
+              <rect width="115" height="75" rx="16" fill="url(#cardGrad1)" stroke="rgba(0,223,130,0.3)" stroke-width="1.5"/>
+              <text x="57" y="42" font-size="26" text-anchor="middle">🌾</text>
+              <rect x="25" y="54" width="65" height="6" rx="3" fill="#00DF82" fill-opacity="0.5"/>
+            </g>
+            <!-- Card 4: Radar Bar Chart (Bottom Left) -->
+            <g transform="translate(45, 235)">
+              <rect width="95" height="75" rx="16" fill="url(#cardGrad1)" stroke="rgba(0,223,130,0.3)" stroke-width="1.5"/>
+              <!-- Bar chart glyphs -->
+              <rect x="25" y="50" width="8" height="15" rx="2" fill="#00DF82"/>
+              <rect x="40" y="40" width="8" height="25" rx="2" fill="#00DF82"/>
+              <rect x="55" y="32" width="8" height="33" rx="2" fill="#34d399"/>
+              <rect x="70" y="45" width="8" height="20" rx="2" fill="#00DF82"/>
+            </g>
+            <!-- Card 5: AI Center Message on Phone Screen -->
+            <rect x="105" y="150" width="130" height="55" rx="14" fill="#071a12" stroke="#00DF82" stroke-width="1.2"/>
+            <circle cx="125" cy="177" r="10" fill="#00DF82"/>
+            <rect x="145" y="168" width="75" height="7" rx="3.5" fill="#ffffff"/>
+            <rect x="145" y="180" width="50" height="6" rx="3" fill="rgba(255,255,255,0.4)"/>
+          </svg>
+        </div>
+
+        <div class="onboard-content">
+          <h2 class="onboard-title">AI That Understands<br>Your Weather Needs</h2>
+          <p class="onboard-desc">From farming advice to travel safety,<br>ask anything and get instant answers.</p>
+        </div>
+      </div>
+
+      <!-- ONBOARDING SLIDE 3: Trusted Data & Satellites -->
+      <div class="onboard-slide" data-index="2">
+        <div class="onboard-visual-frame satellite-bg">
+          <svg class="onboard-svg" viewBox="0 0 340 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="globeGrad" cx="45%" cy="40%" r="60%">
+                <stop offset="0%" stop-color="#1e5f4a"/>
+                <stop offset="60%" stop-color="#0a2a1f"/>
+                <stop offset="100%" stop-color="#04120c"/>
+              </radialGradient>
+              <linearGradient id="orbitGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#00DF82" stop-opacity="0.8"/>
+                <stop offset="100%" stop-color="#00DF82" stop-opacity="0.1"/>
+              </linearGradient>
+            </defs>
+            <!-- Outer Glow -->
+            <circle cx="170" cy="170" r="125" fill="rgba(0,223,130,0.1)"/>
+            <!-- Orbit Ellipses -->
+            <ellipse cx="170" cy="170" rx="135" ry="55" transform="rotate(-25 170 170)" stroke="url(#orbitGrad)" stroke-width="1.5" stroke-dasharray="6 4"/>
+            <ellipse cx="170" cy="170" rx="140" ry="60" transform="rotate(35 170 170)" stroke="url(#orbitGrad)" stroke-width="1.5" stroke-dasharray="6 4"/>
+            <!-- Earth Globe -->
+            <circle cx="170" cy="170" r="95" fill="url(#globeGrad)" stroke="#00DF82" stroke-width="2"/>
+            <!-- Continents Silhouettes -->
+            <path d="M125,125 Q145,115 160,130 Q175,145 155,165 Q135,175 125,155 Z" fill="#2d7c58" opacity="0.85"/>
+            <path d="M175,130 Q205,120 220,140 Q230,170 205,185 Q180,180 170,155 Z" fill="#2d7c58" opacity="0.85"/>
+            <path d="M150,185 Q170,175 185,190 Q180,225 160,235 Q140,225 150,185 Z" fill="#2d7c58" opacity="0.85"/>
+            <!-- Atmosphere Rim Glow -->
+            <circle cx="170" cy="170" r="95" stroke="rgba(0,223,130,0.4)" stroke-width="4"/>
+            <!-- Satellite 1 (Top Left) -->
+            <g transform="translate(60, 80) rotate(-20)">
+              <!-- Satellite Main Body -->
+              <rect x="15" y="10" width="16" height="22" rx="4" fill="#0d281e" stroke="#00DF82" stroke-width="1.5"/>
+              <!-- Solar Array Left -->
+              <rect x="0" y="14" width="13" height="14" rx="2" fill="#38bdf8" stroke="#00DF82" stroke-width="1"/>
+              <!-- Solar Array Right -->
+              <rect x="33" y="14" width="13" height="14" rx="2" fill="#38bdf8" stroke="#00DF82" stroke-width="1"/>
+              <!-- Beam / Telemetry Signal -->
+              <line x1="23" y1="34" x2="70" y2="70" stroke="#00DF82" stroke-width="1.5" stroke-dasharray="3 3"/>
+            </g>
+            <!-- Satellite 2 (Bottom Right) -->
+            <g transform="translate(240, 220) rotate(15)">
+              <rect x="12" y="8" width="14" height="18" rx="3" fill="#0d281e" stroke="#00DF82" stroke-width="1.5"/>
+              <rect x="0" y="11" width="10" height="12" rx="2" fill="#38bdf8" stroke="#00DF82" stroke-width="1"/>
+              <rect x="28" y="11" width="10" height="12" rx="2" fill="#38bdf8" stroke="#00DF82" stroke-width="1"/>
+            </g>
+            <!-- Ground Radar Sensor Beacons -->
+            <circle cx="160" cy="150" r="4" fill="#00DF82"/>
+            <circle cx="160" cy="150" r="9" stroke="#00DF82" stroke-width="1" opacity="0.6"/>
+            <circle cx="200" cy="165" r="4" fill="#00DF82"/>
+            <circle cx="200" cy="165" r="9" stroke="#00DF82" stroke-width="1" opacity="0.6"/>
+          </svg>
+        </div>
+
+        <div class="onboard-content">
+          <h2 class="onboard-title">Powered by<br>Trusted Data</h2>
+          <p class="onboard-desc">Combining satellites, radar and<br>advanced models for reliable insights.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Onboarding Bottom Controls -->
+    <div class="onboard-bottom-controls">
+      <!-- 3-Dot Indicator -->
+      <div class="onboard-dots">
+        <span class="dot active" data-index="0"></span>
+        <span class="dot" data-index="1"></span>
+        <span class="dot" data-index="2"></span>
+      </div>
+
+      <!-- Action Button: Next Arrow on slide 0 & 1, "Get Started" wide button on slide 2 -->
+      <div class="onboard-btn-wrap">
+        <button class="onboard-circle-next-btn" id="onboardNextBtn" aria-label="Next slide">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+
+        <button class="onboard-get-started-btn hidden" id="onboardGetStartedBtn">
+          Get Started
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- SCREEN 5 & 6: AUTHENTICATION (LOGIN & SIGN UP)                    -->
+  <!-- ================================================================= -->
+  <!-- LOGIN SCREEN -->
+  <div class="flow-screen hidden" id="screen-login">
+    <div class="auth-header">
+      <button class="auth-back-btn" id="loginBackBtn" aria-label="Back">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+    </div>
+
+    <div class="auth-body">
+      <h2 class="auth-title">Welcome Back</h2>
+      <p class="auth-subtitle">Sign in to continue to WeatherGPT</p>
+
+      <form class="auth-form" id="loginForm" onsubmit="event.preventDefault();">
+        <div class="auth-input-group">
+          <span class="auth-icon">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          </span>
+          <input type="text" id="loginEmailInput" class="auth-input" placeholder="Email or phone number" value="user@weathergpt.gov.in" autocomplete="username">
+        </div>
+
+        <div class="auth-input-group">
+          <span class="auth-icon">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+          <input type="password" id="loginPassInput" class="auth-input" placeholder="Password" value="••••••••" autocomplete="current-password">
+          <button type="button" class="auth-eye-btn" id="loginPassToggle" aria-label="Toggle password visibility">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+
+        <div class="auth-action-row">
+          <a href="#" class="auth-forgot-link" id="forgotPassLink">Forgot password?</a>
+        </div>
+
+        <button type="button" class="auth-primary-btn" id="loginSubmitBtn">
+          Sign In
+        </button>
+
+        <div class="auth-divider">
+          <span>OR</span>
+        </div>
+
+        <button type="button" class="auth-social-btn" id="googleLoginBtn">
+          <svg viewBox="0 0 24 24" width="18" height="18">
+            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.15z"/>
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.27 21.39 7.33 24 12 24z"/>
+            <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.26C.46 8.16 0 9.94 0 12s.46 3.84 1.26 5.42l4.02-3.15z"/>
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.27 2.61 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+        <button type="button" class="auth-social-btn" id="appleLoginBtn">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.42c.6-1.01.99-2.42.79-3.83-1.2.07-2.58.82-3.17 1.83-.54.91-.95 2.37-.74 3.77 1.34.1 2.54-.76 3.12-1.77z"/>
+          </svg>
+          <span>Continue with Apple</span>
+        </button>
+
+        <div class="auth-switch-row">
+          <span>Don't have an account?</span>
+          <button type="button" class="auth-switch-link" id="goToSignUpBtn">Sign Up</button>
+        </div>
+
+        <button type="button" class="auth-guest-btn" id="guestLoginBtn">
+          Continue as Guest
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- SIGN UP SCREEN -->
+  <div class="flow-screen hidden" id="screen-signup">
+    <div class="auth-header">
+      <button class="auth-back-btn" id="signupBackBtn" aria-label="Back">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+    </div>
+
+    <div class="auth-body">
+      <h2 class="auth-title">Create Account</h2>
+      <p class="auth-subtitle">Join WeatherGPT and explore smarter weather insights</p>
+
+      <form class="auth-form" id="signupForm" onsubmit="event.preventDefault();">
+        <div class="auth-input-group">
+          <span class="auth-icon">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <input type="text" id="signupNameInput" class="auth-input" placeholder="Full Name" value="Raju R" autocomplete="name">
+        </div>
+
+        <div class="auth-input-group">
+          <span class="auth-icon">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          </span>
+          <input type="email" id="signupEmailInput" class="auth-input" placeholder="Email" value="user@weathergpt.gov.in" autocomplete="email">
+        </div>
+
+        <div class="auth-input-group">
+          <span class="auth-icon">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+          <input type="password" id="signupPassInput" class="auth-input" placeholder="Password" value="••••••••" autocomplete="new-password">
+          <button type="button" class="auth-eye-btn" id="signupPassToggle">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+
+        <div class="auth-input-group">
+          <span class="auth-icon">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+          <input type="password" id="signupConfirmPassInput" class="auth-input" placeholder="Confirm Password" value="••••••••" autocomplete="new-password">
+          <button type="button" class="auth-eye-btn" id="signupConfirmPassToggle">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+
+        <button type="button" class="auth-primary-btn" id="signupSubmitBtn">
+          Sign Up
+        </button>
+
+        <div class="auth-divider">
+          <span>OR</span>
+        </div>
+
+        <button type="button" class="auth-social-btn" id="googleSignupBtn">
+          <svg viewBox="0 0 24 24" width="18" height="18">
+            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.15z"/>
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.27 21.39 7.33 24 12 24z"/>
+            <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.26C.46 8.16 0 9.94 0 12s.46 3.84 1.26 5.42l4.02-3.15z"/>
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.27 2.61 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+        <button type="button" class="auth-social-btn" id="appleSignupBtn">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.42c.6-1.01.99-2.42.79-3.83-1.2.07-2.58.82-3.17 1.83-.54.91-.95 2.37-.74 3.77 1.34.1 2.54-.76 3.12-1.77z"/>
+          </svg>
+          <span>Continue with Apple</span>
+        </button>
+
+        <div class="auth-switch-row">
+          <span>Already have an account?</span>
+          <button type="button" class="auth-switch-link" id="goToSignInBtn">Sign In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- MAIN APP WRAPPER (TOP APP BAR, VIEWPORT, BOTTOM NAV)              -->
+  <!-- ================================================================= -->
+  <div class="main-app-shell" id="mainAppShell">
+
+    <!-- 1. ANDROID TOP APP BAR -->
+    <header class="android-top-app-bar" id="topAppBar">
+      <button class="icon-touch-btn" id="drawerOpenBtn" aria-label="Open Navigation Drawer">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none">
+          <line x1="4" y1="7" x2="20" y2="7"/>
+          <line x1="4" y1="12" x2="20" y2="12"/>
+          <line x1="4" y1="17" x2="20" y2="17"/>
+        </svg>
+      </button>
+
+      <div class="top-app-title-group" id="topAppTitleGroup">
+        <h1 class="top-brand-text">Weather<span class="text-accent-green">GPT</span></h1>
+      </div>
+
+      <div class="top-app-actions">
+        <!-- Quick Role Switcher Pill -->
+        <button class="role-selector-pill" id="openSetupGateBtn" title="Switch Stakeholder Profile & Region">
+          <span id="topRoleIcon">🌾</span>
+          <span id="topRoleText">Farmer</span> • <b id="topCityText">Hyd</b> ▾
+        </button>
+
+        <!-- Notification Bell Icon (Opens Alerts Center) -->
+        <button class="icon-touch-btn" id="topBellBtn" aria-label="Notifications" title="Alerts & Notification Center">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span class="bell-alert-badge" id="bellBadge">2</span>
+        </button>
+
+        <!-- Top GPS Quick Trigger -->
+        <button class="icon-touch-btn" id="topGpsBtn" title="Detect GPS Location" aria-label="Current Location">
+          <svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none">
+            <circle cx="12" cy="12" r="8"/>
+            <line x1="12" y1="2" x2="12" y2="6"/>
+            <line x1="12" y1="18" x2="12" y2="22"/>
+            <line x1="2" y1="12" x2="6" y2="12"/>
+            <line x1="18" y1="12" x2="22" y2="12"/>
+          </svg>
+        </button>
+
+        <button class="icon-touch-btn" id="topHistoryBtn" title="Chat History" aria-label="Session Log" style="display:none">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- 2. NATIVE ANDROID DRAWER BACKDROP & MENU (SCREEN 8) -->
+    <div class="drawer-backdrop" id="androidDrawerBackdrop"></div>
+    <aside class="android-drawer" id="androidDrawer" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="drawer-header">
+        <div class="drawer-branding">
+          <div class="drawer-logo-orb"></div>
+          <div>
+            <div class="drawer-brand-name">WeatherGPT</div>
+            <div class="drawer-brand-sub">Neural Decision Platform • SIH26068</div>
+          </div>
+        </div>
+        <div class="drawer-header-actions">
+          <button class="drawer-avatar-btn" id="drawerProfileShortcut" aria-label="Profile">
+            <div class="drawer-avatar-circle">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            </div>
+          </button>
+          <button class="drawer-close-touch" id="drawerCloseBtn" aria-label="Close Drawer">&times;</button>
+        </div>
+      </div>
+
+      <!-- Quick Location Search inside Drawer -->
+      <div class="drawer-search-box">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="drawerSearchInput" placeholder="Search city, district or village..." autocomplete="off">
+        <button id="drawerSearchGoBtn" aria-label="Search" title="Search Location">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+
+      <!-- Vernacular Language Quick Switcher (2x3 Grid) -->
+      <div class="drawer-section-label">REGIONAL LANGUAGE / భాష</div>
+      <div class="drawer-lang-grid">
+        <button class="lang-chip active" data-lang="en">English</button>
+        <button class="lang-chip" data-lang="hi">हिन्दी</button>
+        <button class="lang-chip" data-lang="te">తెలుగు</button>
+        <button class="lang-chip" data-lang="mr">मराठी</button>
+        <button class="lang-chip" data-lang="kn">ಕನ್ನಡ</button>
+        <button class="lang-chip" data-lang="ta">தமிழ்</button>
+      </div>
+
+      <!-- Deep-Dive Intelligence Modules (Matching Screen 8) -->
+      <div class="drawer-section-label">INTELLIGENCE MODULES</div>
+      <nav class="drawer-nav-list">
+        <button class="drawer-item" data-action="tab-home">
+          <div class="d-ico-box">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div class="d-txt">
+            <b>Home</b>
+            <small>Meteorological dashboard &amp; live conditions</small>
+          </div>
+          <svg class="d-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <button class="drawer-item" data-action="tab-ai">
+          <div class="d-ico-box">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div class="d-txt">
+            <b>WeatherGPT Assistant</b>
+            <small>Conversational forecasts, voice queries &amp; early warning</small>
+          </div>
+          <svg class="d-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <button class="drawer-item" data-action="tab-radar">
+          <div class="d-ico-box">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+          </div>
+          <div class="d-txt">
+            <b>Live Doppler Radar &amp; GIS</b>
+            <small>RainViewer reflectivity &amp; satellite layers</small>
+          </div>
+          <svg class="d-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <button class="drawer-item" data-sheet="sheet-nwp">
+          <div class="d-ico-box">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          </div>
+          <div class="d-txt">
+            <b>NWP Multi-Model Consensus</b>
+            <small>NOAA GFS, ECMWF IFS, DWD ICON, Mesoscale WRF</small>
+          </div>
+          <svg class="d-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <button class="drawer-item" data-sheet="sheet-aviation">
+          <div class="d-ico-box">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>
+          </div>
+          <div class="d-txt">
+            <b>Aviation Aerodrome Briefing</b>
+            <small>Synthetic METAR/TAF, runway crosswind &amp; VFR/IFR</small>
+          </div>
+          <svg class="d-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <button class="drawer-item" data-sheet="sheet-climate">
+          <div class="d-ico-box">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <div class="d-txt">
+            <b>Decadal Climate Trends (1991–2025)</b>
+            <small>Thermal anomaly, monsoon LPA deviation &amp; CSV</small>
+          </div>
+          <svg class="d-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <button class="drawer-item" data-action="tab-travel">
+          <div class="d-ico-box">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          </div>
+          <div class="d-txt">
+            <b>Smart Highway Travel Planner</b>
+            <small>Route precipitation, fog &amp; road hazards</small>
+          </div>
+          <svg class="d-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <button class="drawer-item" data-action="tab-crop">
+          <div class="d-ico-box">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a9 9 0 0 1 9 9v1a9 9 0 0 1-9 9 9 9 0 0 1-9-9v-1a9 9 0 0 1 9-9z"/><path d="M12 2v20"/><path d="M12 12c-3-2-5-1-6 2"/><path d="M12 8c3-2 5-1 6 2"/></svg>
+          </div>
+          <div class="d-txt">
+            <b>Crop &amp; Spray Advice</b>
+            <small>Optimal foliar spray windows &amp; disease risks</small>
+          </div>
+          <svg class="d-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <button class="drawer-item" data-action="tab-alerts">
+          <div class="d-ico-box">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="d-txt">
+            <b>Severe Alerts &amp; Disaster Helpline</b>
+            <small>Active CAP warnings &amp; emergency protocols</small>
+          </div>
+          <svg class="d-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <button class="drawer-item" data-action="tab-settings">
+          <div class="d-ico-box">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </div>
+          <div class="d-txt">
+            <b>Settings</b>
+            <small>Units, preferences &amp; WeatherGPT AI keys</small>
+          </div>
+          <svg class="d-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <button class="drawer-item" data-action="tab-about">
+          <div class="d-ico-box">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          </div>
+          <div class="d-txt">
+            <b>About</b>
+            <small>Neural Decision Platform SIH26068</small>
+          </div>
+          <svg class="d-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </nav>
+
+      <!-- Emergency Disaster Helplines -->
+      <div class="drawer-emergency-banner">
+        <div class="em-title">
+          <span class="pulse-live-red"></span>
+          NATIONAL DISASTER HELPLINES
+        </div>
+        <div class="em-chips">
+          <a href="tel:1070" class="em-pill"><span>📞</span> Relief: <b>1070</b></a>
+          <a href="tel:112" class="em-pill"><span>🚨</span> All-in-One: <b>112</b></a>
+          <a href="tel:1078" class="em-pill"><span>🛡️</span> NDMA: <b>1078</b></a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 3. MAIN APPLICATION VIEWPORT (PAGES & TABS) -->
+    <main class="android-viewport" id="mainViewport">
+
+      <!-- =============================================================== -->
+      <!-- TAB 1: HOME DASHBOARD (SCREEN 7)                                -->
+      <!-- =============================================================== -->
+      <section class="tab-screen active" id="tab-home">
+        <div class="home-scroll-container" id="homeScrollContainer">
+          
+          <!-- Weather Location Glance Card (Matching Screen 7) -->
+          <div class="weather-hero-card" id="homeGlancePill">
+            <!-- Location Pin Dropdown Row -->
+            <div class="whc-top-row">
+              <button class="whc-loc-btn" id="openLocationPickerBtn" title="Switch Location">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#00DF82" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span id="glancePlace">Hyderabad</span>
+                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+            </div>
+
+            <!-- Weather Illustration & Big Temperature Center Row -->
+            <div class="whc-temp-cluster">
+              <div class="whc-weather-artwork" id="weatherArtwork">
+                <!-- Glowing Sun behind Cloud Vector Graphic -->
+                <svg viewBox="0 0 100 80" width="90" height="72" fill="none">
+                  <circle cx="36" cy="32" r="22" fill="#ffeaa7"/>
+                  <circle cx="36" cy="32" r="28" fill="rgba(255,234,167,0.2)"/>
+                  <path d="M25,52 Q25,40 38,40 Q45,30 58,32 Q70,30 76,40 Q88,40 88,52 Q88,64 76,64 L25,64 Z" fill="#e2e8f0"/>
+                  <path d="M30,55 Q30,46 40,46 Q46,38 56,40 Q66,38 71,46 Q80,46 80,55 Q80,64 71,64 L30,64 Z" fill="#cbd5e1"/>
+                </svg>
+              </div>
+
+              <div class="whc-temp-info">
+                <div class="whc-big-temp" id="glanceTemp">26°C</div>
+                <div class="whc-condition" id="glanceCondition">Overcast</div>
+                <div class="whc-feels" id="glanceFeels">Feels like 28°</div>
+              </div>
+            </div>
+
+            <!-- 3-Metric Horizontal Strip (Matching Screen 7) -->
+            <div class="whc-metric-row">
+              <div class="whc-metric-item">
+                <div class="whc-m-top">
+                  <span class="whc-m-icon">💧</span>
+                  <b id="glanceRain">3%</b>
+                </div>
+                <small>Humidity</small>
+              </div>
+
+              <div class="whc-metric-item">
+                <div class="whc-m-top">
+                  <span class="whc-m-icon">💨</span>
+                  <b id="glanceWind">72%</b>
+                </div>
+                <small>Wind</small>
+              </div>
+
+              <div class="whc-metric-item">
+                <div class="whc-m-top">
+                  <span class="whc-m-icon">☀️</span>
+                  <b id="glanceUv">Moderate</b>
+                </div>
+                <small>UV</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ask anything search bar (Screen 7 Hero Ask Bar) -->
+          <div class="home-ask-bar-wrap">
+            <div class="home-ask-bar" id="homeAskBarTrigger">
+              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="homeQuickInput" placeholder="Ask anything about weather..." readonly>
+              <button class="home-mic-btn" id="homeQuickMicBtn" aria-label="Voice Query">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="#00DF82" stroke-width="2.2" fill="none"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- 2-Column Quick Action Cards (Screen 7 Matching Grid) -->
+          <div class="home-actions-grid" id="quickActionCards">
+            <!-- Card 1: Crop & Spray Advice -->
+            <button class="grid-action-card" id="cardCropAdvice" data-target-tab="tab-crop">
+              <div class="gac-icon-circle green">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 2a9 9 0 0 1 9 9v1a9 9 0 0 1-9 9 9 9 0 0 1-9-9v-1a9 9 0 0 1 9-9z"/><path d="M12 2v20"/><path d="M12 12c-3-2-5-1-6 2"/><path d="M12 8c3-2 5-1 6 2"/></svg>
+              </div>
+              <div class="gac-content">
+                <b>Crop &amp; Spray<br>Advice</b>
+              </div>
+            </button>
+
+            <!-- Card 2: Rain Timeline -->
+            <button class="grid-action-card" id="cardRainTimeline" data-action="open-telemetry">
+              <div class="gac-icon-circle emerald">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/><line x1="8" y1="19" x2="8" y2="21"/><line x1="8" y1="13" x2="8" y2="15"/><line x1="16" y1="19" x2="16" y2="21"/><line x1="16" y1="13" x2="16" y2="15"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="12" y1="15" x2="12" y2="17"/></svg>
+              </div>
+              <div class="gac-content">
+                <b>Rain<br>Timeline</b>
+              </div>
+            </button>
+
+            <!-- Card 3: Travel Safety Risk -->
+            <button class="grid-action-card" id="cardTravelSafety" data-target-tab="tab-travel">
+              <div class="gac-icon-circle green">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              </div>
+              <div class="gac-content">
+                <b>Travel Safety<br>Risk</b>
+              </div>
+            </button>
+
+            <!-- Card 4: Severe Alerts Status -->
+            <button class="grid-action-card" id="cardSevereAlerts" data-target-tab="tab-alerts">
+              <div class="gac-icon-circle emerald">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <div class="gac-content">
+                <b>Severe Alerts<br>Status</b>
+              </div>
+            </button>
+          </div>
+
+          <!-- Hero AI Orb & Conversational Assistant Quick Access -->
+          <div class="home-assistant-banner" id="homeAssistantBanner">
+            <div class="hab-orb-mini" id="aiOrbWrapper">
+              <div class="ai-orb-core"></div>
+              <div class="ai-orb-ring ring-1"></div>
+            </div>
+            <div class="hab-text">
+              <h3>How can I help you today?</h3>
+              <p>Ask about weather forecasts, farming advice, travel safety or live alerts.</p>
+            </div>
+            <button class="hab-chat-btn" id="openAiChatBtn">Chat →</button>
+          </div>
+
+          <!-- Live GIS Doppler Radar Preview Card -->
+          <div class="home-radar-card" id="homeRadarCard">
+            <div class="hrc-header">
+              <div class="hrc-title-cluster">
+                <span class="pulse-live-red"></span>
+                <b>Live GIS Doppler Radar</b>
+                <span class="hrc-city-tag" id="hrcCityTag">Hyderabad</span>
+              </div>
+              <button class="hrc-expand-btn" id="hrcExpandBtn" title="Full Map">
+                <span>Console</span> ↗
+              </button>
+            </div>
+            <div class="hrc-map-frame">
+              <div id="homeMiniLeafletMap" class="home-mini-map"></div>
+              <div class="hrc-live-badge">DOPPLER LIVE • 250KM BASIN</div>
+            </div>
+          </div>
+
+          <!-- Hidden helper anchor elements for existing event listeners -->
+          <button id="glanceExpandBtn" style="display:none"></button>
+          <div id="chatActiveCity" style="display:none">Hyderabad</div>
+
+          <div class="viewport-bottom-spacer"></div>
+        </div>
+      </section>
+
+      <!-- =============================================================== -->
+      <!-- TAB 2: LIVE DOPPLER RADAR + GIS (SCREEN 10)                     -->
+      <!-- =============================================================== -->
+      <section class="tab-screen" id="tab-radar">
+        <div class="radar-container">
+          <!-- Top Header Navigation -->
+          <div class="subpage-header">
+            <button class="subpage-back-btn" id="radarBackBtn" aria-label="Back to Home">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h2 class="subpage-title">Live Doppler Radar</h2>
+            <button class="subpage-action-btn" id="radarCenterGpsBtn" aria-label="Center Location">
+              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
+            </button>
+          </div>
+
+          <!-- 3 Filter Tabs: Radar | Satellite | Precipitation (Matching Screen 10) -->
+          <div class="radar-mode-tabs">
+            <button class="mode-tab-btn active" data-radarmode="radar">Radar</button>
+            <button class="mode-tab-btn" data-radarmode="satellite">Satellite</button>
+            <button class="mode-tab-btn" data-radarmode="precipitation">Precipitation</button>
+          </div>
+
+          <!-- Map Frame Container -->
+          <div class="radar-map-wrapper">
+            <div id="radarLeafletMap" class="full-viewport-map"></div>
+
+            <!-- Floating Map Layer Controls on Right -->
+            <div class="radar-side-toolbox">
+              <button class="toolbox-btn" id="mapLayersBtn" title="Toggle Layers" aria-label="Layers">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+              </button>
+              
+              <!-- Layer Selection Popup -->
+              <div class="radar-layer-panel" id="radarLayerPanel" style="display:none">
+                <div class="rlp-title">Base Map Style</div>
+                <button class="rlp-btn active" data-basemap="dark">🌙 Dark Matter</button>
+                <button class="rlp-btn" data-basemap="osm">🗺️ OpenStreetMap</button>
+                <button class="rlp-btn" data-basemap="satellite">🛰️ Satellite (Esri)</button>
+                <button class="rlp-btn" data-basemap="topo">⛰️ Topographic</button>
+                <div class="rlp-title" style="margin-top:10px">Overlays</div>
+                <label class="rlp-check"><input type="checkbox" id="overlayRadarCheck" checked> Live Rain Radar</label>
+                <label class="rlp-check"><input type="checkbox" id="overlayPinsCheck" checked> Metro City Pins</label>
+              </div>
+
+              <button class="toolbox-btn" id="mapZoomInBtn" title="Zoom In" aria-label="Zoom In">+</button>
+              <button class="toolbox-btn" id="mapZoomOutBtn" title="Zoom Out" aria-label="Zoom Out">−</button>
+              <button class="toolbox-btn" id="mapIndiaOverviewBtn" title="India National Overview" aria-label="National View">🇮🇳</button>
+            </div>
+
+            <!-- Bottom Playback Controller & Intensity Scale (Matching Screen 10) -->
+            <div class="radar-playback-deck">
+              <div class="rpd-controls-row">
+                <button class="radar-play-round" id="radarPlayPauseBtn" aria-label="Play Radar Time Lapse">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+                </button>
+                <div class="rpd-time-box">
+                  <span class="rpd-time-text" id="radarTimestamp">Today 02:30 PM</span>
+                </div>
+                <button class="rpd-options-btn" id="telemetryDetailsBtn" aria-label="More Options">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+                </button>
+              </div>
+
+              <!-- Precipitation Intensity Gradient Scale (Screen 10) -->
+              <div class="radar-intensity-scale">
+                <span class="ris-label">Light</span>
+                <div class="ris-gradient-bar"></div>
+                <span class="ris-label">Heavy</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hidden elements for data binding compatibility with app.js -->
+          <div style="display:none">
+            <span id="radarPlaceName">Hyderabad</span>
+            <span id="radarTempHead">26°C</span>
+            <span id="telemetryIcon">☀️</span>
+            <span id="telemetryTemp">26°C</span>
+            <span id="telemetryConditionBadge">Clear Sky</span>
+            <span id="telemetryFeels">Feels like 28°</span>
+            <span id="tpRainProb">3%</span>
+            <span id="tpWind">12 km/h</span>
+            <span id="tpHumidityUv">65% • UV 4.0</span>
+            <span id="tpPressureVis">1013 hPa • 10 km</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- =============================================================== -->
+      <!-- TAB 3: AI ASSISTANT (SCREEN 9)                                  -->
+      <!-- =============================================================== -->
+      <section class="tab-screen" id="tab-ai">
+        <div class="chat-viewport-container">
+          <!-- Top Chat Header -->
+          <div class="subpage-header">
+            <button class="subpage-back-btn" id="aiBackBtn" aria-label="Back to Home">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h2 class="subpage-title">WeatherGPT Assistant</h2>
+            <button class="subpage-action-btn" id="chatMoreMenuBtn" aria-label="Options">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+            </button>
+          </div>
+
+          <!-- Conversational Message Feed -->
+          <div class="ai-chat-feed" id="conversationFeed">
+            
+            <!-- Welcome Greeting Card (Matching Screen 9) -->
+            <div class="ai-greeting-bubble">
+              <div class="agb-orb-mini"></div>
+              <div class="agb-content">
+                <h4>Hello! I'm WeatherGPT</h4>
+                <p>Ask me anything about weather, farming, travel safety or live alerts.</p>
+              </div>
+            </div>
+
+            <!-- Quick Suggestion Buttons (Matching Screen 9) -->
+            <div class="ai-suggestions-list" id="aiQuickSuggestions">
+              <button class="suggestion-item" data-prompt="Will it rain today in Hyderabad?">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <span>Will it rain today in Hyderabad?</span>
+              </button>
+
+              <button class="suggestion-item" data-prompt="What is the best time to spray crops today?">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <span>Best time to spray crops?</span>
+              </button>
+
+              <button class="suggestion-item" data-prompt="Is it safe to travel on the highway tomorrow?">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <span>Is it safe to travel tomorrow?</span>
+              </button>
+
+              <button class="suggestion-item" data-prompt="Show me the 7-day weather forecast with rain probability.">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <span>Show me 7 day forecast</span>
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Audio replay bar if speech synthesized -->
+          <div class="audio-replay-bar" id="audioReplayBar" style="display:none">
+            <button class="audio-replay-btn" id="listenLastBtn">
+              <span>🔊</span> Listen Audio Response
+            </button>
+          </div>
+
+          <!-- Bottom Chat Message Bar (Matching Screen 9) -->
+          <div class="ai-bottom-bar-wrap">
+            <div class="ai-message-bar">
+              <button class="msg-btn-icon plus" id="msgAttachBtn" title="More Quick Actions" aria-label="Attachments">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+
+              <input type="text" id="chatMessageInput" class="msg-input" placeholder="Ask anything about weather..." autocomplete="off">
+
+              <button class="msg-btn-icon mic" id="msgVoiceBtn" title="Voice Input" aria-label="Voice Query">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="#00DF82" stroke-width="2" fill="none"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+              </button>
+
+              <button class="msg-send-round" id="msgSendBtn" aria-label="Send Message">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =============================================================== -->
+      <!-- TAB 4: CROP & SPRAY ADVICE (SCREEN 11)                          -->
+      <!-- =============================================================== -->
+      <section class="tab-screen" id="tab-crop">
+        <div class="subpage-scroll-container">
+          <div class="subpage-header">
+            <button class="subpage-back-btn" data-back-to-home aria-label="Back">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h2 class="subpage-title">Crop &amp; Spray Advice</h2>
+            <div style="width:24px"></div>
+          </div>
+
+          <!-- Crop Selection Tabs (Matching Screen 11: Rice, Wheat, Maize, Cotton) -->
+          <div class="crop-tabs-row" id="cropTabsRow">
+            <button class="crop-tab-btn active" data-crop="rice">Rice</button>
+            <button class="crop-tab-btn" data-crop="wheat">Wheat</button>
+            <button class="crop-tab-btn" data-crop="maize">Maize</button>
+            <button class="crop-tab-btn" data-crop="cotton">Cotton</button>
+          </div>
+
+          <!-- Main Crop Visual & Stage Card (Screen 11) -->
+          <div class="crop-hero-card" id="cropHeroCard">
+            <div class="chc-image-wrap">
+              <!-- Stylized crop illustration -->
+              <svg viewBox="0 0 100 100" width="80" height="80" fill="none">
+                <rect width="100" height="100" rx="16" fill="#0d281e"/>
+                <path d="M50 85 V20" stroke="#00DF82" stroke-width="3" stroke-linecap="round"/>
+                <path d="M50 30 Q30 20 25 35 Q40 45 50 35" fill="#34d399"/>
+                <path d="M50 45 Q70 35 75 50 Q60 60 50 50" fill="#00DF82"/>
+                <path d="M50 60 Q30 50 25 65 Q40 75 50 65" fill="#34d399"/>
+                <path d="M50 75 Q70 65 75 80 Q60 90 50 80" fill="#00DF82"/>
+              </svg>
+            </div>
+            <div class="chc-details">
+              <h3 class="crop-name" id="cropNameDisplay">Rice</h3>
+              <div class="crop-stage-label">Current Stage</div>
+              <div class="crop-stage-val" id="cropStageDisplay">Vegetative</div>
+            </div>
+          </div>
+
+          <!-- Recommendation Cards (Screen 11) -->
+          <div class="crop-advice-stack">
+            <!-- Spray Recommendation -->
+            <div class="crop-metric-card">
+              <div class="cmc-icon green">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a9 9 0 0 1 9 9v1a9 9 0 0 1-9 9 9 9 0 0 1-9-9v-1a9 9 0 0 1 9-9z"/><path d="M12 2v20"/></svg>
+              </div>
+              <div class="cmc-body">
+                <div class="cmc-label">Spray Recommendation</div>
+                <div class="cmc-value" id="cropSprayRecommendation">No spray needed today</div>
+              </div>
+            </div>
+
+            <!-- Ideal Window -->
+            <div class="crop-metric-card">
+              <div class="cmc-icon emerald">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div class="cmc-body">
+                <div class="cmc-label">Ideal Window</div>
+                <div class="cmc-value" id="cropIdealWindow">Next 3–5 days</div>
+              </div>
+            </div>
+
+            <!-- Disease Risk -->
+            <div class="crop-metric-card">
+              <div class="cmc-icon teal">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div class="cmc-body">
+                <div class="cmc-label">Disease Risk</div>
+                <div class="cmc-value" id="cropDiseaseRisk">Low</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Key Tips Section (Screen 11) -->
+          <div class="crop-tips-card">
+            <h4 class="tips-header">Key Tips</h4>
+            <ul class="tips-list" id="cropKeyTipsList">
+              <li><span class="tip-dot"></span> Maintain proper water level</li>
+              <li><span class="tip-dot"></span> Monitor for leaf blast</li>
+              <li><span class="tip-dot"></span> Apply nitrogen as per schedule</li>
+            </ul>
+          </div>
+
+          <div class="viewport-bottom-spacer"></div>
+        </div>
+      </section>
+
+      <!-- =============================================================== -->
+      <!-- TAB 5: SEVERE ALERTS (SCREEN 12)                                -->
+      <!-- =============================================================== -->
+      <section class="tab-screen" id="tab-alerts">
+        <div class="subpage-scroll-container">
+          <div class="subpage-header">
+            <button class="subpage-back-btn" data-back-to-home aria-label="Back">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h2 class="subpage-title">Severe Alerts</h2>
+            <div style="width:24px"></div>
+          </div>
+
+          <!-- Filter Tabs: All | Cyclone | Heavy Rain | Heatwave (Matching Screen 12) -->
+          <div class="alert-filter-tabs" id="alertFilterTabs">
+            <button class="alert-tab-btn active" data-filter="all">All</button>
+            <button class="alert-tab-btn" data-filter="cyclone">Cyclone</button>
+            <button class="alert-tab-btn" data-filter="rain">Heavy Rain</button>
+            <button class="alert-tab-btn" data-filter="heatwave">Heatwave</button>
+          </div>
+
+          <!-- Alert Cards Stack (Matching Screen 12) -->
+          <div class="severe-alerts-list" id="severeAlertsList">
+            
+            <!-- Alert 1: Heavy Rain Alert (Critical Red Border) -->
+            <div class="severe-alert-card critical-red" data-type="rain">
+              <div class="sac-icon-box red">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13" stroke="#000" stroke-width="2"/><circle cx="12" cy="17" r="1" fill="#000"/></svg>
+              </div>
+              <div class="sac-content">
+                <h4 class="sac-title">Heavy Rain Alert</h4>
+                <p class="sac-desc">Heavy rainfall likely in Hyderabad and nearby districts.</p>
+                <span class="sac-time">2 hours ago</span>
+              </div>
+              <div class="sac-arrow">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+
+            <!-- Alert 2: Thunderstorm Alert (Amber / Yellow) -->
+            <div class="severe-alert-card warning-amber" data-type="storm">
+              <div class="sac-icon-box amber">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              </div>
+              <div class="sac-content">
+                <h4 class="sac-title">Thunderstorm Alert</h4>
+                <p class="sac-desc">Lightning and gusty winds expected.</p>
+                <span class="sac-time">5 hours ago</span>
+              </div>
+              <div class="sac-arrow">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+
+            <!-- Alert 3: Heatwave Warning (Orange / Red Drop) -->
+            <div class="severe-alert-card warning-heat" data-type="heatwave">
+              <div class="sac-icon-box orange">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+              </div>
+              <div class="sac-content">
+                <h4 class="sac-title">Heatwave Warning</h4>
+                <p class="sac-desc">High temperatures expected.</p>
+                <span class="sac-time">1 day ago</span>
+              </div>
+              <div class="sac-arrow">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+
+            <!-- Alert 4: Cyclone Update (Cyan / Blue) -->
+            <div class="severe-alert-card info-cyan" data-type="cyclone">
+              <div class="sac-icon-box cyan">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/></svg>
+              </div>
+              <div class="sac-content">
+                <h4 class="sac-title">Cyclone Update</h4>
+                <p class="sac-desc">Cyclonic circulation over Bay of Bengal.</p>
+                <span class="sac-time">1 day ago</span>
+              </div>
+              <div class="sac-arrow">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="viewport-bottom-spacer"></div>
+        </div>
+      </section>
+
+      <!-- =============================================================== -->
+      <!-- TAB 6: TRAVEL SAFETY (SCREEN 13)                                -->
+      <!-- =============================================================== -->
+      <section class="tab-screen" id="tab-travel">
+        <div class="subpage-scroll-container">
+          <div class="subpage-header">
+            <button class="subpage-back-btn" data-back-to-home aria-label="Back">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h2 class="subpage-title">Travel Safety Risk</h2>
+            <div style="width:24px"></div>
+          </div>
+
+          <!-- Mode Tabs: Road | Flight | Rail (Screen 13) -->
+          <div class="travel-mode-tabs" id="travelModeTabs">
+            <button class="travel-tab-btn active" data-mode="road">Road</button>
+            <button class="travel-tab-btn" data-mode="flight">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>
+              Flight
+            </button>
+            <button class="travel-tab-btn" data-mode="rail">Rail</button>
+          </div>
+
+          <!-- Route Search Bar (Screen 13) -->
+          <div class="travel-search-wrap">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="travelRouteInput" placeholder="Select route or location..." value="Hyderabad → Bengaluru">
+          </div>
+
+          <!-- Route Summary Card (Screen 13) -->
+          <div class="travel-route-card">
+            <div class="trc-icon">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M12 19h4.5a3.5 3.5 0 0 0 0-7h-9a3.5 3.5 0 0 1 0-7H12"/></svg>
+            </div>
+            <div class="trc-info">
+              <h4 class="trc-title" id="travelRouteName">Hyderabad → Bengaluru</h4>
+              <span class="trc-date" id="travelRouteDate">Tomorrow, 10 Oct</span>
+            </div>
+          </div>
+
+          <!-- Overall Risk Card (Screen 13: Green Shield, Overall Risk Low) -->
+          <div class="travel-risk-card">
+            <div class="trc-shield-box">
+              <svg viewBox="0 0 24 24" width="28" height="28" stroke="#00DF82" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10" stroke="#00DF82" stroke-width="2"/></svg>
+            </div>
+            <div class="trc-risk-content">
+              <div class="trc-risk-label">Overall Risk</div>
+              <div class="trc-risk-status" id="travelRiskStatus">Low</div>
+            </div>
+          </div>
+
+          <!-- Key Factors List (Screen 13) -->
+          <div class="travel-factors-card">
+            <h4 class="factors-title">Key Factors</h4>
+            <div class="factors-list">
+              <div class="factor-row">
+                <span class="factor-check-icon">✓</span>
+                <span>No heavy rain expected</span>
+              </div>
+              <div class="factor-row">
+                <span class="factor-check-icon">✓</span>
+                <span>Good visibility</span>
+              </div>
+              <div class="factor-row">
+                <span class="factor-check-icon">✓</span>
+                <span>Normal wind conditions</span>
+              </div>
+              <div class="factor-row">
+                <span class="factor-check-icon">✓</span>
+                <span>Low flood risk</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Button: View Detailed Forecast (Screen 13) -->
+          <button class="travel-forecast-btn" id="travelForecastBtn">
+            View Detailed Forecast
+          </button>
+
+          <div class="viewport-bottom-spacer"></div>
+        </div>
+      </section>
+
+      <!-- =============================================================== -->
+      <!-- TAB 7: SETTINGS (SCREEN 14)                                     -->
+      <!-- =============================================================== -->
+      <section class="tab-screen" id="tab-settings">
+        <div class="subpage-scroll-container">
+          <div class="subpage-header">
+            <button class="subpage-back-btn" data-back-to-home aria-label="Back">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h2 class="subpage-title">Settings</h2>
+            <div style="width:24px"></div>
+          </div>
+
+          <!-- Settings Items List (Matching Screen 14) -->
+          <div class="settings-list-group">
+            
+            <!-- Profile -->
+            <button class="settings-nav-item" data-action="tab-profile">
+              <div class="sni-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="sni-body">
+                <b>Profile</b>
+                <small>Manage your account</small>
+              </div>
+              <svg class="sni-chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+
+            <!-- Location -->
+            <button class="settings-nav-item" data-sheet="sheet-city-picker">
+              <div class="sni-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <div class="sni-body">
+                <b>Location</b>
+                <small id="settingsCurrentLoc">Hyderabad, Telangana</small>
+              </div>
+              <svg class="sni-chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+
+            <!-- Units -->
+            <button class="settings-nav-item" id="settingsUnitToggleBtn">
+              <div class="sni-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+              </div>
+              <div class="sni-body">
+                <b>Units</b>
+                <small id="settingsUnitDisplay">Celsius, km/h</small>
+              </div>
+              <svg class="sni-chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+
+            <!-- Language -->
+            <button class="settings-nav-item" id="settingsLangBtn">
+              <div class="sni-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              </div>
+              <div class="sni-body">
+                <b>Language</b>
+                <small id="settingsLangDisplay">English</small>
+              </div>
+              <svg class="sni-chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+
+            <!-- Notifications -->
+            <button class="settings-nav-item" id="settingsNotificationsBtn">
+              <div class="sni-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              </div>
+              <div class="sni-body">
+                <b>Notifications</b>
+                <small>Weather alerts, updates</small>
+              </div>
+              <svg class="sni-chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+
+            <!-- Data & Storage -->
+            <button class="settings-nav-item" id="settingsDataBtn">
+              <div class="sni-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              </div>
+              <div class="sni-body">
+                <b>Data &amp; Storage</b>
+                <small>Manage offline data</small>
+              </div>
+              <svg class="sni-chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+
+            <!-- Appearance -->
+            <div class="settings-nav-item">
+              <div class="sni-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+              </div>
+              <div class="sni-body">
+                <b>Appearance</b>
+                <small>AMOLED Dark Mode (Active)</small>
+              </div>
+              <span class="active-tag-emerald">AMOLED</span>
+            </div>
+
+            <!-- Help & Support -->
+            <button class="settings-nav-item" id="settingsHelpBtn">
+              <div class="sni-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <div class="sni-body">
+                <b>Help &amp; Support</b>
+                <small>Documentation &amp; Helpline</small>
+              </div>
+              <svg class="sni-chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+
+            <!-- About WeatherGPT -->
+            <button class="settings-nav-item" data-action="tab-about">
+              <div class="sni-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              </div>
+              <div class="sni-body">
+                <b>About WeatherGPT</b>
+                <small>v2.5.0 Flagship Platform</small>
+              </div>
+              <svg class="sni-chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+
+          </div>
+
+          <div class="viewport-bottom-spacer"></div>
+        </div>
+      </section>
+
+      <!-- =============================================================== -->
+      <!-- TAB 8: PROFILE SCREEN                                           -->
+      <!-- =============================================================== -->
+      <section class="tab-screen" id="tab-profile">
+        <div class="subpage-scroll-container">
+          <div class="subpage-header">
+            <button class="subpage-back-btn" data-back-to-home aria-label="Back">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h2 class="subpage-title">Profile</h2>
+            <div style="width:24px"></div>
+          </div>
+
+          <!-- User Avatar & Halo -->
+          <div class="profile-hero-center">
+            <div class="user-avatar-halo">
+              <div class="user-avatar-inner">
+                <svg viewBox="0 0 24 24" width="40" height="40" fill="currentColor">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+              </div>
+            </div>
+            <h3 class="profile-user-name" id="profileUserName">Raju R</h3>
+            <p class="profile-user-email" id="profileUserEmail">user@weathergpt.gov.in</p>
+            <span class="profile-badge-pill">🇮🇳 SIH26068 • Kisan Profile</span>
+          </div>
+
+          <!-- Profile Details Cards -->
+          <div class="profile-card">
+            <div class="pc-row">
+              <span class="pc-label">Operational Sector</span>
+              <b class="pc-value text-accent-green" id="profileSectorText">Farmer (Kisan)</b>
+            </div>
+            <div class="pc-row">
+              <span class="pc-label">Default Region</span>
+              <b class="pc-value" id="profileRegionText">Hyderabad, Telangana</b>
+            </div>
+            <div class="pc-row">
+              <span class="pc-label">Regional Language</span>
+              <b class="pc-value" id="profileLangText">English (Global)</b>
+            </div>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div class="profile-actions-stack">
+            <button class="profile-action-btn" id="openSetupGateFromProfileBtn">
+              <span>🌾</span> Switch Operational Profile
+            </button>
+            <button class="profile-action-btn" id="replayOnboardingBtn">
+              <span>✨</span> Replay Startup Onboarding
+            </button>
+            <button class="profile-action-btn logout-danger" id="logoutBtn">
+              <span>🚪</span> Sign Out
+            </button>
+          </div>
+
+          <div class="viewport-bottom-spacer"></div>
+        </div>
+      </section>
+
+      <!-- =============================================================== -->
+      <!-- TAB 9: ABOUT SCREEN (Screen 15)                                 -->
+      <!-- =============================================================== -->
+      <section class="tab-screen" id="tab-about">
+        <div class="subpage-scroll-container">
+          <div class="subpage-header">
+            <button class="subpage-back-btn" data-back-to-home aria-label="Back">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h2 class="subpage-title">About WeatherGPT</h2>
+            <div style="width:24px"></div>
+          </div>
+
+          <div class="about-hero-center">
+            <div class="about-logo-orb"></div>
+            <h3 class="about-app-name">Weather<span class="text-accent-green">GPT</span></h3>
+            <p class="about-app-badge">Neural Decision Platform • SIH26068</p>
+            <p class="about-app-desc">
+              AI-powered weather intelligence for forecasts, alerts, agriculture, travel and climate insights.
+            </p>
+          </div>
+
+          <div class="about-info-card">
+            <div class="aic-row">
+              <span>Version</span>
+              <b>v2.5.0 Flagship</b>
+            </div>
+            <div class="aic-row">
+              <span>Meteorological Data</span>
+              <b>IMD, NOAA GFS, ECMWF IFS, DWD</b>
+            </div>
+            <div class="aic-row">
+              <span>Radar Coverage</span>
+              <b>RainViewer Global Doppler GIS</b>
+            </div>
+            <div class="aic-row">
+              <span>Platform</span>
+              <b>Native Android AMOLED UI</b>
+            </div>
+          </div>
+
+          <div class="about-links-stack">
+            <a href="#" class="about-link-pill" onclick="alert('WeatherGPT follows strict end-to-end data privacy.'); return false;">Privacy Policy</a>
+            <a href="#" class="about-link-pill" onclick="alert('WeatherGPT Terms of Service • SIH26068'); return false;">Terms of Service</a>
+            <a href="tel:112" class="about-link-pill text-accent-red">National Emergency Helpline (112)</a>
+          </div>
+
+          <div class="viewport-bottom-spacer"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- =============================================================== -->
+    <!-- 4. FLOATING MODERN ANDROID BOTTOM NAVIGATION (5 TABS)            -->
+    <!-- =============================================================== -->
+    <nav class="android-bottom-nav" id="bottomNav">
+      <div class="nav-pill-container">
+        
+        <!-- Tab 1: Home -->
+        <button class="nav-tab-btn active" data-tab="tab-home" aria-label="Home">
+          <div class="tab-icon-wrap">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>
+          </div>
+          <span class="tab-label">Home</span>
+        </button>
+
+        <!-- Tab 2: Map / Radar -->
+        <button class="nav-tab-btn" data-tab="tab-radar" aria-label="Map">
+          <div class="tab-icon-wrap">
+            <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+              <path d="M2 12h20"/>
+            </svg>
+          </div>
+          <span class="tab-label">Map</span>
+        </button>
+
+        <!-- Tab 3: Center Glowing Orb AI Assistant Button (Matching Screen 7) -->
+        <button class="nav-tab-btn center-orb-btn" data-tab="tab-ai" aria-label="WeatherGPT Assistant">
+          <div class="nav-center-orb"></div>
+        </button>
+
+        <!-- Tab 4: Alerts -->
+        <button class="nav-tab-btn" data-tab="tab-alerts" aria-label="Alerts">
+          <div class="tab-icon-wrap">
+            <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+          </div>
+          <span class="tab-label">Alerts</span>
+        </button>
+
+        <!-- Tab 5: Profile -->
+        <button class="nav-tab-btn" data-tab="tab-profile" aria-label="Profile">
+          <div class="tab-icon-wrap">
+            <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+          <span class="tab-label">Profile</span>
+        </button>
+
+      </div>
+    </nav>
+
+    <!-- 5. ANDROID GESTURE HOME PILL -->
+    <div class="android-gesture-bar">
+      <div class="gesture-pill"></div>
+    </div>
+
+  </div> <!-- /mainAppShell -->
+
+  <!-- ================================================================= -->
+  <!-- 6. OPERATIONAL PROFILE & LOCATION SETUP GATE MODAL                -->
+  <!-- ================================================================= -->
+  <div class="sih-setup-gate hidden" id="sihSetupGate">
+    <div class="setup-mobile-view">
       <div class="setup-header">
         <div class="setup-badge-row">
-          <span class="sih-pill-badge">🇮🇳 SIH26068 • OPERATIONAL SETUP</span>
+          <span class="sih-pill-badge">🇮🇳 SIH26068 • OPERATIONAL PROFILE</span>
           <button class="setup-close-btn" id="setupCloseBtn" title="Close Setup" aria-label="Close Setup">&times;</button>
         </div>
-        <h2 class="setup-title">Select Operational Profile</h2>
+        <h2 class="setup-title">Calibrate Intelligence</h2>
         <p class="setup-subtitle">
-          Calibrate real-time atmospheric models and decision rules for your sector.
+          Tailor atmospheric models and decision rules for your sector.
         </p>
       </div>
 
-      <!-- Section 1: Choose Stakeholder Persona / Role -->
       <div class="setup-section">
         <div class="setup-section-label">
           <span>1. OPERATIONAL SECTOR</span>
@@ -46,56 +1598,47 @@
         </div>
 
         <div class="setup-role-grid" id="setupRoleGrid">
-          
           <div class="setup-role-card active" data-role="farmer">
-            <div class="role-icon-box">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a9 9 0 0 1 9 9v1a9 9 0 0 1-9 9 9 9 0 0 1-9-9v-1a9 9 0 0 1 9-9z"/><path d="M12 2v20"/><path d="M12 12c-3-2-5-1-6 2"/><path d="M12 8c3-2 5-1 6 2"/></svg>
-            </div>
+            <div class="role-icon-box">🌾</div>
             <div class="role-card-info">
               <div class="role-card-name-row">
                 <span class="role-card-name">Farmer (Kisan)</span>
                 <span class="role-badge">Agromet</span>
               </div>
-              <div class="role-card-desc">Foliar spray windows, soil moisture &amp; thermal stress</div>
+              <div class="role-card-desc">Foliar spray windows, soil moisture &amp; crop stress</div>
             </div>
             <div class="role-radio-check"></div>
           </div>
 
           <div class="setup-role-card" data-role="pilot">
-            <div class="role-icon-box">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>
-            </div>
+            <div class="role-icon-box">✈️</div>
             <div class="role-card-info">
               <div class="role-card-name-row">
                 <span class="role-card-name">Aviator / Drone Pilot</span>
                 <span class="role-badge">Aviation</span>
               </div>
-              <div class="role-card-desc">METAR/TAF ceiling, crosswind vectors &amp; VFR clearance</div>
+              <div class="role-card-desc">METAR/TAF ceiling, crosswind &amp; VFR clearance</div>
             </div>
             <div class="role-radio-check"></div>
           </div>
 
           <div class="setup-role-card" data-role="official">
-            <div class="role-icon-box">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </div>
+            <div class="role-icon-box">🏛️</div>
             <div class="role-card-info">
               <div class="role-card-name-row">
                 <span class="role-card-name">Disaster Management</span>
-                <span class="role-badge">NDMA / SDMA</span>
+                <span class="role-badge">NDMA</span>
               </div>
-              <div class="role-card-desc">CAP alerts, 4-stage color alerts &amp; flood evacuation</div>
+              <div class="role-card-desc">CAP alerts, 4-stage color alerts &amp; evacuation</div>
             </div>
             <div class="role-radio-check"></div>
           </div>
 
           <div class="setup-role-card" data-role="traveller">
-            <div class="role-icon-box">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-            </div>
+            <div class="role-icon-box">🚗</div>
             <div class="role-card-info">
               <div class="role-card-name-row">
-                <span class="role-card-name">Highway Fleet &amp; Traveler</span>
+                <span class="role-card-name">Highway Traveler</span>
                 <span class="role-badge">Logistics</span>
               </div>
               <div class="role-card-desc">Road hazards, hydroplaning risk &amp; fog visibility</div>
@@ -104,9 +1647,7 @@
           </div>
 
           <div class="setup-role-card" data-role="general">
-            <div class="role-icon-box">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-            </div>
+            <div class="role-icon-box">🏙️</div>
             <div class="role-card-info">
               <div class="role-card-name-row">
                 <span class="role-card-name">General Citizen</span>
@@ -116,11 +1657,9 @@
             </div>
             <div class="role-radio-check"></div>
           </div>
-
         </div>
       </div>
 
-      <!-- Section 2: Choose Monitoring Location -->
       <div class="setup-section">
         <div class="setup-section-label">
           <span>2. MONITORING REGION</span>
@@ -134,7 +1673,6 @@
           </button>
         </div>
 
-        <!-- Quick Hub Chips -->
         <div class="setup-city-chips" id="setupCityChips">
           <button class="city-btn active" data-city="Hyderabad" data-lat="17.3850" data-lon="78.4867">Hyderabad</button>
           <button class="city-btn" data-city="New Delhi" data-lat="28.6139" data-lon="77.2090">Delhi</button>
@@ -142,22 +1680,16 @@
           <button class="city-btn" data-city="Bengaluru" data-lat="12.9716" data-lon="77.5946">Bengaluru</button>
           <button class="city-btn" data-city="Chennai" data-lat="13.0827" data-lon="80.2707">Chennai</button>
           <button class="city-btn" data-city="Kolkata" data-lat="22.5726" data-lon="88.3639">Kolkata</button>
-          <button class="city-btn" data-city="Visakhapatnam" data-lat="17.6868" data-lon="83.2185">Vizag</button>
-          <button class="city-btn" data-city="Pune" data-lat="18.5204" data-lon="73.8567">Pune</button>
-          <button class="city-btn" data-city="Ahmedabad" data-lat="23.0225" data-lon="72.5714">Ahmedabad</button>
-          <button class="city-btn" data-city="Jaipur" data-lat="26.9124" data-lon="75.7873">Jaipur</button>
-          <button class="city-btn" data-city="Chandigarh" data-lat="30.7333" data-lon="76.7794">Chandigarh</button>
         </div>
       </div>
 
-      <!-- Section 3: Language & Units -->
       <div class="setup-section-row">
         <div class="setup-col">
           <label class="setup-mini-label">LANGUAGE</label>
           <select id="setupLangSelect" class="setup-select">
             <option value="en">English (Global)</option>
-            <option value="te">తెలుగు (Telugu)</option>
             <option value="hi">हिन्दी (Hindi)</option>
+            <option value="te">తెలుగు (Telugu)</option>
             <option value="mr">मराठी (Marathi)</option>
             <option value="kn">ಕನ್ನಡ (Kannada)</option>
             <option value="ta">தமிழ் (Tamil)</option>
@@ -173,714 +1705,19 @@
         </div>
       </div>
 
-      <!-- Launch Action Button -->
       <button class="setup-launch-btn" id="setupLaunchBtn">
-        <span>Launch Weather Intelligence</span>
+        <span>Apply Intelligence Profile</span>
         <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </button>
-
     </div>
   </div>
 
-  <!-- 0. ANDROID SYSTEM STATUS BAR -->
-  <div class="android-status-bar" id="androidStatusBar">
-    <div class="status-time" id="statusClock">11:16</div>
-    <div class="status-notch-spacer"></div>
-    <div class="status-icons">
-      <span class="status-icon" title="VoNR Active">Vo<br>NR</span>
-      <span class="status-icon">5G<sup>+</sup></span>
-      <svg class="status-svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-        <path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/>
-      </svg>
-      <div class="battery-pill">
-        <div class="battery-fill"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 1. ANDROID TOP APP BAR -->
-  <header class="android-top-app-bar" id="topAppBar">
-    <button class="icon-touch-btn" id="drawerOpenBtn" aria-label="Open Navigation Drawer">
-      <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none">
-        <line x1="4" y1="7" x2="20" y2="7"/>
-        <line x1="4" y1="12" x2="20" y2="12"/>
-        <line x1="4" y1="17" x2="20" y2="17"/>
-      </svg>
-    </button>
-
-    <div class="top-app-title-group" id="topAppTitleGroup">
-      <div class="top-app-sub">Speaking to</div>
-      <div class="top-app-main-title">
-        <span>WeatherGPT</span>
-        <span class="pulse-online-badge">● Live</span>
-      </div>
-    </div>
-
-    <div class="top-app-actions">
-      <!-- Quick Role & City Switcher Pill -->
-      <button class="role-selector-pill" id="openSetupGateBtn" title="Switch Stakeholder Profile & Region">
-        <span id="topRoleIcon">🌾</span>
-        <span id="topRoleText">Farmer</span> • <b id="topCityText">Hyd</b> ▾
-      </button>
-
-      <button class="icon-touch-btn" id="topGpsBtn" title="Detect GPS Location" aria-label="Current Location">
-        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none">
-          <circle cx="12" cy="12" r="8"/>
-          <line x1="12" y1="2" x2="12" y2="6"/>
-          <line x1="12" y1="18" x2="12" y2="22"/>
-          <line x1="2" y1="12" x2="6" y2="12"/>
-          <line x1="18" y1="12" x2="22" y2="12"/>
-        </svg>
-      </button>
-
-      <button class="icon-touch-btn" id="topHistoryBtn" title="Chat History & Notes" aria-label="Session Log">
-        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/>
-          <line x1="16" y1="13" x2="8" y2="13"/>
-          <line x1="16" y1="17" x2="8" y2="17"/>
-          <polyline points="10 9 9 9 8 9"/>
-        </svg>
-      </button>
-    </div>
-  </header>
-
-  <!-- 2. NATIVE ANDROID DRAWER BACKDROP & MENU -->
-  <div class="drawer-backdrop" id="androidDrawerBackdrop"></div>
-  <aside class="android-drawer" id="androidDrawer" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="drawer-header">
-      <div class="drawer-branding">
-        <div class="drawer-logo-orb"></div>
-        <div>
-          <div class="drawer-brand-name">WeatherGPT</div>
-          <div class="drawer-brand-sub">Neural Decision Platform • SIH26068</div>
-        </div>
-      </div>
-      <button class="drawer-close-touch" id="drawerCloseBtn" aria-label="Close Drawer">&times;</button>
-    </div>
-
-    <!-- Quick Location Search inside Drawer -->
-    <div class="drawer-search-box">
-      <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
-        <circle cx="11" cy="11" r="8"/>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
-      <input type="text" id="drawerSearchInput" placeholder="Search city, district or village..." autocomplete="off">
-      <button id="drawerSearchGoBtn" aria-label="Search" title="Search Location">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </button>
-    </div>
-
-    <!-- Vernacular Language Quick Switcher -->
-    <div class="drawer-section-label">REGIONAL LANGUAGE / భాష</div>
-    <div class="drawer-lang-grid">
-      <button class="lang-chip active" data-lang="en">English</button>
-      <button class="lang-chip" data-lang="te">తెలుగు</button>
-      <button class="lang-chip" data-lang="hi">हिन्दी</button>
-      <button class="lang-chip" data-lang="mr">मराठी</button>
-      <button class="lang-chip" data-lang="kn">ಕನ್ನಡ</button>
-      <button class="lang-chip" data-lang="ta">தமிழ்</button>
-    </div>
-
-    <!-- Deep-Dive Intelligence Modules -->
-    <div class="drawer-section-label">INTELLIGENCE MODULES</div>
-    <nav class="drawer-nav-list">
-      <button class="drawer-item" data-action="tab-home">
-        <div class="d-ico-box">
-          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-          </svg>
-        </div>
-        <div class="d-txt">
-          <b>WeatherGPT Assistant</b>
-          <small>Conversational forecasts, voice queries & early warning</small>
-        </div>
-        <svg class="d-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-
-      <button class="drawer-item" data-action="tab-radar">
-        <div class="d-ico-box">
-          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
-            <path d="M2 12h20"/>
-          </svg>
-        </div>
-        <div class="d-txt">
-          <b>Live Doppler Radar & GIS</b>
-          <small>Interactive RainViewer satellite reflectivity</small>
-        </div>
-        <svg class="d-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-
-      <button class="drawer-item" data-sheet="sheet-nwp">
-        <div class="d-ico-box">
-          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-          </svg>
-        </div>
-        <div class="d-txt">
-          <b>NWP Multi-Model Consensus</b>
-          <small>NOAA GFS, ECMWF IFS, DWD ICON, Mesoscale WRF</small>
-        </div>
-        <svg class="d-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-
-      <button class="drawer-item" data-sheet="sheet-aviation">
-        <div class="d-ico-box">
-          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z"/>
-          </svg>
-        </div>
-        <div class="d-txt">
-          <b>Aviation Aerodrome Briefing</b>
-          <small>Synthetic METAR/TAF, runway crosswind & VFR/IFR</small>
-        </div>
-        <svg class="d-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-
-      <button class="drawer-item" data-sheet="sheet-climate">
-        <div class="d-ico-box">
-          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="20" x2="18" y2="10"/>
-            <line x1="12" y1="20" x2="12" y2="4"/>
-            <line x1="6" y1="20" x2="6" y2="14"/>
-          </svg>
-        </div>
-        <div class="d-txt">
-          <b>Decadal Climate Trends (1991–2025)</b>
-          <small>Thermal anomaly, monsoon LPA deviation & CSV</small>
-        </div>
-        <svg class="d-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-
-      <button class="drawer-item" data-sheet="sheet-travel">
-        <div class="d-ico-box">
-          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="1" y="3" width="15" height="13"/>
-            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
-            <circle cx="5.5" cy="18.5" r="2.5"/>
-            <circle cx="18.5" cy="18.5" r="2.5"/>
-          </svg>
-        </div>
-        <div class="d-txt">
-          <b>Smart Highway Travel Planner</b>
-          <small>Route precipitation, fog & road hazard intelligence</small>
-        </div>
-        <svg class="d-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-
-      <button class="drawer-item" data-sheet="sheet-settings">
-        <div class="d-ico-box">
-          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-          </svg>
-        </div>
-        <div class="d-txt">
-          <b>Settings & SQLite Database</b>
-          <small>Units, voice synthesis & WeatherGPT AI keys</small>
-        </div>
-        <svg class="d-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-    </nav>
-
-    <!-- Emergency Disaster Helplines -->
-    <div class="drawer-emergency-banner">
-      <div class="em-title">
-        <span class="pulse-live-red"></span>
-        NATIONAL DISASTER HELPLINES
-      </div>
-      <div class="em-chips">
-        <a href="tel:1070" class="em-pill"><span>📞</span> Relief: <b>1070</b></a>
-        <a href="tel:112" class="em-pill"><span>🚨</span> All-in-One: <b>112</b></a>
-        <a href="tel:1078" class="em-pill"><span>🛡️</span> NDMA: <b>1078</b></a>
-      </div>
-    </div>
-  </aside>
-
-  <!-- 3. MAIN APPLICATION VIEWPORT (3 PRIMARY TABS) -->
-  <main class="android-viewport" id="mainViewport">
-
-    <!-- ================================================================= -->
-    <!-- TAB 1: HOME (WeatherGPT AI + Real-time Weather Glance)            -->
-    <!-- Matching Screenshot 1: Living Orb, Quick Actions, Conversational  -->
-    <!-- ================================================================= -->
-    <section class="tab-screen active" id="tab-home">
-      <div class="home-scroll-container" id="homeScrollContainer">
-        
-        <!-- Atmospheric Ambient Glow Canvas -->
-        <div class="ambient-glow-aura"></div>
-
-        <!-- Live Meteorological Context Glance Pill -->
-        <div class="live-glance-strip" id="homeGlancePill">
-          <div class="glance-location">
-            <span class="glance-pin">📍</span>
-            <b id="glancePlace">Hyderabad</b>
-          </div>
-          <div class="glance-metrics">
-            <span class="glance-temp" id="glanceTemp">28°C</span>
-            <span class="glance-sep">•</span>
-            <span class="glance-cond" id="glanceCondition">Partly Cloudy</span>
-            <span class="glance-sep">•</span>
-            <span class="glance-rain" id="glanceRain">🌧️ 15%</span>
-          </div>
-          <button class="glance-expand-btn" id="glanceExpandBtn" aria-label="Open Full Telemetry">
-            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M6 9l6 6 6-6"/></svg>
-          </button>
-        </div>
-
-        <!-- Hero AI Section with Living Glowing Gradient Orb -->
-        <div class="ai-hero-center">
-          <div class="ai-orb-wrapper" id="aiOrbWrapper">
-            <div class="ai-orb-core"></div>
-            <div class="ai-orb-ring ring-1"></div>
-            <div class="ai-orb-ring ring-2"></div>
-            <div class="ai-orb-particle p-1"></div>
-            <div class="ai-orb-particle p-2"></div>
-            <div class="ai-orb-particle p-3"></div>
-          </div>
-
-          <h1 class="ai-hero-title">How can I help you today?</h1>
-          <p class="ai-hero-subtitle">
-            Ask about hyper-local forecasts, farming schedules, or live radars.
-          </p>
-        </div>
-
-        <!-- Live Interactive GIS Radar & Hazard Map Card -->
-        <div class="home-radar-card" id="homeRadarCard">
-          <div class="hrc-header">
-            <div class="hrc-title-cluster">
-              <span class="pulse-live-red"></span>
-              <b>Live GIS Doppler Radar &amp; Hazards</b>
-              <span class="hrc-city-tag" id="hrcCityTag">Hyderabad</span>
-            </div>
-            <button class="hrc-expand-btn" id="hrcExpandBtn" title="Open Full-Screen GIS Radar Console">
-              <span>Full Map</span> ↗
-            </button>
-          </div>
-          <div class="hrc-map-frame">
-            <div id="homeMiniLeafletMap" class="home-mini-map"></div>
-            <div class="hrc-map-overlay-chips">
-              <button class="hrc-chip active" data-layer="radar">🌧️ Rain Radar</button>
-              <button class="hrc-chip" data-layer="satellite">🛰️ Satellite</button>
-              <button class="hrc-chip" data-layer="hazard">⚠️ Hazards</button>
-            </div>
-            <div class="hrc-live-badge">DOPPLER LIVE • 250KM BASIN</div>
-          </div>
-        </div>
-
-        <!-- Quick Action Suggestion Cards (Matching User Screenshot 1) -->
-        <div class="quick-action-cards" id="quickActionCards">
-          <button class="action-card-row" data-prompt="Provide agricultural crop irrigation, spraying window, and heat stress advisory for my location today." data-persona="farmer">
-            <div class="ac-icon-box purple">
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            </div>
-            <div class="ac-text">Crop &amp; Spray Advice</div>
-            <div class="ac-chevron">
-              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M9 18l6-6-6-6"/></svg>
-            </div>
-          </button>
-
-          <button class="action-card-row" data-prompt="What is the detailed rain probability and cloud timeline for the next 24 hours in my location?" data-persona="general">
-            <div class="ac-icon-box blue">
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/><line x1="8" y1="19" x2="8" y2="21"/><line x1="8" y1="13" x2="8" y2="15"/><line x1="16" y1="19" x2="16" y2="21"/><line x1="16" y1="13" x2="16" y2="15"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="12" y1="15" x2="12" y2="17"/></svg>
-            </div>
-            <div class="ac-text">Rain Timeline</div>
-            <div class="ac-chevron">
-              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M9 18l6-6-6-6"/></svg>
-            </div>
-          </button>
-
-          <button class="action-card-row" data-prompt="Analyze road travel hazards, highway visibility, and flash flood risk for my journey." data-persona="traveller">
-            <div class="ac-icon-box indigo">
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            </div>
-            <div class="ac-text">Travel Safety Risk</div>
-            <div class="ac-chevron">
-              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M9 18l6-6-6-6"/></svg>
-            </div>
-          </button>
-
-          <button class="action-card-row" data-prompt="What are the active IMD disaster alerts, color protocol stage (Green/Yellow/Orange/Red), and safety precautions for this region?">
-            <div class="ac-icon-box magenta">
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-            </div>
-            <div class="ac-text">Severe Alerts Status</div>
-            <div class="ac-chevron">
-              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M9 18l6-6-6-6"/></svg>
-            </div>
-          </button>
-
-          <!-- Extra SIH Advanced Shortcuts -->
-          <div class="quick-action-extra-row">
-            <button class="mini-shortcut-chip" data-sheet="sheet-nwp">🌀 Compare NWP Models</button>
-            <button class="mini-shortcut-chip" data-sheet="sheet-aviation">✈️ Aviation METAR</button>
-            <button class="mini-shortcut-chip" data-sheet="sheet-climate">📈 30-Yr Climate</button>
-          </div>
-        </div>
-
-        <!-- Conversational Message Feed -->
-        <div class="conversation-feed" id="conversationFeed">
-          <div class="chat-bubble bot initial">
-            <div class="bubble-avatar-glow">🌦️</div>
-            <div class="bubble-content">
-              <p><strong>WeatherGPT Neural Engine active.</strong></p>
-              <p>I have ingested real-time numerical predictions and radar reflectivity for <b id="chatActiveCity">Hyderabad</b>. Tap a card above or ask me any question in English or Indian regional languages.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Audio Player Action if speech synthesized -->
-        <div class="audio-replay-bar" id="audioReplayBar" style="display:none">
-          <button class="audio-replay-btn" id="listenLastBtn">
-            <span>🔊</span> Listen Audio Response
-          </button>
-        </div>
-
-        <!-- Spacer for floating input bar and bottom navigation -->
-        <div class="viewport-bottom-spacer"></div>
-      </div>
-
-      <!-- Floating Android Message Input Bar (Matching Screenshot 1) -->
-      <div class="android-message-bar-wrap">
-        <div class="android-message-bar">
-          <button class="msg-btn-icon plus" id="msgAttachBtn" title="More Quick Actions" aria-label="Attachments">
-            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          
-          <input type="text" id="chatMessageInput" class="msg-input" placeholder="Message..." autocomplete="off">
-          
-          <button class="msg-btn-icon mic" id="msgVoiceBtn" title="Voice Input" aria-label="Voice Query">
-            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-          </button>
-
-          <button class="msg-send-round" id="msgSendBtn" aria-label="Send Message">
-            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================================================================= -->
-    <!-- TAB 2: RADAR & GIS LIVE MAP                                      -->
-    <!-- Matching Screenshot 3: Location pill, Hazard filters, Sliding Card-->
-    <!-- ================================================================= -->
-    <section class="tab-screen" id="tab-radar">
-      <div class="radar-container">
-        
-        <!-- Radar Floating Header (Back button, Location pill, GPS locate) -->
-        <div class="radar-top-controls">
-          <button class="radar-back-btn" id="radarBackBtn" aria-label="Back to Home">
-            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M15 18l-6-6 6-6"/></svg>
-          </button>
-
-          <div class="radar-loc-badge" id="radarLocationBadge">
-            <span class="pulse-green"></span>
-            <span id="radarPlaceName">Hyderabad</span>
-            <span class="radar-temp-val" id="radarTempHead">28°C</span>
-          </div>
-
-          <button class="radar-action-icon" id="radarCenterGpsBtn" title="Center Current Position" aria-label="Locate">
-            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
-          </button>
-        </div>
-
-        <!-- Horizontally Scrollable Hazard Filter Chips (Matching Screenshot 3) -->
-        <div class="radar-hazard-filters">
-          <button class="hazard-chip active" data-filter="all">All Hazards</button>
-          <button class="hazard-chip" data-filter="rain">🌊 Flood &amp; Rain</button>
-          <button class="hazard-chip" data-filter="storm">⚡ Severe Storms</button>
-          <button class="hazard-chip" data-filter="heat">🌡️ Heatwave</button>
-          <button class="hazard-chip" data-filter="fog">🌫️ Fog &amp; Visibility</button>
-        </div>
-
-        <!-- Floating Map Layer Controls on Right -->
-        <div class="radar-side-toolbox">
-          <button class="toolbox-btn" id="mapLayersBtn" title="Toggle Layers" aria-label="Layers">
-            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-          </button>
-          
-          <!-- Layer Selection Popup -->
-          <div class="radar-layer-panel" id="radarLayerPanel" style="display:none">
-            <div class="rlp-title">Base Map Style</div>
-            <button class="rlp-btn active" data-basemap="dark">🌙 Dark Matter</button>
-            <button class="rlp-btn" data-basemap="osm">🗺️ OpenStreetMap</button>
-            <button class="rlp-btn" data-basemap="satellite">🛰️ Satellite (Esri)</button>
-            <button class="rlp-btn" data-basemap="topo">⛰️ Topographic</button>
-            <div class="rlp-title" style="margin-top:10px">Overlays</div>
-            <label class="rlp-check"><input type="checkbox" id="overlayRadarCheck" checked> Live Rain Radar</label>
-            <label class="rlp-check"><input type="checkbox" id="overlayPinsCheck" checked> Metro City Pins</label>
-          </div>
-
-          <button class="toolbox-btn" id="mapZoomInBtn" title="Zoom In" aria-label="Zoom In">+</button>
-          <button class="toolbox-btn" id="mapZoomOutBtn" title="Zoom Out" aria-label="Zoom Out">−</button>
-          <button class="toolbox-btn" id="mapIndiaOverviewBtn" title="India National Overview" aria-label="National View">🇮🇳</button>
-        </div>
-
-        <!-- Leaflet Map Container (Zero watermark, dark high-performance tiles) -->
-        <div id="radarLeafletMap" class="full-viewport-map"></div>
-
-        <!-- Floating Radar Live Player Bar (Matching Screenshot 3) -->
-        <div class="radar-player-bar" id="radarPlayerBar">
-          <button class="radar-play-round" id="radarPlayPauseBtn" aria-label="Play Radar Time Lapse">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>
-          </button>
-          <div class="radar-player-label">
-            <span>Rain Radar: <b>LIVE</b></span>
-            <small id="radarTimestamp">Reflectivity Frame: Past 10m</small>
-          </div>
-          <span class="doppler-live-tag">LIVE DOPPLER</span>
-        </div>
-
-        <!-- Sliding Bottom Sheet / Current Weather Telemetry Card (Matching Screenshot 3) -->
-        <div class="radar-bottom-card" id="radarSlidingCard">
-          <div class="card-drag-handle"></div>
-
-          <div class="telemetry-head-row">
-            <div class="telemetry-temp-cluster">
-              <span class="telemetry-wmo-ico" id="telemetryIcon">☀️</span>
-              <div>
-                <span class="telemetry-big-temp" id="telemetryTemp">28°C</span>
-                <span class="telemetry-status-pill" id="telemetryConditionBadge">Clear Sky</span>
-              </div>
-            </div>
-            <button class="telemetry-expand-toggle" id="telemetryDetailsBtn">
-              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M6 9l6 6 6-6"/></svg>
-            </button>
-          </div>
-
-          <div class="telemetry-subtext" id="telemetryFeels">
-            Feels like 29°C • Cloud Cover 12%
-          </div>
-
-          <!-- 4 Telemetry Metric Pills (Matching Screenshot 3) -->
-          <div class="telemetry-four-grid">
-            <div class="tele-pill">
-              <div class="tp-top">
-                <span class="tp-ico">💧</span>
-                <b id="tpRainProb">0% prob</b>
-              </div>
-              <small>Precipitation</small>
-            </div>
-
-            <div class="tele-pill">
-              <div class="tp-top">
-                <span class="tp-ico">💨</span>
-                <b id="tpWind">12 km/h (G 18)</b>
-              </div>
-              <small>Wind Speed</small>
-            </div>
-
-            <div class="tele-pill">
-              <div class="tp-top">
-                <span class="tp-ico">💧</span>
-                <b id="tpHumidityUv">65% • UV 4.0</b>
-              </div>
-              <small>Humidity / UV</small>
-            </div>
-
-            <div class="tele-pill">
-              <div class="tp-top">
-                <span class="tp-ico">🧭</span>
-                <b id="tpPressureVis">1013 hPa • 10 km</b>
-              </div>
-              <small>Pressure / Visibility</small>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ================================================================= -->
-    <!-- TAB 3: PROFILE / AI INTELLIGENCE                                 -->
-    <!-- Matching Screenshot 2: Persona switcher, Basins, NDMA Warnings    -->
-    <!-- ================================================================= -->
-    <section class="tab-screen" id="tab-profile">
-      <div class="profile-scroll-container">
-        
-        <!-- Header -->
-        <div class="profile-top-bar">
-          <div class="profile-heading">
-            <span class="sparkle-ico">✨</span>
-            <h2>AI Intelligence</h2>
-          </div>
-          <span class="cloud-synced-pill">
-            <span class="synced-dot"></span> Cloud Synced
-          </span>
-        </div>
-
-        <!-- User Profile Avatar & Halo (Matching Screenshot 2) -->
-        <div class="user-profile-center">
-          <div class="user-avatar-halo">
-            <div class="user-avatar-inner">
-              <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-              </svg>
-            </div>
-          </div>
-          <h3 class="user-name">Guest User</h3>
-          <p class="user-sub">AI Weather Telemetry Profile</p>
-        </div>
-
-        <!-- Active Intelligence Persona Card (Matching Screenshot 2) -->
-        <div class="amoled-card">
-          <div class="card-head-title">Active Intelligence Persona</div>
-          <p class="card-head-desc">Adapts WeatherGPT responses, risk thresholds, and voice tone.</p>
-
-          <div class="persona-three-grid">
-            <button class="persona-chip" data-persona="farmer">
-              <span class="p-ico">🌾</span>
-              <span class="p-label">Farmer</span>
-            </button>
-
-            <button class="persona-chip" data-persona="traveller">
-              <span class="p-ico">✈️</span>
-              <span class="p-label">Traveller</span>
-            </button>
-
-            <button class="persona-chip active" data-persona="general">
-              <span class="p-ico">🔆</span>
-              <span class="p-label">General</span>
-            </button>
-          </div>
-
-          <!-- AI Behavioral Inference Bar -->
-          <div class="inference-bar-row">
-            <div class="inf-label">
-              <span class="inf-icon">⚙️</span>
-              <span>AI Behavioral Inference</span>
-            </div>
-            <span class="inf-pct">95%</span>
-          </div>
-          <div class="inf-progress-track">
-            <div class="inf-progress-fill" style="width: 95%"></div>
-          </div>
-        </div>
-
-        <!-- Saved Locations & Monitored Basins Card (Matching Screenshot 2) -->
-        <div class="amoled-card">
-          <div class="card-head-title">Saved Locations &amp; Monitored Basins</div>
-          <p class="card-head-desc">Locations tracked for convective alerts &amp; agricultural timelines.</p>
-
-          <div class="saved-loc-list" id="savedLocationsList">
-            <div class="loc-item-row" data-lat="28.6139" data-lon="77.2090" data-name="New Delhi">
-              <div class="loc-info">
-                <span class="loc-ico">🏢</span>
-                <div>
-                  <b class="loc-title">New Delhi, India</b>
-                  <small class="loc-coords">28.61° N, 77.20° E</small>
-                </div>
-              </div>
-              <span class="loc-badge primary">Primary</span>
-            </div>
-
-            <div class="loc-item-row" data-lat="12.9716" data-lon="77.5946" data-name="Bengaluru">
-              <div class="loc-info">
-                <span class="loc-ico">🏢</span>
-                <div>
-                  <b class="loc-title">Bengaluru, Karnataka</b>
-                  <small class="loc-coords">12.97° N, 77.59° E</small>
-                </div>
-              </div>
-            </div>
-
-            <div class="loc-item-row" data-lat="17.3850" data-lon="78.4867" data-name="Hyderabad">
-              <div class="loc-info">
-                <span class="loc-ico">🏢</span>
-                <div>
-                  <b class="loc-title">Hyderabad, Telangana</b>
-                  <small class="loc-coords">17.38° N, 78.48° E</small>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <button class="add-loc-btn" id="addLocationBtn">+ Add New Monitored Basin</button>
-        </div>
-
-        <!-- Active NDMA SACHET Warnings Card (Matching Screenshot 2) -->
-        <div class="amoled-card">
-          <div class="card-title-flex">
-            <div>
-              <div class="card-head-title">Active NDMA SACHET Warnings</div>
-              <p class="card-head-desc">Official government CAP telemetry feeds.</p>
-            </div>
-            <button class="view-all-link" id="viewAllAlertsBtn">View All</button>
-          </div>
-
-          <div class="ndma-warning-pill" id="ndmaWarningPill">
-            <span class="w-ico">⚠️</span>
-            <span id="ndmaStatusText">Normal Meteorological Conditions</span>
-          </div>
-
-          <!-- IMD 4-Stage Warning Color Protocol -->
-          <div class="imd-stage-row">
-            <div class="imd-stage-dot green active" title="Green: No Warning">🟢 No Warning</div>
-            <div class="imd-stage-dot yellow" title="Yellow: Watch">🟡 Watch</div>
-            <div class="imd-stage-dot orange" title="Orange: Alert">🟠 Alert</div>
-            <div class="imd-stage-dot red" title="Red: Warning">🔴 Warning</div>
-          </div>
-        </div>
-
-        <!-- Extra Quick Links Card -->
-        <div class="amoled-card">
-          <div class="card-head-title">System &amp; Research Access</div>
-          <div class="system-links-grid">
-            <button class="sys-btn" data-sheet="sheet-nwp">🌀 NWP Consensus</button>
-            <button class="sys-btn" data-sheet="sheet-aviation">✈️ Aviation Aero</button>
-            <button class="sys-btn" data-sheet="sheet-climate">📈 Climate Trends</button>
-            <button class="sys-btn" data-sheet="sheet-settings">⚙️ Preferences</button>
-          </div>
-        </div>
-
-        <div class="viewport-bottom-spacer"></div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- 4. FLOATING AMOLED BOTTOM NAVIGATION (Matching All 3 User Screenshots) -->
-  <nav class="android-bottom-nav" id="bottomNav">
-    <div class="nav-pill-container">
-      
-      <!-- Tab 1: Radar -->
-      <button class="nav-tab-btn" data-tab="tab-radar" aria-label="Radar Map">
-        <div class="tab-icon-wrap">
-          <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>
-        </div>
-        <span class="tab-label">Radar</span>
-      </button>
-
-      <!-- Tab 2: Home / WeatherGPT (Active by Default) -->
-      <button class="nav-tab-btn active" data-tab="tab-home" aria-label="WeatherGPT Home">
-        <div class="tab-icon-wrap active-capsule">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
-          <span class="tab-label">Home</span>
-        </div>
-      </button>
-
-      <!-- Tab 3: Profile / Intelligence -->
-      <button class="nav-tab-btn" data-tab="tab-profile" aria-label="Intelligence Profile">
-        <div class="tab-icon-wrap">
-          <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        </div>
-        <span class="tab-label">Profile</span>
-      </button>
-
-    </div>
-  </nav>
-
-  <!-- 5. ANDROID GESTURE HOME PILL (Matching Android System Chrome in Screenshots) -->
-  <div class="android-gesture-bar">
-    <div class="gesture-pill"></div>
-  </div>
-
-  <!-- 6. NATIVE ANDROID BOTTOM SHEETS (DEEP-DIVE SIH MODULES) -->
-  
-  <!-- Sheet: NWP Multi-Model Consensus -->
+  <!-- ================================================================= -->
+  <!-- 7. NATIVE ANDROID BOTTOM SHEETS (DEEP-DIVE SIH MODULES)           -->
+  <!-- ================================================================= -->
   <div class="sheet-overlay" id="sheetOverlay"></div>
+
+  <!-- Sheet: NWP Multi-Model Consensus -->
   <div class="android-bottom-sheet" id="sheet-nwp">
     <div class="sheet-drag-handle"></div>
     <div class="sheet-header">
@@ -891,10 +1728,10 @@
       <p class="sheet-intro">Ensemble cross-verification: NOAA GFS vs ECMWF IFS vs DWD ICON vs Mesoscale WRF.</p>
 
       <div class="sheet-consensus-card">
-        <div class="sc-score" id="nwpConsensusScore">79%</div>
+        <div class="sc-score" id="nwpConsensusScore">88%</div>
         <div>
           <b id="nwpConsensusLabel">HIGH CONSENSUS</b>
-          <p id="nwpSpread">Model Spread: 1.2°C delta</p>
+          <p id="nwpSpread">Model Spread: 0.8°C delta</p>
         </div>
       </div>
 
@@ -980,7 +1817,7 @@
         </div>
         <div class="av-metric-cell">
           <small>Density Altitude</small>
-          <b id="avDensityAlt">-- ft</b>
+          <b id="avDensityAlt">1,200 ft</b>
         </div>
         <div class="av-metric-cell">
           <small>Turbulence</small>
@@ -1029,11 +1866,11 @@
     </div>
   </div>
 
-  <!-- Sheet: Settings -->
+  <!-- Sheet: Settings & Preferences -->
   <div class="android-bottom-sheet" id="sheet-settings">
     <div class="sheet-drag-handle"></div>
     <div class="sheet-header">
-      <h3>⚙️ Preferences &amp; Keys</h3>
+      <h3>⚙️ Preferences &amp; API Keys</h3>
       <button class="sheet-close" data-close-sheet>&times;</button>
     </div>
     <div class="sheet-body">
@@ -1049,8 +1886,8 @@
         <label>Regional Language</label>
         <select id="langSelect" class="settings-select">
           <option value="en">English</option>
-          <option value="te">తెలుగు (Telugu)</option>
           <option value="hi">हिन्दी (Hindi)</option>
+          <option value="te">తెలుగు (Telugu)</option>
           <option value="mr">मराठी (Marathi)</option>
           <option value="kn">ಕನ್ನಡ (Kannada)</option>
           <option value="ta">தமிழ் (Tamil)</option>
@@ -1073,7 +1910,7 @@
     </div>
   </div>
 
-  <!-- Sheet: Travel Planner -->
+  <!-- Sheet: Highway Travel Planner (Integration) -->
   <div class="android-bottom-sheet" id="sheet-travel">
     <div class="sheet-drag-handle"></div>
     <div class="sheet-header">
@@ -1104,27 +1941,23 @@
     <div class="sheet-header">
       <div>
         <h3 style="margin:0">📍 Switch Location</h3>
-        <small style="color:var(--text-secondary);font-size:11px">Search any Indian city, district or village</small>
+        <small style="color:var(--text-tertiary);font-size:11px">Search any Indian city, district or village</small>
       </div>
       <button class="sheet-close" data-close-sheet>&times;</button>
     </div>
     <div class="sheet-body" style="padding:16px;max-height:70vh;overflow-y:auto">
-      <!-- Search Input Box -->
       <div style="display:flex;gap:8px;margin-bottom:12px">
         <input type="text" id="cityPickerInput" placeholder="Search city or village..." style="flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:12px 14px;color:#fff;font-size:14px;outline:none">
-        <button id="cityPickerSearchBtn" style="background:#10b981;color:#000000;border:none;border-radius:12px;padding:0 18px;font-weight:800;cursor:pointer">Find</button>
+        <button id="cityPickerSearchBtn" style="background:#00DF82;color:#000000;border:none;border-radius:12px;padding:0 18px;font-weight:800;cursor:pointer">Find</button>
       </div>
 
-      <!-- GPS Button -->
-      <button id="cityPickerGpsBtn" style="width:100%;background:rgba(16,185,129,0.12);border:1px solid rgba(52,211,153,0.3);color:#34d399;padding:10px 14px;border-radius:12px;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;margin-bottom:14px">
+      <button id="cityPickerGpsBtn" style="width:100%;background:rgba(0,223,130,0.12);border:1px solid rgba(0,223,130,0.3);color:#00DF82;padding:10px 14px;border-radius:12px;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;margin-bottom:14px">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="7"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg> Detect Current GPS Location
       </button>
 
-      <!-- Search Results Container -->
       <div id="citySearchResults" style="display:none;flex-direction:column;gap:6px;margin-bottom:14px"></div>
 
-      <!-- Popular Indian Cities Quick Switch Grid -->
-      <div style="font-size:11px;font-weight:700;color:var(--text-secondary);letter-spacing:0.8px;margin-bottom:8px">POPULAR HUBS</div>
+      <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);letter-spacing:0.8px;margin-bottom:8px">POPULAR HUBS</div>
       <div class="quick-city-grid" id="quickCityChips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
         <button class="city-chip" data-city="Hyderabad" data-lat="17.3850" data-lon="78.4867">Hyderabad</button>
         <button class="city-chip" data-city="Delhi" data-lat="28.6139" data-lon="77.2090">Delhi</button>
@@ -1137,21 +1970,17 @@
         <button class="city-chip" data-city="Jaipur" data-lat="26.9124" data-lon="75.7873">Jaipur</button>
         <button class="city-chip" data-city="Lucknow" data-lat="26.8467" data-lon="80.9462">Lucknow</button>
         <button class="city-chip" data-city="Visakhapatnam" data-lat="17.6868" data-lon="83.2185">Vizag</button>
-        <button class="city-chip" data-city="Warangal" data-lat="17.9689" data-lon="79.5941">Warangal</button>
-        <button class="city-chip" data-city="Vijayawada" data-lat="16.5062" data-lon="80.6480">Vijayawada</button>
         <button class="city-chip" data-city="Chandigarh" data-lat="30.7333" data-lon="76.7794">Chandigarh</button>
         <button class="city-chip" data-city="Kochi" data-lat="9.9312" data-lon="76.2673">Kochi</button>
-        <button class="city-chip" data-city="Goa" data-lat="15.2993" data-lon="74.1240">Goa</button>
-        <button class="city-chip" data-city="Shimla" data-lat="31.1048" data-lon="77.1734">Shimla</button>
       </div>
     </div>
   </div>
 
-  <!-- Sheet: Full Telemetry / 7-Day Extended (Opened from Glance Pill) -->
+  <!-- Sheet: Full Telemetry / 7-Day & Hourly Timeline -->
   <div class="android-bottom-sheet" id="sheet-telemetry">
     <div class="sheet-drag-handle"></div>
     <div class="sheet-header">
-      <h3>📅 7-Day Forecast &amp; Hourly Timeline</h3>
+      <h3>📅 24-Hour &amp; 7-Day Weather Timeline</h3>
       <button class="sheet-close" data-close-sheet>&times;</button>
     </div>
     <div class="sheet-body">
@@ -1160,7 +1989,7 @@
     </div>
   </div>
 
-</div>
+</div> <!-- /androidShell -->
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="module" src="/js/app.js"></script>

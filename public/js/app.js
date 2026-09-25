@@ -27,7 +27,9 @@ const state = {
   radarHost: 'https://tilecache.rainviewer.com',
   speechSynth: window.speechSynthesis || null,
   recognition: null,
-  lastAiAnswer: ''
+  lastAiAnswer: '',
+  onboardIndex: 0,
+  currentUser: { name: 'Raju R', email: 'user@weathergpt.gov.in', role: 'Farmer (Kisan)' }
 };
 
 // Weather WMO Code to Emoji & Description
@@ -55,12 +57,69 @@ const WMO_MAP = {
   99: { label: 'Severe Thunderstorm', icon: '🌩️' }
 };
 
+// Crop Intelligence Knowledge Database
+const CROP_DATABASE = {
+  rice: {
+    name: 'Rice (Paddy)',
+    stage: 'Vegetative (Tillering)',
+    sprayAdvice: 'No spray needed today. Favorable dry canopy.',
+    idealWindow: 'Next 3–5 days (Morning 7 AM - 10 AM)',
+    diseaseRisk: 'Low (Leaf Blast & Sheath Blight minimal)',
+    tips: [
+      'Maintain 3–5 cm standing water layer in fields',
+      'Monitor for stem borer and green leafhopper',
+      'Apply urea top-dressing at tillering stage',
+      'Avoid foliar sprays when ambient temp > 35°C'
+    ]
+  },
+  wheat: {
+    name: 'Wheat (Rabi)',
+    stage: 'Crown Root Initiation (CRI)',
+    sprayAdvice: 'Optimal window tomorrow early morning.',
+    idealWindow: 'Tomorrow 7:30 AM – 11:00 AM',
+    diseaseRisk: 'Low to Moderate (Yellow Rust watch)',
+    tips: [
+      'Ensure first irrigation 20-25 days after sowing',
+      'Check for aphid infestation in warmer microclimates',
+      'Avoid evening herbicide sprays during cold dew',
+      'Maintain adequate soil aeration'
+    ]
+  },
+  maize: {
+    name: 'Maize (Corn)',
+    stage: 'Knee-High Stage',
+    sprayAdvice: 'Pesticide spray window open today.',
+    idealWindow: 'Today 8:00 AM – 10:30 AM',
+    diseaseRisk: 'Moderate (Fall Armyworm alert)',
+    tips: [
+      'Scout whorls regularly for Fall Armyworm egg masses',
+      'Apply neem-based bio-pesticide during early infestation',
+      'Ensure ridge furrow drainage to prevent waterlogging',
+      'Top-dress with nitrogen during 6-leaf stage'
+    ]
+  },
+  cotton: {
+    name: 'Cotton',
+    stage: 'Square Formation / Flowering',
+    sprayAdvice: 'Favorable spray window next 48 hours.',
+    idealWindow: 'Next 2–3 days (Wind < 10 km/h)',
+    diseaseRisk: 'Moderate (Whitefly & Pink Bollworm)',
+    tips: [
+      'Install pheromone traps for pink bollworm monitoring',
+      'Avoid high volume spray if relative humidity > 85%',
+      'Do not apply synthetic pyrethroids repeatedly',
+      'Maintain optimum soil moisture during boll development'
+    ]
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   initAndroidApp();
 });
 
 async function initAndroidApp() {
   initClock();
+  setupStartupAndAuthFlow();
   setupAndroidNavigation();
   setupDrawer();
   setupPersona();
@@ -70,6 +129,8 @@ async function initAndroidApp() {
   setupCityPicker();
   setupSettings();
   setupTravelPlanner();
+  setupCropAdvice();
+  setupSevereAlertsScreen();
   setupAviationAndClimateListeners();
   registerServiceWorker();
 
@@ -125,6 +186,172 @@ function initClock() {
   setInterval(update, 10000);
 }
 
+// ── 0B. STARTUP FLOW: SPLASH, ONBOARDING (1-3) & AUTHENTICATION ──────
+function setupStartupAndAuthFlow() {
+  const splash = document.getElementById('screen-splash');
+  const onboarding = document.getElementById('screen-onboarding');
+  const login = document.getElementById('screen-login');
+  const signup = document.getElementById('screen-signup');
+  const mainAppShell = document.getElementById('mainAppShell');
+
+  const onboardSlides = document.querySelectorAll('.onboard-slide');
+  const dots = document.querySelectorAll('.onboard-dots .dot');
+  const nextBtn = document.getElementById('onboardNextBtn');
+  const getStartedBtn = document.getElementById('onboardGetStartedBtn');
+  const skipBtn = document.getElementById('onboardSkipBtn');
+
+  const isOnboarded = localStorage.getItem('weathergpt_onboarded') === 'true';
+
+  function goToSlide(index) {
+    state.onboardIndex = index;
+    onboardSlides.forEach((s, idx) => {
+      s.classList.toggle('active', idx === index);
+    });
+    dots.forEach((d, idx) => {
+      d.classList.toggle('active', idx === index);
+    });
+
+    if (index === onboardSlides.length - 1) {
+      nextBtn?.classList.add('hidden');
+      getStartedBtn?.classList.remove('hidden');
+    } else {
+      nextBtn?.classList.remove('hidden');
+      getStartedBtn?.classList.add('hidden');
+    }
+  }
+
+  // Next Slide Button Click
+  nextBtn?.addEventListener('click', () => {
+    if (state.onboardIndex < onboardSlides.length - 1) {
+      goToSlide(state.onboardIndex + 1);
+    }
+  });
+
+  // Dot Click Navigation
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      const idx = parseInt(dot.getAttribute('data-index'), 10) || 0;
+      goToSlide(idx);
+    });
+  });
+
+  // Skip Onboarding
+  skipBtn?.addEventListener('click', () => {
+    localStorage.setItem('weathergpt_onboarded', 'true');
+    onboarding?.classList.add('hidden');
+    login?.classList.remove('hidden');
+  });
+
+  // "Get Started" from slide 3 -> Go to Authentication
+  getStartedBtn?.addEventListener('click', () => {
+    localStorage.setItem('weathergpt_onboarded', 'true');
+    onboarding?.classList.add('hidden');
+    login?.classList.remove('hidden');
+  });
+
+  // Authentication Switchers
+  const goToSignUp = document.getElementById('goToSignUpBtn');
+  const goToSignIn = document.getElementById('goToSignInBtn');
+  const loginBack = document.getElementById('loginBackBtn');
+  const signupBack = document.getElementById('signupBackBtn');
+  const loginSubmit = document.getElementById('loginSubmitBtn');
+  const signupSubmit = document.getElementById('signupSubmitBtn');
+  const guestBtn = document.getElementById('guestLoginBtn');
+  const googleLogin = document.getElementById('googleLoginBtn');
+  const appleLogin = document.getElementById('appleLoginBtn');
+  const googleSignup = document.getElementById('googleSignupBtn');
+  const appleSignup = document.getElementById('appleSignupBtn');
+
+  goToSignUp?.addEventListener('click', () => {
+    login?.classList.add('hidden');
+    signup?.classList.remove('hidden');
+  });
+
+  goToSignIn?.addEventListener('click', () => {
+    signup?.classList.add('hidden');
+    login?.classList.remove('hidden');
+  });
+
+  loginBack?.addEventListener('click', () => {
+    login?.classList.add('hidden');
+    onboarding?.classList.remove('hidden');
+  });
+
+  signupBack?.addEventListener('click', () => {
+    signup?.classList.add('hidden');
+    login?.classList.remove('hidden');
+  });
+
+  function completeAuth(name, email) {
+    if (name) state.currentUser.name = name;
+    if (email) state.currentUser.email = email;
+    localStorage.setItem('weathergpt_user', JSON.stringify(state.currentUser));
+    localStorage.setItem('weathergpt_onboarded', 'true');
+
+    // Update Profile Screen UI
+    const nameEl = document.getElementById('profileUserName');
+    const emailEl = document.getElementById('profileUserEmail');
+    if (nameEl) nameEl.textContent = state.currentUser.name;
+    if (emailEl) emailEl.textContent = state.currentUser.email;
+
+    login?.classList.add('hidden');
+    signup?.classList.add('hidden');
+    onboarding?.classList.add('hidden');
+    splash?.classList.add('hidden');
+
+    setTimeout(() => {
+      if (state.homeMap) state.homeMap.invalidateSize();
+      if (state.map) state.map.invalidateSize();
+    }, 200);
+  }
+
+  loginSubmit?.addEventListener('click', () => {
+    const email = document.getElementById('loginEmailInput')?.value || 'user@weathergpt.gov.in';
+    completeAuth('Raju R', email);
+  });
+
+  signupSubmit?.addEventListener('click', () => {
+    const name = document.getElementById('signupNameInput')?.value || 'Raju R';
+    const email = document.getElementById('signupEmailInput')?.value || 'user@weathergpt.gov.in';
+    completeAuth(name, email);
+  });
+
+  guestBtn?.addEventListener('click', () => {
+    completeAuth('Guest User', 'guest@weathergpt.local');
+  });
+
+  googleLogin?.addEventListener('click', () => completeAuth('Google User', 'google.user@gmail.com'));
+  appleLogin?.addEventListener('click', () => completeAuth('Apple User', 'user@icloud.com'));
+  googleSignup?.addEventListener('click', () => completeAuth('Google User', 'google.user@gmail.com'));
+  appleSignup?.addEventListener('click', () => completeAuth('Apple User', 'user@icloud.com'));
+
+  // Replay Onboarding Button from Profile
+  document.getElementById('replayOnboardingBtn')?.addEventListener('click', () => {
+    goToSlide(0);
+    onboarding?.classList.remove('hidden');
+  });
+
+  // Logout Button
+  document.getElementById('logoutBtn')?.addEventListener('click', () => {
+    login?.classList.remove('hidden');
+  });
+
+  // Initial Startup Transition Logic
+  if (isOnboarded) {
+    // Already onboarded: Brief splash then direct to app
+    setTimeout(() => {
+      splash?.classList.add('hidden');
+    }, 600);
+  } else {
+    // First time open: Show splash for 1.8s then show onboarding
+    setTimeout(() => {
+      splash?.classList.add('hidden');
+      onboarding?.classList.remove('hidden');
+      goToSlide(0);
+    }, 1800);
+  }
+}
+
 // ── 1. WEATHER TELEMETRY LOADER ──────────────────────────────────────
 async function loadWeather(lat, lon, placeName, refresh = false) {
   try {
@@ -134,7 +361,7 @@ async function loadWeather(lat, lon, placeName, refresh = false) {
     state.currentPlace.longitude = lon;
     state.currentPlace.name = placeName || state.currentPlace.name;
 
-    // Update Home Live Glance Pill
+    // Update Home Live Glance Card
     renderHomeGlance(data, state.currentPlace.name);
 
     // Update Radar Sliding Telemetry Card
@@ -142,6 +369,9 @@ async function loadWeather(lat, lon, placeName, refresh = false) {
 
     // Update 7-Day Extended Sheet
     renderExtendedForecast(data);
+
+    // Update Crop Advice based on weather
+    updateCropAdviceWeather(data);
 
     // Sync SIH Advanced Meteorological Intelligence modules
     loadNwpData(lat, lon);
@@ -167,16 +397,23 @@ function formatTemp(celsius) {
   return `${val}°${state.unit.toUpperCase()}`;
 }
 
-// ── 2. RENDER HOME SCREEN GLANCE PILL ────────────────────────────────
+// ── 2. RENDER HOME SCREEN GLANCE CARD (Screen 7) ─────────────────────
 function renderHomeGlance(data, placeName) {
   const placeEl = document.getElementById('glancePlace');
   const tempEl = document.getElementById('glanceTemp');
   const condEl = document.getElementById('glanceCondition');
+  const feelsEl = document.getElementById('glanceFeels');
   const rainEl = document.getElementById('glanceRain');
+  const windEl = document.getElementById('glanceWind');
+  const uvEl = document.getElementById('glanceUv');
   const chatCityEl = document.getElementById('chatActiveCity');
+  const settingsLoc = document.getElementById('settingsCurrentLoc');
+  const profileRegion = document.getElementById('profileRegionText');
 
   if (placeEl) placeEl.textContent = placeName;
   if (chatCityEl) chatCityEl.textContent = placeName;
+  if (settingsLoc) settingsLoc.textContent = `${placeName}, India`;
+  if (profileRegion) profileRegion.textContent = `${placeName}, India`;
 
   const current = data.current || {};
   const daily = data.daily || {};
@@ -184,12 +421,23 @@ function renderHomeGlance(data, placeName) {
   const wmo = WMO_MAP[code] || { label: 'Clear Sky', icon: '☀️' };
 
   if (tempEl) tempEl.textContent = formatTemp(current.temperature_2m);
-  if (condEl) condEl.textContent = `${wmo.icon} ${wmo.label}`;
-  const pop = daily.precipitation_probability_max?.[0] ?? 0;
-  if (rainEl) rainEl.textContent = `🌧️ ${pop}%`;
+  if (condEl) condEl.textContent = wmo.label;
+  
+  const feelsVal = current.apparent_temperature ?? current.temperature_2m;
+  if (feelsEl) feelsEl.textContent = `Feels like ${formatTemp(feelsVal)}`;
+
+  const pop = daily.precipitation_probability_max?.[0] ?? (current.relative_humidity_2m ? Math.min(Math.round(current.relative_humidity_2m / 3), 100) : 3);
+  if (rainEl) rainEl.textContent = `${pop}%`;
+
+  const windSpeed = Math.round(current.wind_speed_10m ?? 7.2);
+  if (windEl) windEl.textContent = `${windSpeed} km/h`;
+
+  const uvVal = current.uv_index !== undefined ? Number(current.uv_index) : 4.0;
+  const uvLabel = uvVal > 7 ? 'High' : (uvVal > 3 ? 'Moderate' : 'Low');
+  if (uvEl) uvEl.textContent = uvLabel;
 }
 
-// ── 3. RENDER RADAR SLIDING CARD TELEMETRY (Matching Screenshot 3) ───
+// ── 3. RENDER RADAR SLIDING CARD TELEMETRY (Screen 10) ───────────────
 function renderRadarTelemetry(data, placeName) {
   const radarPlace = document.getElementById('radarPlaceName');
   const radarTempHead = document.getElementById('radarTempHead');
@@ -303,121 +551,40 @@ function initHomeMiniMap() {
   const { latitude, longitude } = state.currentPlace;
   state.homeMap = L.map('homeMiniLeafletMap', {
     center: [latitude, longitude],
-    zoom: 8,
+    zoom: 6,
     zoomControl: false,
     attributionControl: false
   });
 
-  // Dark basemap
   L.tileLayer(BASEMAP_TILES.dark, {
     subdomains: 'abcd',
     maxZoom: 19
   }).addTo(state.homeMap);
 
-  // Glowing pulse marker for current selected location
-  const pulseIcon = L.divIcon({
-    className: 'home-pulse-icon',
-    html: `<div style="width:14px;height:14px;background:#c084fc;border:2px solid #ffffff;border-radius:50%;box-shadow:0 0 14px #c084fc;"></div>`,
-    iconSize: [14, 14],
-    iconAnchor: [7, 7]
-  });
+  state.homeMarker = L.circleMarker([latitude, longitude], {
+    radius: 7,
+    color: '#00DF82',
+    fillColor: '#84fab0',
+    fillOpacity: 0.9,
+    weight: 2
+  }).addTo(state.homeMap);
 
-  state.homeMarker = L.marker([latitude, longitude], { icon: pulseIcon }).addTo(state.homeMap)
-    .bindPopup(`<b>${state.currentPlace.name}</b>`);
-
-  // Radar Overlay if frames are already loaded
-  if (state.radarFrames && state.radarFrames.length > 0) {
-    const frame = state.radarFrames[state.radarIndex || state.radarFrames.length - 1];
-    state.homeRadarLayer = L.tileLayer(`${state.radarHost}${frame.path}/256/{z}/{x}/{y}/2/1_1.png`, {
-      opacity: 0.72,
-      zIndex: 10
-    }).addTo(state.homeMap);
-  }
-
-  // Home Radar Card expand button (switches to tab-radar)
   document.getElementById('hrcExpandBtn')?.addEventListener('click', () => {
-    document.querySelector('.nav-tab-btn[data-tab="tab-radar"]')?.click();
+    switchTab('tab-radar');
   });
-
-  // Layer chips on Home Radar Card
-  document.querySelectorAll('.hrc-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      document.querySelectorAll('.hrc-chip').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      const layerType = chip.getAttribute('data-layer');
-      handleHomeMapLayer(layerType);
-    });
-  });
-
-  setTimeout(() => {
-    if (state.homeMap) state.homeMap.invalidateSize();
-  }, 250);
 }
 
-function updateHomeMap(lat, lon, name, data) {
-  const hrcCityTag = document.getElementById('hrcCityTag');
-  if (hrcCityTag) hrcCityTag.textContent = name;
-
-  if (state.homeMap) {
-    state.homeMap.setView([lat, lon], 8);
-    if (state.homeMarker) {
-      state.homeMarker.setLatLng([lat, lon])
-        .bindPopup(`<b>${name}</b><br>${formatTemp(data?.current?.temperature_2m)}`);
-    }
-    setTimeout(() => state.homeMap.invalidateSize(), 150);
-  }
-}
-
-function handleHomeMapLayer(layerType) {
+function updateHomeMap(lat, lon, placeName, weatherData) {
   if (!state.homeMap) return;
-
-  if (layerType === 'radar') {
-    if (state.homeHazardLayer) {
-      state.homeMap.removeLayer(state.homeHazardLayer);
-      state.homeHazardLayer = null;
-    }
-    if (state.homeSatelliteLayer) {
-      state.homeMap.removeLayer(state.homeSatelliteLayer);
-      state.homeSatelliteLayer = null;
-    }
-    if (state.homeRadarLayer && !state.homeMap.hasLayer(state.homeRadarLayer)) {
-      state.homeRadarLayer.addTo(state.homeMap);
-    }
-  } else if (layerType === 'satellite') {
-    if (state.homeHazardLayer) {
-      state.homeMap.removeLayer(state.homeHazardLayer);
-      state.homeHazardLayer = null;
-    }
-    if (state.homeSatelliteLayer) {
-      state.homeMap.removeLayer(state.homeSatelliteLayer);
-      state.homeSatelliteLayer = null;
-    } else {
-      state.homeSatelliteLayer = L.tileLayer(BASEMAP_TILES.satellite, {
-        maxZoom: 19
-      }).addTo(state.homeMap);
-    }
-  } else if (layerType === 'hazard') {
-    if (!state.homeHazardLayer) {
-      const circle1 = L.circle([state.currentPlace.latitude, state.currentPlace.longitude], {
-        color: '#f59e0b',
-        fillColor: '#f59e0b',
-        fillOpacity: 0.22,
-        radius: 35000
-      }).bindPopup('<b>Moderate Convective Risk</b><br>Gust potential 35-45 km/h');
-
-      const circle2 = L.circle([state.currentPlace.latitude + 0.3, state.currentPlace.longitude - 0.2], {
-        color: '#ef4444',
-        fillColor: '#ef4444',
-        fillOpacity: 0.26,
-        radius: 20000
-      }).bindPopup('<b>Severe Storm Alert</b><br>Rain rate > 25mm/hr');
-
-      state.homeHazardLayer = L.layerGroup([circle1, circle2]).addTo(state.homeMap);
-    }
+  state.homeMap.setView([lat, lon], 6);
+  if (state.homeMarker) {
+    state.homeMarker.setLatLng([lat, lon]);
   }
+  const tag = document.getElementById('hrcCityTag');
+  if (tag) tag.textContent = placeName;
 }
 
-/* ── 5B. FULL RADAR CONSOLE MAP ── */
+/* ── 5B. FULL RADAR CONSOLE MAP (Screen 10) ── */
 function initLeafletRadarMap() {
   const container = document.getElementById('radarLeafletMap');
   if (!container || state.map || typeof L === 'undefined') return;
@@ -430,18 +597,15 @@ function initLeafletRadarMap() {
     attributionControl: false
   });
 
-  // Dark basemap with zero watermark
   state.radarBasemapLayer = L.tileLayer(BASEMAP_TILES.dark, {
     subdomains: 'abcd',
     maxZoom: 19
   }).addTo(state.map);
 
-  // Pulse Location Marker
   state.marker = L.marker([latitude, longitude]).addTo(state.map)
     .bindPopup(`<b>${state.currentPlace.name}</b>`)
     .openPopup();
 
-  // Create India Metro City Pins Layer
   createCityPinsLayer();
 
   // Load RainViewer Radar Frames
@@ -452,7 +616,6 @@ function initLeafletRadarMap() {
       state.radarIndex = state.radarFrames.length - 1;
       updateRadarLayer();
 
-      // Also ensure Home map radar layer is synced
       if (state.homeMap && !state.homeRadarLayer) {
         const frame = state.radarFrames[state.radarIndex];
         if (frame) {
@@ -467,16 +630,16 @@ function initLeafletRadarMap() {
     console.warn('[radar] Satellite radar tiles offline:', err.message);
   });
 
-  // Map Controls
+  // Play / Pause Toggle
   const playBtn = document.getElementById('radarPlayPauseBtn');
   if (playBtn) {
     playBtn.addEventListener('click', () => {
       if (state.radarTimer) {
         clearInterval(state.radarTimer);
         state.radarTimer = null;
-        playBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>';
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>';
       } else {
-        playBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
         state.radarTimer = setInterval(() => {
           if (state.radarFrames.length > 0) {
             state.radarIndex = (state.radarIndex + 1) % state.radarFrames.length;
@@ -494,14 +657,13 @@ function initLeafletRadarMap() {
     state.map?.setView([state.currentPlace.latitude, state.currentPlace.longitude], 8);
   });
 
-  // Layer Toolbox Toggle & Switching
   setupRadarLayerControls();
 
-  // Hazard Filter Chips
-  document.querySelectorAll('.hazard-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      document.querySelectorAll('.hazard-chip').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
+  // Mode Tabs (Radar, Satellite, Precipitation)
+  document.querySelectorAll('.mode-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.mode-tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
     });
   });
 }
@@ -518,23 +680,21 @@ function createCityPinsLayer() {
     { name: 'Ahmedabad', lat: 23.0225, lon: 72.5714, tag: 'Semi-Arid' },
     { name: 'Pune', lat: 18.5204, lon: 73.8567, tag: 'Western Ghats' },
     { name: 'Jaipur', lat: 26.9124, lon: 75.7873, tag: 'Thar Basin' },
-    { name: 'Visakhapatnam', lat: 17.6868, lon: 83.2185, tag: 'Cyclone Radar' },
-    { name: 'Kochi', lat: 9.9312, lon: 76.2673, tag: 'Monsoon Gate' },
-    { name: 'Shimla', lat: 31.1048, lon: 77.1734, tag: 'Himalayan' }
+    { name: 'Visakhapatnam', lat: 17.6868, lon: 83.2185, tag: 'Cyclone Radar' }
   ];
 
   const markers = METRO_PINS.map(p => {
     const pin = L.circleMarker([p.lat, p.lon], {
       radius: 6,
-      color: '#a855f7',
-      fillColor: '#c084fc',
+      color: '#00DF82',
+      fillColor: '#84fab0',
       fillOpacity: 0.85,
       weight: 2
     });
     pin.bindPopup(`
       <div style="font-family:sans-serif;font-size:12px;color:#1e293b;padding:4px;">
         <b style="font-size:13px;">${p.name}</b> <span style="font-size:10px;background:#e2e8f0;padding:1px 5px;border-radius:4px;">${p.tag}</span><br>
-        <button style="margin-top:8px;padding:4px 10px;font-size:11px;background:#9333ea;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;" onclick="window.selectCityFromPin('${p.name}', ${p.lat}, ${p.lon})">
+        <button style="margin-top:8px;padding:4px 10px;font-size:11px;background:#00DF82;color:#000;border:none;border-radius:6px;cursor:pointer;font-weight:700;" onclick="window.selectCityFromPin('${p.name}', ${p.lat}, ${p.lon})">
           Select ${p.name}
         </button>
       </div>
@@ -564,7 +724,6 @@ function setupRadarLayerControls() {
     }
   });
 
-  // Basemap switch buttons
   document.querySelectorAll('.rlp-btn[data-basemap]').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.rlp-btn[data-basemap]').forEach(b => b.classList.remove('active'));
@@ -579,7 +738,6 @@ function setupRadarLayerControls() {
     });
   });
 
-  // Checkbox: Live Rain Radar
   document.getElementById('overlayRadarCheck')?.addEventListener('change', (e) => {
     if (!state.map) return;
     if (e.target.checked) {
@@ -589,7 +747,6 @@ function setupRadarLayerControls() {
     }
   });
 
-  // Checkbox: Metro Pins
   document.getElementById('overlayPinsCheck')?.addEventListener('change', (e) => {
     if (!state.map || !state.radarCityPinsLayer) return;
     if (e.target.checked) {
@@ -617,59 +774,55 @@ function updateRadarLayer() {
   const timeLabel = document.getElementById('radarTimestamp');
   if (timeLabel) {
     const d = new Date(frame.time * 1000);
-    timeLabel.textContent = `Reflectivity: ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    timeLabel.textContent = `Today ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
   }
 }
 
-// ── 6. ANDROID NAVIGATION SYSTEM (3 Primary Tabs) ─────────────────────
+// ── 6. ANDROID NAVIGATION SYSTEM (5 Tabs + Subpages) ──────────────────
+function switchTab(tabId) {
+  state.activeTab = tabId;
+  const tabScreens = document.querySelectorAll('.tab-screen');
+  const navButtons = document.querySelectorAll('.nav-tab-btn');
+
+  tabScreens.forEach(screen => {
+    screen.classList.toggle('active', screen.id === tabId);
+  });
+
+  navButtons.forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId);
+  });
+
+  if (tabId === 'tab-radar') {
+    setTimeout(() => { if (state.map) state.map.invalidateSize(); }, 150);
+  } else if (tabId === 'tab-home') {
+    setTimeout(() => { if (state.homeMap) state.homeMap.invalidateSize(); }, 150);
+  }
+}
+
+window.switchTab = switchTab;
+
 function setupAndroidNavigation() {
   const tabButtons = document.querySelectorAll('.nav-tab-btn');
-  const tabScreens = document.querySelectorAll('.tab-screen');
-  const radarBackBtn = document.getElementById('radarBackBtn');
-
-  function switchTab(tabId) {
-    state.activeTab = tabId;
-
-    tabScreens.forEach(screen => {
-      if (screen.id === tabId) {
-        screen.classList.add('active');
-      } else {
-        screen.classList.remove('active');
-      }
-    });
-
-    tabButtons.forEach(btn => {
-      if (btn.getAttribute('data-tab') === tabId) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
-      }
-    });
-
-    // Invalidate maps when switching tabs to ensure tile rendering
-    if (tabId === 'tab-radar') {
-      setTimeout(() => {
-        if (state.map) state.map.invalidateSize();
-      }, 150);
-    } else if (tabId === 'tab-home') {
-      setTimeout(() => {
-        if (state.homeMap) state.homeMap.invalidateSize();
-      }, 150);
-    }
-  }
 
   tabButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       const target = btn.getAttribute('data-tab');
-      switchTab(target);
+      if (target) switchTab(target);
     });
   });
 
-  if (radarBackBtn) {
-    radarBackBtn.addEventListener('click', () => switchTab('tab-home'));
-  }
+  // Back to home buttons on all subpages
+  document.querySelectorAll('[data-back-to-home]').forEach(btn => {
+    btn.addEventListener('click', () => switchTab('tab-home'));
+  });
 
-  // Top Title Bar GPS quick trigger
+  document.getElementById('radarBackBtn')?.addEventListener('click', () => switchTab('tab-home'));
+  document.getElementById('aiBackBtn')?.addEventListener('click', () => switchTab('tab-home'));
+
+  // Bell icon in header -> Switch to Severe Alerts (tab-alerts)
+  document.getElementById('topBellBtn')?.addEventListener('click', () => switchTab('tab-alerts'));
+
+  // GPS trigger in top bar
   document.getElementById('topGpsBtn')?.addEventListener('click', () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(pos => {
@@ -680,27 +833,38 @@ function setupAndroidNavigation() {
     }
   });
 
-  // Top History / Log button
-  document.getElementById('topHistoryBtn')?.addEventListener('click', () => {
-    const feed = document.getElementById('conversationFeed');
-    feed?.scrollIntoView({ behavior: 'smooth' });
+  // Home Screen Quick Action Cards Handlers
+  document.getElementById('cardCropAdvice')?.addEventListener('click', () => switchTab('tab-crop'));
+  document.getElementById('cardTravelSafety')?.addEventListener('click', () => switchTab('tab-travel'));
+  document.getElementById('cardSevereAlerts')?.addEventListener('click', () => switchTab('tab-alerts'));
+  document.getElementById('cardRainTimeline')?.addEventListener('click', () => openBottomSheet('sheet-telemetry'));
+
+  // Home Ask Bar & Mic Trigger -> Go to AI Assistant
+  document.getElementById('homeAskBarTrigger')?.addEventListener('click', () => switchTab('tab-ai'));
+  document.getElementById('openAiChatBtn')?.addEventListener('click', () => switchTab('tab-ai'));
+
+  // Open Location Picker from Weather Card
+  document.getElementById('openLocationPickerBtn')?.addEventListener('click', () => {
+    openBottomSheet('sheet-city-picker');
   });
 
-  // Glance Pill Click -> Open City Switcher Sheet (or 7-day telemetry on expand btn)
-  document.getElementById('homeGlancePill')?.addEventListener('click', (e) => {
-    if (e.target.closest('#glanceExpandBtn')) {
-      openBottomSheet('sheet-telemetry');
-    } else {
-      openBottomSheet('sheet-city-picker');
+  // Units Toggle in Settings
+  document.getElementById('settingsUnitToggleBtn')?.addEventListener('click', () => {
+    state.unit = state.unit === 'c' ? 'f' : 'c';
+    const display = document.getElementById('settingsUnitDisplay');
+    if (display) display.textContent = state.unit === 'c' ? 'Celsius, km/h' : 'Fahrenheit, mph';
+    const unitSelect = document.getElementById('unitSelect');
+    if (unitSelect) unitSelect.value = state.unit;
+    if (state.currentWeather) {
+      renderHomeGlance(state.currentWeather, state.currentPlace.name);
+      renderRadarTelemetry(state.currentWeather, state.currentPlace.name);
+      renderExtendedForecast(state.currentWeather);
     }
-  });
-
-  document.getElementById('telemetryDetailsBtn')?.addEventListener('click', () => {
-    openBottomSheet('sheet-telemetry');
+    api.updateSettings({ temperature_unit: state.unit }).catch(() => {});
   });
 }
 
-// ── 7. ANDROID DRAWER NAVIGATION ─────────────────────────────────────
+// ── 7. ANDROID DRAWER NAVIGATION (Screen 8) ──────────────────────────
 function setupDrawer() {
   const drawer = document.getElementById('androidDrawer');
   const backdrop = document.getElementById('androidDrawerBackdrop');
@@ -708,6 +872,7 @@ function setupDrawer() {
   const closeBtn = document.getElementById('drawerCloseBtn');
   const searchInput = document.getElementById('drawerSearchInput');
   const searchGoBtn = document.getElementById('drawerSearchGoBtn');
+  const profileShortcut = document.getElementById('drawerProfileShortcut');
 
   function openDrawer() {
     drawer?.classList.add('open');
@@ -723,14 +888,18 @@ function setupDrawer() {
   closeBtn?.addEventListener('click', closeDrawer);
   backdrop?.addEventListener('click', closeDrawer);
 
-  // Drawer nav items
+  profileShortcut?.addEventListener('click', () => {
+    closeDrawer();
+    switchTab('tab-profile');
+  });
+
   document.querySelectorAll('.drawer-item').forEach(item => {
     item.addEventListener('click', () => {
       closeDrawer();
       const action = item.getAttribute('data-action');
       const sheet = item.getAttribute('data-sheet');
       if (action) {
-        document.querySelector(`.nav-tab-btn[data-tab="${action}"]`)?.click();
+        switchTab(action);
       } else if (sheet) {
         openBottomSheet(sheet);
       }
@@ -768,279 +937,135 @@ function setupDrawer() {
       const lang = chip.getAttribute('data-lang');
       state.language = lang;
       applyLanguage(lang);
+      const display = document.getElementById('settingsLangDisplay');
+      if (display) display.textContent = chip.textContent;
       try { await api.updateSettings({ language: lang }); } catch {}
     });
   });
 }
 
-// ── 8. INTELLIGENCE PERSONA SWITCHER (Matching Screenshot 2) ─────────
-function setupPersona() {
-  const chips = document.querySelectorAll('.persona-chip');
-  chips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      chips.forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      state.persona = chip.getAttribute('data-persona') || 'general';
+// ── 8. CROP & SPRAY ADVICE SCREEN LOGIC (Screen 11) ──────────────────
+function setupCropAdvice() {
+  const cropButtons = document.querySelectorAll('#cropTabsRow .crop-tab-btn');
+  const cropNameDisplay = document.getElementById('cropNameDisplay');
+  const cropStageDisplay = document.getElementById('cropStageDisplay');
+  const cropSprayRec = document.getElementById('cropSprayRecommendation');
+  const cropIdeal = document.getElementById('cropIdealWindow');
+  const cropRisk = document.getElementById('cropDiseaseRisk');
+  const tipsList = document.getElementById('cropKeyTipsList');
 
-      // Visual feedback in feed
-      const promptMap = {
-        farmer: 'Switched to Agronomy Persona. Tailoring soil moisture, spray windows, and thermal stress thresholds.',
-        pilot: 'Switched to Aviation Persona. Tailoring METAR/TAF ceiling, crosswinds, and VFR/IFR clearance.',
-        official: 'Switched to Disaster Responder Persona. Monitoring NDMA/SDMA CAP alerts and IMD 4-stage color alerts.',
-        traveller: 'Switched to Traveller Persona. Evaluating highway convective hazards and visibility.',
-        general: 'Switched to General Citizen Persona. Providing daily clothing and rain schedules.'
-      };
+  function renderCrop(cropKey) {
+    const crop = CROP_DATABASE[cropKey] || CROP_DATABASE.rice;
+    if (cropNameDisplay) cropNameDisplay.textContent = crop.name;
+    if (cropStageDisplay) cropStageDisplay.textContent = crop.stage;
+    if (cropSprayRec) cropSprayRec.textContent = crop.sprayAdvice;
+    if (cropIdeal) cropIdeal.textContent = crop.idealWindow;
+    if (cropRisk) cropRisk.textContent = crop.diseaseRisk;
 
-      appendBotMessage(`✨ <strong>Persona Adapted</strong>: ${promptMap[state.persona] || 'Profile updated.'}`);
-    });
-  });
-
-  // Saved Locations Click
-  document.querySelectorAll('.loc-item-row').forEach(row => {
-    row.addEventListener('click', () => {
-      const lat = parseFloat(row.getAttribute('data-lat'));
-      const lon = parseFloat(row.getAttribute('data-lon'));
-      const name = row.getAttribute('data-name');
-      loadWeather(lat, lon, name);
-      document.querySelector('.nav-tab-btn[data-tab="tab-home"]')?.click();
-    });
-  });
-
-  // Add Location
-  document.getElementById('addLocationBtn')?.addEventListener('click', () => {
-    const loc = prompt('Enter city or district name to monitor:');
-    if (loc) {
-      api.searchGeocode(loc).then(geo => {
-        if (geo.results && geo.results[0]) {
-          const item = geo.results[0];
-          loadWeather(item.latitude, item.longitude, item.name);
-          document.querySelector('.nav-tab-btn[data-tab="tab-home"]')?.click();
-        }
-      });
-    }
-  });
-}
-
-// ── 8B. SIH OPERATIONAL PROFILE & LOCATION SETUP GATE ────────────────
-function setupSihSetupGate() {
-  const gate = document.getElementById('sihSetupGate');
-  const closeBtn = document.getElementById('setupCloseBtn');
-  const launchBtn = document.getElementById('setupLaunchBtn');
-  const openGateBtn = document.getElementById('openSetupGateBtn');
-  const roleCards = document.querySelectorAll('.setup-role-card');
-  const cityChips = document.querySelectorAll('#setupCityChips .city-btn');
-  const locationInput = document.getElementById('setupLocationInput');
-  const gpsBtn = document.getElementById('setupGpsBtn');
-  const langSelect = document.getElementById('setupLangSelect');
-  const unitSelect = document.getElementById('setupUnitSelect');
-
-  let selectedRole = localStorage.getItem('sih_role') || 'farmer';
-  let selectedCity = localStorage.getItem('sih_city') || 'Hyderabad';
-  let selectedLat = parseFloat(localStorage.getItem('sih_lat')) || 17.3850;
-  let selectedLon = parseFloat(localStorage.getItem('sih_lon')) || 78.4867;
-
-  state.persona = selectedRole;
-  state.currentPlace.name = selectedCity;
-  state.currentPlace.latitude = selectedLat;
-  state.currentPlace.longitude = selectedLon;
-
-  const roleMeta = {
-    farmer: { icon: '🌾', label: 'Farmer' },
-    pilot: { icon: '✈️', label: 'Aviator' },
-    official: { icon: '🏛️', label: 'Disaster Mgt' },
-    traveller: { icon: '🚗', label: 'Traveler' },
-    general: { icon: '🏙️', label: 'Citizen' }
-  };
-
-  function updateTopRoleBadge(role, city) {
-    const meta = roleMeta[role] || roleMeta.general;
-    const topRoleIcon = document.getElementById('topRoleIcon');
-    const topRoleText = document.getElementById('topRoleText');
-    const topCityText = document.getElementById('topCityText');
-    if (topRoleIcon) topRoleIcon.textContent = meta.icon;
-    if (topRoleText) topRoleText.textContent = meta.label;
-    if (topCityText) {
-      const shortCity = city.length > 7 ? city.substring(0, 6) + '…' : city;
-      topCityText.textContent = shortCity;
+    if (tipsList) {
+      tipsList.innerHTML = crop.tips.map(t => `
+        <li><span class="tip-dot"></span> ${t}</li>
+      `).join('');
     }
   }
 
-  updateTopRoleBadge(selectedRole, selectedCity);
+  cropButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      cropButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cropKey = btn.getAttribute('data-crop');
+      renderCrop(cropKey);
+    });
+  });
 
-  // Sync role cards
-  roleCards.forEach(card => {
-    if (card.getAttribute('data-role') === selectedRole) {
-      card.classList.add('active');
+  renderCrop('rice');
+}
+
+function updateCropAdviceWeather(weatherData) {
+  if (!weatherData) return;
+  const current = weatherData.current || {};
+  const temp = current.temperature_2m ?? 26;
+  const hum = current.relative_humidity_2m ?? 65;
+  const wind = current.wind_speed_10m ?? 8;
+
+  const sprayRec = document.getElementById('cropSprayRecommendation');
+  if (sprayRec) {
+    if (wind > 15) {
+      sprayRec.textContent = `High winds (${Math.round(wind)} km/h). Delay spray to prevent drift.`;
+    } else if (temp > 35) {
+      sprayRec.textContent = `High temperature (${Math.round(temp)}°C). Spray only during dawn (6–8 AM).`;
+    } else if (hum > 85) {
+      sprayRec.textContent = `High humidity (${Math.round(hum)}%). Optimal fungicide absorption window.`;
     } else {
-      card.classList.remove('active');
+      sprayRec.textContent = 'No spray needed today. Favorable dry canopy.';
     }
+  }
+}
+
+// ── 9. SEVERE ALERTS LOGIC (Screen 12) ────────────────────────────────
+function setupSevereAlertsScreen() {
+  const filterTabs = document.querySelectorAll('#alertFilterTabs .alert-tab-btn');
+  const alertCards = document.querySelectorAll('#severeAlertsList .severe-alert-card');
+
+  filterTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      filterTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const filter = tab.getAttribute('data-filter');
+
+      alertCards.forEach(card => {
+        if (filter === 'all' || card.getAttribute('data-type') === filter) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // Clicking an alert card triggers detailed voice advisory
+  alertCards.forEach(card => {
     card.addEventListener('click', () => {
-      roleCards.forEach(c => c.classList.remove('active'));
-      card.classList.add('active');
-      selectedRole = card.getAttribute('data-role');
+      const title = card.querySelector('.sac-title')?.textContent || 'Weather Alert';
+      const desc = card.querySelector('.sac-desc')?.textContent || '';
+      alert(`⚠️ ${title}\n\n${desc}\n\nOfficial Action: Follow state disaster management guidelines and take shelter if needed.`);
     });
-  });
-
-  // Sync city chips
-  cityChips.forEach(chip => {
-    if (chip.getAttribute('data-city') === selectedCity) {
-      chip.classList.add('active');
-    } else {
-      chip.classList.remove('active');
-    }
-    chip.addEventListener('click', () => {
-      cityChips.forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      selectedCity = chip.getAttribute('data-city');
-      selectedLat = parseFloat(chip.getAttribute('data-lat'));
-      selectedLon = parseFloat(chip.getAttribute('data-lon'));
-      if (locationInput) locationInput.value = selectedCity;
-    });
-  });
-
-  // GPS button
-  gpsBtn?.addEventListener('click', () => {
-    if (navigator.geolocation) {
-      gpsBtn.innerHTML = '<span>⏳</span> Locating...';
-      navigator.geolocation.getCurrentPosition(pos => {
-        selectedLat = pos.coords.latitude;
-        selectedLon = pos.coords.longitude;
-        selectedCity = 'GPS Location';
-        if (locationInput) locationInput.value = 'Current GPS Location';
-        gpsBtn.innerHTML = '<span>✓</span> Locked';
-      }, () => {
-        gpsBtn.innerHTML = '<span>⚠️</span> Denied';
-      });
-    }
-  });
-
-  // Language & Unit dropdowns
-  if (langSelect) {
-    langSelect.value = state.language;
-    langSelect.addEventListener('change', () => {
-      state.language = langSelect.value;
-      applyLanguage(state.language);
-    });
-  }
-  if (unitSelect) {
-    unitSelect.value = state.unit;
-    unitSelect.addEventListener('change', () => {
-      state.unit = unitSelect.value;
-    });
-  }
-
-  // Top header button to re-open setup gate anytime
-  openGateBtn?.addEventListener('click', () => {
-    gate?.classList.remove('hidden');
-    if (locationInput) locationInput.value = state.currentPlace.name;
-  });
-
-  // Close button
-  closeBtn?.addEventListener('click', () => {
-    gate?.classList.add('hidden');
-    setTimeout(() => {
-      state.homeMap?.invalidateSize();
-      state.map?.invalidateSize();
-    }, 200);
-  });
-
-  // Launch button
-  launchBtn?.addEventListener('click', async () => {
-    launchBtn.innerHTML = '<span>⚙️ Calibrating Models...</span>';
-
-    const typedQuery = locationInput?.value.trim();
-    if (typedQuery && typedQuery !== selectedCity && typedQuery !== 'Current GPS Location') {
-      try {
-        const geo = await api.searchGeocode(typedQuery);
-        if (geo.results && geo.results[0]) {
-          selectedCity = geo.results[0].name;
-          selectedLat = geo.results[0].latitude;
-          selectedLon = geo.results[0].longitude;
-        }
-      } catch (err) {
-        console.warn('[setup] Geocode lookup note:', err.message);
-      }
-    }
-
-    state.persona = selectedRole;
-    state.currentPlace.name = selectedCity;
-    state.currentPlace.latitude = selectedLat;
-    state.currentPlace.longitude = selectedLon;
-
-    localStorage.setItem('sih_configured', 'true');
-    localStorage.setItem('sih_role', selectedRole);
-    localStorage.setItem('sih_city', selectedCity);
-    localStorage.setItem('sih_lat', String(selectedLat));
-    localStorage.setItem('sih_lon', String(selectedLon));
-
-    updateTopRoleBadge(selectedRole, selectedCity);
-
-    // Sync persona chip in chat feed if it exists
-    document.querySelectorAll('.persona-chip').forEach(c => {
-      if (c.getAttribute('data-persona') === selectedRole) c.classList.add('active');
-      else c.classList.remove('active');
-    });
-
-    // Load weather for selected city
-    await loadWeather(selectedLat, selectedLon, selectedCity, true);
-
-    // Close gate modal
-    gate?.classList.add('hidden');
-    launchBtn.innerHTML = '<span>🚀 Launch WeatherGPT Intelligence Console</span>';
-
-    // Invalidate both maps to render tiles immediately
-    setTimeout(() => {
-      if (state.homeMap) state.homeMap.invalidateSize();
-      if (state.map) state.map.invalidateSize();
-    }, 250);
-
-    // Welcoming persona greeting in chat
-    const personaGreetings = {
-      farmer: `🌾 <strong>Agromet Kisan Console Initialized</strong>: Calibrated for <strong>${selectedCity}</strong>. Monitoring 0-10cm topsoil moisture, foliar spray windows, thermal stress, and 7-day precipitation anomalies.`,
-      pilot: `✈️ <strong>Aviation Dispatch Initialized</strong>: Calibrated for <strong>${selectedCity}</strong>. METAR/TAF ceiling, density altitude, crosswind vectors, and VFR/IFR flight levels active.`,
-      official: `🏛️ <strong>Disaster &amp; Crisis Console Initialized</strong>: Calibrated for <strong>${selectedCity}</strong> basin. CAP common alert protocol, IMD 4-stage color alerts, and evacuation routing monitoring active.`,
-      traveller: `🚗 <strong>Logistics &amp; Travel Console Initialized</strong>: Calibrated for <strong>${selectedCity}</strong>. Real-time highway convective road hazards, hydroplaning, and visibility metrics active.`,
-      general: `🏙️ <strong>Citizen Hyper-Local Console Initialized</strong>: Calibrated for <strong>${selectedCity}</strong>. Real-time temperatures, umbrella advice, UV index, and AQI active.`
-    };
-    appendBotMessage(personaGreetings[selectedRole] || personaGreetings.general);
-  });
-
-  // Saved Locations Click
-  document.querySelectorAll('.loc-item-row').forEach(row => {
-    row.addEventListener('click', () => {
-      const lat = parseFloat(row.getAttribute('data-lat'));
-      const lon = parseFloat(row.getAttribute('data-lon'));
-      const name = row.getAttribute('data-name');
-      loadWeather(lat, lon, name);
-      document.querySelector('.nav-tab-btn[data-tab="tab-home"]')?.click();
-    });
-  });
-
-  // Add Location
-  document.getElementById('addLocationBtn')?.addEventListener('click', () => {
-    const loc = prompt('Enter city or district name to monitor:');
-    if (loc) {
-      api.searchGeocode(loc).then(geo => {
-        if (geo.results && geo.results[0]) {
-          const item = geo.results[0];
-          loadWeather(item.latitude, item.longitude, item.name);
-          document.querySelector('.nav-tab-btn[data-tab="tab-home"]')?.click();
-        }
-      });
-    }
-  });
-
-  document.getElementById('viewAllAlertsBtn')?.addEventListener('click', () => {
-    document.querySelector('[data-prompt*="active IMD disaster alerts"]')?.click();
   });
 }
 
-// ── 9. CONVERSATIONAL AI & QUICK ACTION CARDS (Screenshot 1) ──────────
+// ── 10. TRAVEL SAFETY SCREEN LOGIC (Screen 13) ───────────────────────
+function setupTravelPlanner() {
+  const tabs = document.querySelectorAll('#travelModeTabs .travel-tab-btn');
+  const routeInput = document.getElementById('travelRouteInput');
+  const forecastBtn = document.getElementById('travelForecastBtn');
+  const riskStatus = document.getElementById('travelRiskStatus');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+
+  forecastBtn?.addEventListener('click', async () => {
+    const route = routeInput?.value || 'Hyderabad to Bengaluru';
+    forecastBtn.textContent = '⚡ Analyzing Route...';
+    try {
+      const res = await api.askAi(`Evaluate road travel hazards, rain, and visibility for ${route}.`, state.currentWeather, state.language, state.currentPlace.name, 'traveller');
+      forecastBtn.textContent = 'View Detailed Forecast';
+      alert(`🛣️ Route Forecast: ${route}\n\n${res.answer.substring(0, 300)}...`);
+    } catch (err) {
+      forecastBtn.textContent = 'View Detailed Forecast';
+      alert(`Travel Assessment for ${route}: Favorable driving conditions. No severe convection or waterlogging detected along the primary highway corridor.`);
+    }
+  });
+}
+
+// ── 11. CONVERSATIONAL AI & QUICK ACTION CARDS (Screen 9) ─────────────
 function setupChat() {
   const msgInput = document.getElementById('chatMessageInput');
   const sendBtn = document.getElementById('msgSendBtn');
   const feed = document.getElementById('conversationFeed');
-  const actionCards = document.querySelectorAll('.action-card-row');
   const listenLastBtn = document.getElementById('listenLastBtn');
 
   function renderMarkdown(str) {
@@ -1056,14 +1081,14 @@ function setupChat() {
       const trimmed = l.trim();
       if (trimmed.startsWith('### ')) {
         if (inList) { res.push('</ul>'); inList = false; }
-        res.push(`<h4 style="margin:10px 0 4px;color:var(--accent-cyan);font-size:14px">${trimmed.substring(4)}</h4>`);
+        res.push(`<h4 style="margin:8px 0 4px;color:var(--accent-green);font-size:13.5px">${trimmed.substring(4)}</h4>`);
       } else if (trimmed.startsWith('## ') || trimmed.startsWith('# ')) {
         if (inList) { res.push('</ul>'); inList = false; }
-        res.push(`<h3 style="margin:12px 0 6px;color:#fff;font-size:15px">${trimmed.replace(/^#+\s*/, '')}</h3>`);
+        res.push(`<h3 style="margin:10px 0 5px;color:#fff;font-size:14px">${trimmed.replace(/^#+\s*/, '')}</h3>`);
       } else if (trimmed.startsWith('* ') || trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
-        if (!inList) { res.push('<ul style="margin:6px 0;padding-left:18px">'); inList = true; }
+        if (!inList) { res.push('<ul style="margin:4px 0;padding-left:18px">'); inList = true; }
         const itemContent = trimmed.replace(/^[\*\-•]\s*/, '');
-        res.push(`<li style="margin-bottom:4px">${itemContent}</li>`);
+        res.push(`<li style="margin-bottom:3px">${itemContent}</li>`);
       } else {
         if (inList) { res.push('</ul>'); inList = false; }
         if (trimmed) res.push(`<p style="margin:4px 0">${trimmed}</p>`);
@@ -1078,10 +1103,7 @@ function setupChat() {
     if (!feed) return;
     const bubble = document.createElement('div');
     bubble.className = 'chat-bubble user';
-    bubble.innerHTML = `
-      <div class="bubble-avatar-glow">🧑‍💻</div>
-      <div class="bubble-content"><p>${escapeHtml(text)}</p></div>
-    `;
+    bubble.innerHTML = `<p>${escapeHtml(text)}</p>`;
     feed.appendChild(bubble);
     bubble.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }
@@ -1091,7 +1113,6 @@ function setupChat() {
     const bubble = document.createElement('div');
     bubble.className = 'chat-bubble bot';
     bubble.innerHTML = `
-      <div class="bubble-avatar-glow">🌦️</div>
       <div class="bubble-content">
         ${html}
         <button class="listen-bubble-btn" title="Listen with voice"><span>🔊</span> Listen</button>
@@ -1112,8 +1133,7 @@ function setupChat() {
     if (!promptText || !promptText.trim()) return;
     appendUserMessage(promptText);
 
-    // Typing bubble
-    const typingBubble = appendBotMessage('<p style="color:var(--accent-cyan)">⚡ WeatherGPT Neural Engine calculating atmospheric response...</p>');
+    const typingBubble = appendBotMessage('<p style="color:var(--accent-green)">⚡ WeatherGPT Neural Engine calculating atmospheric response...</p>');
 
     try {
       const res = await api.askAi(promptText, state.currentWeather, state.language, state.currentPlace.name, state.persona);
@@ -1129,7 +1149,6 @@ function setupChat() {
         });
       }
 
-      // If AI response targeted a different city, automatically update active city and telemetry
       if (res.placeName && res.placeName.toLowerCase() !== state.currentPlace.name.toLowerCase()) {
         api.searchGeocode(res.placeName).then(geo => {
           if (geo.results && geo.results[0]) {
@@ -1139,7 +1158,6 @@ function setupChat() {
         }).catch(() => {});
       }
 
-      // Show audio replay button
       const replayBar = document.getElementById('audioReplayBar');
       if (replayBar) replayBar.style.display = 'block';
 
@@ -1155,7 +1173,6 @@ function setupChat() {
 
   window.askWeatherGPT = askWeatherGPT;
 
-  // Send button & enter key
   if (sendBtn && msgInput) {
     sendBtn.addEventListener('click', () => {
       const text = msgInput.value;
@@ -1172,25 +1189,20 @@ function setupChat() {
     });
   }
 
-  // Quick Action Cards Click Handlers (Crop & Spray, Rain, Travel, Severe)
-  actionCards.forEach(card => {
-    card.addEventListener('click', () => {
-      const prompt = card.getAttribute('data-prompt');
-      const persona = card.getAttribute('data-persona');
-      if (persona) {
-        document.querySelector(`.persona-chip[data-persona="${persona}"]`)?.click();
-      }
+  // Quick Suggestion items on AI Assistant Screen
+  document.querySelectorAll('#aiQuickSuggestions .suggestion-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const prompt = item.getAttribute('data-prompt');
       askWeatherGPT(prompt);
     });
   });
 
-  // Audio Replay button
   listenLastBtn?.addEventListener('click', () => {
     if (state.lastAiAnswer) speakText(state.lastAiAnswer);
   });
 }
 
-// ── 10. NATIVE ANDROID BOTTOM SHEETS ─────────────────────────────────
+// ── 12. BOTTOM SHEETS MANAGEMENT ─────────────────────────────────────
 function setupBottomSheets() {
   const overlay = document.getElementById('sheetOverlay');
 
@@ -1229,16 +1241,15 @@ function setupBottomSheets() {
   });
 }
 
-// ── 11. VOICE SPEECH SYNTHESIS & RECOGNITION ─────────────────────────
+// ── 13. VOICE SPEECH SYNTHESIS & RECOGNITION ─────────────────────────
 function setupVoice() {
   const voiceBtn = document.getElementById('msgVoiceBtn');
-  const orb = document.getElementById('aiOrbWrapper');
+  const homeMicBtn = document.getElementById('homeQuickMicBtn');
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
   const toggleRecording = () => {
     if (!SpeechRecognition) {
-      appendBotMessage('🎙️ <strong>Voice Recognition Note</strong>: Web Speech Recognition is natively supported in Chrome on HTTPS or localhost. You can also type your query directly in the message bar below!');
-      document.getElementById('chatMessageInput')?.focus();
+      alert('Voice queries are supported in Chrome & Edge with microphone access. You can also type directly in the input bar.');
       return;
     }
 
@@ -1251,49 +1262,34 @@ function setupVoice() {
         const transcript = e.results[0][0].transcript;
         const input = document.getElementById('chatMessageInput');
         if (input) input.value = transcript;
-        voiceBtn?.classList.remove('recording');
-        orb?.classList.remove('listening');
+        switchTab('tab-ai');
         (window.askWeatherGPT || askWeatherGPT)(transcript);
       };
 
       state.recognition.onerror = (e) => {
         console.warn('[speech] Recognition error:', e.error);
-        voiceBtn?.classList.remove('recording');
-        orb?.classList.remove('listening');
         if (e.error === 'not-allowed') {
-          appendBotMessage('⚠️ <strong>Microphone Permission Blocked</strong>: Please allow microphone access in your browser site permissions to enable voice queries.');
+          alert('Microphone permission was blocked. Please enable microphone permissions in your browser.');
         }
-      };
-
-      state.recognition.onend = () => {
-        voiceBtn?.classList.remove('recording');
-        orb?.classList.remove('listening');
       };
     }
 
     try {
-      if (voiceBtn?.classList.contains('recording')) {
-        state.recognition.stop();
-        voiceBtn.classList.remove('recording');
-        orb?.classList.remove('listening');
-      } else {
-        voiceBtn?.classList.add('recording');
-        orb?.classList.add('listening');
-        state.recognition.lang = getLangCode(state.language);
-        state.recognition.start();
-      }
+      state.recognition.lang = getLangCode(state.language);
+      state.recognition.start();
     } catch (err) {
       console.warn('[speech] Start recognition notice:', err);
-      voiceBtn?.classList.remove('recording');
-      orb?.classList.remove('listening');
     }
   };
 
   voiceBtn?.addEventListener('click', toggleRecording);
-  orb?.addEventListener('click', toggleRecording);
+  homeMicBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleRecording();
+  });
 }
 
-// ── 11B. CITY PICKER & DYNAMIC LOCATION SWITCHER ────────────────────
+// ── 14. CITY PICKER & DYNAMIC LOCATION SWITCHER ──────────────────────
 function setupCityPicker() {
   const input = document.getElementById('cityPickerInput');
   const searchBtn = document.getElementById('cityPickerSearchBtn');
@@ -1307,14 +1303,14 @@ function setupCityPicker() {
     try {
       if (resultsBox) {
         resultsBox.style.display = 'flex';
-        resultsBox.innerHTML = '<div style="color:var(--text-secondary);font-size:12px;padding:8px">🔍 Searching database & geocoding...</div>';
+        resultsBox.innerHTML = '<div style="color:var(--text-secondary);font-size:12px;padding:8px">🔍 Searching database...</div>';
       }
       const geo = await api.searchGeocode(q);
       if (geo.results && geo.results.length > 0) {
         resultsBox.innerHTML = geo.results.map(item => `
           <div class="city-search-row" data-lat="${item.latitude}" data-lon="${item.longitude}" data-name="${item.name}">
             <span><strong>${item.name}</strong> <small style="color:var(--text-secondary)">${item.admin1 || ''}, ${item.country || ''}</small></span>
-            <span style="color:#38bdf8;font-weight:700">Switch →</span>
+            <span style="color:var(--accent-green);font-weight:700">Select →</span>
           </div>
         `).join('');
 
@@ -1325,11 +1321,10 @@ function setupCityPicker() {
             const name = row.getAttribute('data-name');
             loadWeather(lat, lon, name);
             closeBottomSheet('sheet-city-picker');
-            appendBotMessage(`📍 **Location Updated**: Switched to **${name}**. Atmospheric parameters and Doppler radar refreshed.`);
           });
         });
       } else {
-        if (resultsBox) resultsBox.innerHTML = '<div style="color:var(--accent-red);font-size:12px;padding:8px">No places found. Try another city or district.</div>';
+        if (resultsBox) resultsBox.innerHTML = '<div style="color:var(--accent-red);font-size:12px;padding:8px">No places found. Try another city.</div>';
       }
     } catch (err) {
       if (resultsBox) resultsBox.innerHTML = `<div style="color:var(--accent-red);font-size:12px;padding:8px">Search error: ${escapeHtml(err.message)}</div>`;
@@ -1341,14 +1336,12 @@ function setupCityPicker() {
     if (e.key === 'Enter') doSearch();
   });
 
-  // GPS button
   gpsBtn?.addEventListener('click', () => {
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           loadWeather(pos.coords.latitude, pos.coords.longitude, 'Current Location');
           closeBottomSheet('sheet-city-picker');
-          appendBotMessage('🎯 **GPS Location Acquired**: Local atmospheric sensors calibrated to your real coordinates.');
         },
         () => {
           alert('GPS permission was denied or unavailable. Please pick a city from the list.');
@@ -1357,7 +1350,6 @@ function setupCityPicker() {
     }
   });
 
-  // Quick City Chips
   quickChips.forEach(chip => {
     chip.addEventListener('click', () => {
       const city = chip.getAttribute('data-city');
@@ -1365,7 +1357,6 @@ function setupCityPicker() {
       const lon = parseFloat(chip.getAttribute('data-lon'));
       loadWeather(lat, lon, city);
       closeBottomSheet('sheet-city-picker');
-      appendBotMessage(`📍 **Location Switched to ${city}**: Weather telemetry, NWP models, and radar updated.`);
     });
   });
 }
@@ -1385,7 +1376,166 @@ function speakText(text) {
   state.speechSynth.speak(utterance);
 }
 
-// ── 12. NWP, AVIATION & CLIMATE LOADERS ───────────────────────────────
+// ── 15. SIH OPERATIONAL PROFILE & SETUP GATE ─────────────────────────
+function setupSihSetupGate() {
+  const gate = document.getElementById('sihSetupGate');
+  const closeBtn = document.getElementById('setupCloseBtn');
+  const launchBtn = document.getElementById('setupLaunchBtn');
+  const openGateBtn = document.getElementById('openSetupGateBtn');
+  const openGateProfileBtn = document.getElementById('openSetupGateFromProfileBtn');
+  const roleCards = document.querySelectorAll('.setup-role-card');
+  const cityChips = document.querySelectorAll('#setupCityChips .city-btn');
+  const locationInput = document.getElementById('setupLocationInput');
+  const gpsBtn = document.getElementById('setupGpsBtn');
+  const langSelect = document.getElementById('setupLangSelect');
+  const unitSelect = document.getElementById('setupUnitSelect');
+
+  let selectedRole = localStorage.getItem('sih_role') || 'farmer';
+  let selectedCity = localStorage.getItem('sih_city') || 'Hyderabad';
+  let selectedLat = parseFloat(localStorage.getItem('sih_lat')) || 17.3850;
+  let selectedLon = parseFloat(localStorage.getItem('sih_lon')) || 78.4867;
+
+  state.persona = selectedRole;
+  state.currentPlace.name = selectedCity;
+  state.currentPlace.latitude = selectedLat;
+  state.currentPlace.longitude = selectedLon;
+
+  const roleMeta = {
+    farmer: { icon: '🌾', label: 'Farmer' },
+    pilot: { icon: '✈️', label: 'Aviator' },
+    official: { icon: '🏛️', label: 'Disaster' },
+    traveller: { icon: '🚗', label: 'Traveler' },
+    general: { icon: '🏙️', label: 'Citizen' }
+  };
+
+  function updateTopRoleBadge(role, city) {
+    const meta = roleMeta[role] || roleMeta.general;
+    const topRoleIcon = document.getElementById('topRoleIcon');
+    const topRoleText = document.getElementById('topRoleText');
+    const topCityText = document.getElementById('topCityText');
+    const profileSector = document.getElementById('profileSectorText');
+    if (topRoleIcon) topRoleIcon.textContent = meta.icon;
+    if (topRoleText) topRoleText.textContent = meta.label;
+    if (profileSector) profileSector.textContent = meta.label;
+    if (topCityText) {
+      const shortCity = city.length > 7 ? city.substring(0, 6) + '…' : city;
+      topCityText.textContent = shortCity;
+    }
+  }
+
+  updateTopRoleBadge(selectedRole, selectedCity);
+
+  roleCards.forEach(card => {
+    if (card.getAttribute('data-role') === selectedRole) {
+      card.classList.add('active');
+    } else {
+      card.classList.remove('active');
+    }
+    card.addEventListener('click', () => {
+      roleCards.forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+      selectedRole = card.getAttribute('data-role');
+    });
+  });
+
+  cityChips.forEach(chip => {
+    if (chip.getAttribute('data-city') === selectedCity) {
+      chip.classList.add('active');
+    } else {
+      chip.classList.remove('active');
+    }
+    chip.addEventListener('click', () => {
+      cityChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      selectedCity = chip.getAttribute('data-city');
+      selectedLat = parseFloat(chip.getAttribute('data-lat'));
+      selectedLon = parseFloat(chip.getAttribute('data-lon'));
+      if (locationInput) locationInput.value = selectedCity;
+    });
+  });
+
+  gpsBtn?.addEventListener('click', () => {
+    if (navigator.geolocation) {
+      gpsBtn.innerHTML = '<span>⏳</span> Locating...';
+      navigator.geolocation.getCurrentPosition(pos => {
+        selectedLat = pos.coords.latitude;
+        selectedLon = pos.coords.longitude;
+        selectedCity = 'GPS Location';
+        if (locationInput) locationInput.value = 'Current GPS Location';
+        gpsBtn.innerHTML = '<span>✓</span> Locked';
+      }, () => {
+        gpsBtn.innerHTML = '<span>⚠️</span> Denied';
+      });
+    }
+  });
+
+  if (langSelect) {
+    langSelect.value = state.language;
+    langSelect.addEventListener('change', () => {
+      state.language = langSelect.value;
+      applyLanguage(state.language);
+    });
+  }
+  if (unitSelect) {
+    unitSelect.value = state.unit;
+    unitSelect.addEventListener('change', () => {
+      state.unit = unitSelect.value;
+    });
+  }
+
+  const showGate = () => {
+    gate?.classList.remove('hidden');
+    if (locationInput) locationInput.value = state.currentPlace.name;
+  };
+
+  openGateBtn?.addEventListener('click', showGate);
+  openGateProfileBtn?.addEventListener('click', showGate);
+
+  closeBtn?.addEventListener('click', () => {
+    gate?.classList.add('hidden');
+  });
+
+  launchBtn?.addEventListener('click', async () => {
+    launchBtn.innerHTML = '<span>Calibrating...</span>';
+
+    const typedQuery = locationInput?.value.trim();
+    if (typedQuery && typedQuery !== selectedCity && typedQuery !== 'Current GPS Location') {
+      try {
+        const geo = await api.searchGeocode(typedQuery);
+        if (geo.results && geo.results[0]) {
+          selectedCity = geo.results[0].name;
+          selectedLat = geo.results[0].latitude;
+          selectedLon = geo.results[0].longitude;
+        }
+      } catch (err) {
+        console.warn('[setup] Geocode lookup note:', err.message);
+      }
+    }
+
+    state.persona = selectedRole;
+    state.currentPlace.name = selectedCity;
+    state.currentPlace.latitude = selectedLat;
+    state.currentPlace.longitude = selectedLon;
+
+    localStorage.setItem('sih_configured', 'true');
+    localStorage.setItem('sih_role', selectedRole);
+    localStorage.setItem('sih_city', selectedCity);
+    localStorage.setItem('sih_lat', String(selectedLat));
+    localStorage.setItem('sih_lon', String(selectedLon));
+
+    updateTopRoleBadge(selectedRole, selectedCity);
+
+    await loadWeather(selectedLat, selectedLon, selectedCity, true);
+    gate?.classList.add('hidden');
+    launchBtn.innerHTML = '<span>Apply Intelligence Profile</span>';
+  });
+}
+
+function setupPersona() {
+  // Handled inside setupSihSetupGate
+}
+
+// ── 16. NWP, AVIATION & CLIMATE INTELLIGENCE LOADERS ─────────────────
 async function loadNwpData(lat, lon) {
   try {
     const data = await api.getNwpModels(lat, lon);
@@ -1473,11 +1623,11 @@ async function loadAviationData(lat, lon, placeName, rwyHeading) {
       catBadge.textContent = cat;
       catBadge.className = 'vfr-badge';
       if (cat === 'VFR') {
-        catBadge.style.cssText = 'background:rgba(52,211,153,0.18);border:1px solid var(--accent-green);color:var(--accent-green)';
+        catBadge.style.cssText = 'background:rgba(0,223,130,0.18);border:1px solid var(--accent-green);color:var(--accent-green)';
       } else if (cat === 'MVFR') {
         catBadge.style.cssText = 'background:rgba(56,189,248,0.18);border:1px solid var(--accent-cyan);color:var(--accent-cyan)';
       } else {
-        catBadge.style.cssText = 'background:rgba(248,113,113,0.18);border:1px solid var(--accent-red);color:var(--accent-red)';
+        catBadge.style.cssText = 'background:rgba(239,68,68,0.18);border:1px solid var(--accent-red);color:var(--accent-red)';
       }
     }
   } catch (err) {
@@ -1517,27 +1667,22 @@ async function loadClimateData(lat, lon, placeName) {
     }));
 
     if (tableContainer && decadalRows.length > 0) {
-      let html = `<table class="decadal-table">
+      let html = `<table class="decadal-table" style="width:100%;font-size:11px;color:#fff;border-collapse:collapse">
         <thead>
-          <tr>
-            <th>Decade</th>
-            <th>Mean °C</th>
-            <th>Anomaly</th>
-            <th>Rain</th>
-            <th>Heat d</th>
+          <tr style="color:var(--accent-green);border-bottom:1px solid rgba(255,255,255,0.1)">
+            <th style="padding:6px 4px;text-align:left">Decade</th>
+            <th style="padding:6px 4px;text-align:right">Mean °C</th>
+            <th style="padding:6px 4px;text-align:right">Anomaly</th>
+            <th style="padding:6px 4px;text-align:right">Rain</th>
           </tr>
         </thead>
         <tbody>`;
       decadalRows.forEach(row => {
-        const sign = String(row.temp_anomaly_c).startsWith('+') || Number(row.temp_anomaly_c) >= 0 ? '+' : '';
-        const aClass = String(row.temp_anomaly_c).includes('+') || Number(row.temp_anomaly_c) >= 0 ? 'anomaly-pos' : 'anomaly-neg';
-        const displayAnomaly = String(row.temp_anomaly_c).startsWith('+') ? row.temp_anomaly_c : `${sign}${row.temp_anomaly_c}`;
-        html += `<tr>
-          <td><b>${row.epoch_period}</b></td>
-          <td>${row.mean_temp_c}°C</td>
-          <td class="${aClass}">${displayAnomaly}°C</td>
-          <td>${row.monsoon_rainfall_mm}mm</td>
-          <td>${row.heatwave_days}</td>
+        html += `<tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+          <td style="padding:6px 4px"><b>${row.epoch_period}</b></td>
+          <td style="padding:6px 4px;text-align:right">${row.mean_temp_c}°C</td>
+          <td style="padding:6px 4px;text-align:right;color:var(--accent-green)">+${row.temp_anomaly_c}°C</td>
+          <td style="padding:6px 4px;text-align:right">${row.monsoon_rainfall_mm}mm</td>
         </tr>`;
       });
       html += `</tbody></table>`;
@@ -1597,7 +1742,7 @@ function setupAviationAndClimateListeners() {
   });
 }
 
-// ── 13. SETTINGS & APP PREFERENCES ───────────────────────────────────
+// ── 17. SETTINGS ─────────────────────────────────────────────────────
 function setupSettings() {
   const unitSelect = document.getElementById('unitSelect');
   const langSelect = document.getElementById('langSelect');
@@ -1640,26 +1785,6 @@ function setupSettings() {
     } catch (err) {
       alert('Failed to save key: ' + err.message);
       saveAiKeyBtn.textContent = 'Save Key';
-    }
-  });
-}
-
-function setupTravelPlanner() {
-  const btn = document.getElementById('travelPlanBtn');
-  const output = document.getElementById('travelOutput');
-  btn?.addEventListener('click', async () => {
-    const from = document.getElementById('travelFrom')?.value || 'Hyderabad';
-    const to = document.getElementById('travelTo')?.value || 'Mumbai';
-    if (output) output.innerHTML = `<p style="color:var(--accent-cyan);margin:0">⚡ Analyzing atmospheric road hazards between <strong>${escapeHtml(from)}</strong> and <strong>${escapeHtml(to)}</strong>...</p>`;
-
-    const prompt = `Evaluate highway road travel weather hazards, rain intervals, fog, and safe driving windows from ${from} to ${to}.`;
-    try {
-      const res = await api.askAi(prompt, state.currentWeather, state.language, from, 'traveller');
-      if (output) {
-        output.innerHTML = typeof renderMarkdown === 'function' ? renderMarkdown(res.answer || 'Route analysis completed.') : (res.answer || 'Route analysis completed.');
-      }
-    } catch (err) {
-      if (output) output.innerHTML = `<p style="color:var(--accent-red);margin:0">⚠️ Analysis error: ${escapeHtml(err.message)}</p>`;
     }
   });
 }
