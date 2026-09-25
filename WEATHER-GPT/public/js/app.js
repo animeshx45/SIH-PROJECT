@@ -853,10 +853,10 @@ function setupAndroidNavigation() {
   // Home Bottom Input Capsule Handlers (Matching Image 1)
   const homeCapsuleInput = document.getElementById('homeCapsuleInput');
   const homeCapsuleSendBtn = document.getElementById('homeCapsuleSendBtn');
-  const homeCapsuleMicBtn = document.getElementById('homeCapsuleMicBtn');
   const homeAttachmentBtn = document.getElementById('homeAttachmentBtn');
 
-  const executeHomePrompt = () => {
+  const executeHomePrompt = (e) => {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
     const q = homeCapsuleInput?.value.trim();
     if (!q) return;
     homeCapsuleInput.value = '';
@@ -867,21 +867,16 @@ function setupAndroidNavigation() {
   };
 
   homeCapsuleSendBtn?.addEventListener('click', executeHomePrompt);
+  homeCapsuleSendBtn?.addEventListener('touchend', executeHomePrompt);
   homeCapsuleInput?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') executeHomePrompt();
+    if (e.key === 'Enter') executeHomePrompt(e);
   });
 
   homeAttachmentBtn?.addEventListener('click', () => {
     openBottomSheet('sheet-telemetry');
   });
 
-  homeCapsuleMicBtn?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    switchTab('tab-ai');
-    document.getElementById('msgVoiceBtn')?.click();
-  });
-
-  // Home Ask Bar & Mic Trigger -> Go to AI Assistant
+  // Home Ask Bar Trigger -> Go to AI Assistant
   document.getElementById('homeAskBarTrigger')?.addEventListener('click', () => switchTab('tab-ai'));
   document.getElementById('openAiChatBtn')?.addEventListener('click', () => switchTab('tab-ai'));
 
@@ -1367,17 +1362,20 @@ function setupChat() {
   window.askWeatherGPT = askWeatherGPT;
 
   if (sendBtn && msgInput) {
-    sendBtn.addEventListener('click', () => {
+    const handleSend = (e) => {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
       const text = msgInput.value;
+      if (!text || !text.trim()) return;
       msgInput.value = '';
       askWeatherGPT(text);
-    });
+    };
+
+    sendBtn.addEventListener('click', handleSend);
+    sendBtn.addEventListener('touchend', handleSend);
 
     msgInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
-        const text = msgInput.value;
-        msgInput.value = '';
-        askWeatherGPT(text);
+        handleSend(e);
       }
     });
   }
@@ -1441,7 +1439,19 @@ function setupVoice() {
   const homeQuickMicBtn = document.getElementById('homeQuickMicBtn');
   const overlay = document.getElementById('voiceListeningOverlay');
   const cancelBtn = document.getElementById('voiceListeningCancelBtn');
+  const vloTitle = document.getElementById('vloTitle');
+  const vloSubtitle = document.getElementById('vloSubtitle');
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  // Preload speech synthesis voices
+  if ('speechSynthesis' in window && window.speechSynthesis) {
+    try {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => {
+        try { window.speechSynthesis.getVoices(); } catch {}
+      };
+    } catch {}
+  }
 
   function setListeningState(isListening) {
     state.isListening = isListening;
@@ -1452,8 +1462,11 @@ function setupVoice() {
       overlay?.classList.remove('hidden');
       voiceBtn?.classList.add('listening');
       homeMicBtn?.classList.add('listening');
+      if (vloTitle) vloTitle.textContent = 'Listening... Speak now';
+      if (vloSubtitle) vloSubtitle.textContent = 'Say e.g. "Will it rain today?" or tap below';
       if (chatInput) chatInput.placeholder = '🎙️ Listening... Speak now';
       if (homeInput) homeInput.placeholder = '🎙️ Listening... Speak now';
+      try { navigator.vibrate?.([40, 30, 40]); } catch {}
     } else {
       overlay?.classList.add('hidden');
       voiceBtn?.classList.remove('listening');
@@ -1463,6 +1476,24 @@ function setupVoice() {
     }
   }
 
+  // Quick suggestion chips inside the listening overlay
+  document.querySelectorAll('.voice-quick-pill').forEach(pill => {
+    pill.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const prompt = pill.getAttribute('data-voice-prompt');
+      if (!prompt) return;
+      setListeningState(false);
+      if (state.recognition) {
+        try { state.recognition.stop(); } catch {}
+      }
+      switchTab('tab-ai');
+      const input = document.getElementById('chatMessageInput');
+      if (input) input.value = prompt;
+      (window.askWeatherGPT || askWeatherGPT)(prompt);
+    });
+  });
+
   cancelBtn?.addEventListener('click', () => {
     if (state.recognition) {
       try { state.recognition.stop(); } catch {}
@@ -1471,11 +1502,6 @@ function setupVoice() {
   });
 
   const toggleRecording = () => {
-    if (!SpeechRecognition) {
-      alert('Voice queries are supported in Chrome, Edge, and Android with microphone permissions.');
-      return;
-    }
-
     if (state.isListening) {
       if (state.recognition) {
         try { state.recognition.stop(); } catch {}
@@ -1484,55 +1510,73 @@ function setupVoice() {
       return;
     }
 
+    setListeningState(true);
+
+    if (!SpeechRecognition) {
+      if (vloTitle) vloTitle.textContent = '🎙️ Voice Query Ready';
+      if (vloSubtitle) vloSubtitle.textContent = 'Tap a suggestion below or type your question:';
+      return;
+    }
+
     if (!state.recognition) {
-      state.recognition = new SpeechRecognition();
-      state.recognition.continuous = false;
-      state.recognition.interimResults = false;
+      try {
+        state.recognition = new SpeechRecognition();
+        state.recognition.continuous = false;
+        state.recognition.interimResults = false;
 
-      state.recognition.onstart = () => {
-        setListeningState(true);
-      };
+        state.recognition.onstart = () => {
+          setListeningState(true);
+        };
 
-      state.recognition.onresult = (e) => {
-        setListeningState(false);
-        const transcript = e.results && e.results[0] && e.results[0][0] ? e.results[0][0].transcript : '';
-        if (!transcript) return;
-        const input = document.getElementById('chatMessageInput');
-        if (input) input.value = transcript;
-        switchTab('tab-ai');
-        (window.askWeatherGPT || askWeatherGPT)(transcript);
-      };
+        state.recognition.onresult = (e) => {
+          setListeningState(false);
+          const transcript = e.results && e.results[0] && e.results[0][0] ? e.results[0][0].transcript : '';
+          if (!transcript) return;
+          const input = document.getElementById('chatMessageInput');
+          if (input) input.value = transcript;
+          switchTab('tab-ai');
+          (window.askWeatherGPT || askWeatherGPT)(transcript);
+        };
 
-      state.recognition.onerror = (e) => {
-        console.warn('[speech] Recognition error:', e.error);
-        setListeningState(false);
-        if (e.error === 'not-allowed') {
-          alert('Microphone permission was denied. Please allow microphone access in your browser or Android settings.');
-        }
-      };
+        state.recognition.onerror = (e) => {
+          console.warn('[speech] Recognition error:', e.error);
+          if (e.error === 'not-allowed') {
+            if (vloTitle) vloTitle.textContent = '⚠️ Mic Permission Needed';
+            if (vloSubtitle) vloSubtitle.textContent = 'Allow microphone access in settings, or tap below:';
+          } else {
+            setListeningState(false);
+          }
+        };
 
-      state.recognition.onend = () => {
-        setListeningState(false);
-      };
+        state.recognition.onend = () => {
+          setListeningState(false);
+        };
+      } catch (err) {
+        console.warn('[speech] Recognition setup notice:', err);
+      }
     }
 
     try {
-      state.recognition.lang = getLangCode(state.language);
-      setListeningState(true);
-      state.recognition.start();
+      if (state.recognition) {
+        state.recognition.lang = getLangCode(state.language);
+        state.recognition.start();
+      }
     } catch (err) {
       console.warn('[speech] Start notice:', err);
-      setListeningState(false);
     }
   };
 
   voiceBtn?.addEventListener('click', toggleRecording);
   homeMicBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
     e.stopPropagation();
+    switchTab('tab-ai');
     toggleRecording();
   });
   homeQuickMicBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
     e.stopPropagation();
+    switchTab('tab-ai');
     toggleRecording();
   });
 
@@ -1680,24 +1724,31 @@ function updateSpeechUI(isSpeaking, textPreview = '') {
 }
 
 function speakText(text) {
-  if (!('speechSynthesis' in window) || !state.speechSynth) {
-    alert('Voice speech synthesis is not supported on this device/browser.');
+  if (!('speechSynthesis' in window)) {
+    console.warn('[speech] Speech synthesis not supported on this platform');
     return;
   }
+  const synth = window.speechSynthesis;
+  if (!synth) return;
 
   // If already speaking, toggle STOP
-  if (state.isSpeaking || window.speechSynthesis.speaking) {
+  if (state.isSpeaking || synth.speaking) {
     stopSpeaking();
     return;
   }
 
   stopSpeaking();
 
+  try {
+    synth.cancel();
+    synth.resume();
+  } catch {}
+
   const clean = (text || '')
     .replace(/[#*`_~]/g, '')
     .replace(/https?:\/\/\S+/g, '')
     .replace(/<[^>]*>/g, '')
-    .replace(/•/g, '')
+    .replace(/[•👉💡🌤️🌧️☀️☔🌾🏙️🚗✈️🏛️⚡✅⚠️]/g, '')
     .trim();
 
   if (!clean) return;
@@ -1709,13 +1760,15 @@ function speakText(text) {
   utterance.pitch = 1.0;
 
   // Pick matching voice if available
-  const voices = window.speechSynthesis.getVoices();
-  if (voices && voices.length > 0) {
-    const matchingVoice = voices.find(v => v.lang === langCode || v.lang.startsWith(langCode.slice(0, 2))) ||
-      voices.find(v => v.lang.includes('IN')) ||
-      voices.find(v => v.lang.startsWith('en'));
-    if (matchingVoice) utterance.voice = matchingVoice;
-  }
+  try {
+    const voices = synth.getVoices();
+    if (voices && voices.length > 0) {
+      const matchingVoice = voices.find(v => v.lang === langCode || v.lang.startsWith(langCode.slice(0, 2))) ||
+        voices.find(v => v.lang.includes('IN')) ||
+        voices.find(v => v.lang.startsWith('en'));
+      if (matchingVoice) utterance.voice = matchingVoice;
+    }
+  } catch {}
 
   state.isSpeaking = true;
   updateSpeechUI(true, clean);
@@ -1730,7 +1783,7 @@ function speakText(text) {
   };
 
   utterance.onerror = (e) => {
-    console.warn('[speech] Utterance note:', e.error);
+    console.warn('[speech] Utterance note:', e?.error);
     state.isSpeaking = false;
     if (speechKeepAliveTimer) {
       clearInterval(speechKeepAliveTimer);
@@ -1739,17 +1792,27 @@ function speakText(text) {
     updateSpeechUI(false);
   };
 
-  window.speechSynthesis.speak(utterance);
+  try {
+    synth.speak(utterance);
+    if (synth.paused) {
+      synth.resume();
+    }
+  } catch (err) {
+    console.warn('[speech] Speak execution note:', err);
+    state.isSpeaking = false;
+    updateSpeechUI(false);
+  }
 
   // Chromium keepalive: periodically resume to prevent premature audio pause
+  if (speechKeepAliveTimer) clearInterval(speechKeepAliveTimer);
   speechKeepAliveTimer = setInterval(() => {
     if (!state.isSpeaking) {
       clearInterval(speechKeepAliveTimer);
       speechKeepAliveTimer = null;
-    } else if (window.speechSynthesis.speaking && window.speechSynthesis.paused) {
-      window.speechSynthesis.resume();
+    } else if (synth.speaking && synth.paused) {
+      synth.resume();
     }
-  }, 3500);
+  }, 1500);
 }
 
 // ── 15. SIH OPERATIONAL PROFILE & SETUP GATE ─────────────────────────
