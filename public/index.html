@@ -454,7 +454,8 @@
       </button>
 
       <div class="top-app-title-group" id="topAppTitleGroup">
-        <h1 class="top-brand-text">Weather<span class="text-accent-green">GPT</span></h1>
+        <h1 class="top-brand-text">Weather<span class="sih-brand-accent">GPT</span></h1>
+        <span class="sih-tricolor-badge">🇮🇳 SIH 2024</span>
       </div>
 
       <div class="top-app-actions">
@@ -854,13 +855,17 @@
                 <b>Live GIS Doppler Radar</b>
                 <span class="hrc-city-tag" id="hrcCityTag">Hyderabad</span>
               </div>
-              <button class="hrc-expand-btn" id="hrcExpandBtn" title="Open Full Doppler Console">
-                <span>Console</span> ↗
-              </button>
+              <div class="hrc-header-actions">
+                <button class="hrc-mini-btn" id="homeMapZoomInBtn" title="Zoom in" aria-label="Zoom in">+</button>
+                <button class="hrc-mini-btn" id="homeMapZoomOutBtn" title="Zoom out" aria-label="Zoom out">−</button>
+                <button class="hrc-expand-btn" id="hrcExpandBtn" title="Open Full Doppler Console">
+                  <span>Console</span> ↗
+                </button>
+              </div>
             </div>
             <div class="hrc-map-frame">
               <div id="homeMiniLeafletMap" class="home-mini-map"></div>
-              <div class="hrc-live-badge">DOPPLER LIVE • 250KM BASIN</div>
+              <div class="hrc-live-badge">🇮🇳 LIVE DOPPLER • 500KM BASIN</div>
             </div>
           </div>
 
@@ -1020,13 +1025,6 @@
               </button>
             </div>
 
-          </div>
-
-          <!-- Audio replay bar if speech synthesized -->
-          <div class="audio-replay-bar" id="audioReplayBar" style="display:none">
-            <button class="audio-replay-btn" id="listenLastBtn">
-              <span>🔊</span> Listen Audio Response
-            </button>
           </div>
 
           <!-- Bottom Chat Message Bar (Matching Screen 9) -->
@@ -1376,6 +1374,18 @@
                 <small id="settingsLangDisplay">English</small>
               </div>
               <svg class="sni-chevron" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+
+            <!-- Voice Synthesis Auto-Speak -->
+            <button class="settings-nav-item" id="settingsAutoSpeakBtn">
+              <div class="sni-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              </div>
+              <div class="sni-body">
+                <b>Voice Synthesis</b>
+                <small id="settingsAutoSpeakDisplay">Auto-speak AI responses (Off)</small>
+              </div>
+              <span class="active-tag-emerald" id="settingsAutoSpeakTag" style="opacity:0.6">OFF</span>
             </button>
 
             <!-- Notifications -->
@@ -1910,75 +1920,6 @@
       </div>
 
       <button class="export-csv-btn" id="exportClimateBtn">📥 Export Research CSV</button>
-    </div>
-  </div>
-
-  <!-- Sheet: Settings & Preferences -->
-  <div class="android-bottom-sheet" id="sheet-settings">
-    <div class="sheet-drag-handle"></div>
-    <div class="sheet-header">
-      <h3>⚙️ Preferences &amp; API Keys</h3>
-      <button class="sheet-close" data-close-sheet>&times;</button>
-    </div>
-    <div class="sheet-body">
-      <div class="settings-group">
-        <label>Temperature Unit</label>
-        <select id="unitSelect" class="settings-select">
-          <option value="c">Celsius (°C)</option>
-          <option value="f">Fahrenheit (°F)</option>
-        </select>
-      </div>
-
-      <div class="settings-group">
-        <label>Regional Language</label>
-        <select id="langSelect" class="settings-select">
-          <option value="en">English</option>
-          <option value="hi">हिन्दी (Hindi)</option>
-          <option value="te">తెలుగు (Telugu)</option>
-          <option value="mr">मराठी (Marathi)</option>
-          <option value="kn">ಕನ್ನಡ (Kannada)</option>
-          <option value="ta">தமிழ் (Tamil)</option>
-        </select>
-      </div>
-
-      <div class="settings-group check-group">
-        <input type="checkbox" id="autoSpeakCheck">
-        <label for="autoSpeakCheck">Automatically speak AI responses (Voice Synthesis)</label>
-      </div>
-
-      <div class="settings-group">
-        <label>WeatherGPT AI Access Key (SQLite Secured)</label>
-        <input type="password" id="aiKeyInput" class="settings-input" placeholder="Enter WeatherGPT AI Key">
-        <div class="key-save-row">
-          <button id="saveAiKeyBtn" class="save-key-btn">Save Key</button>
-          <span id="aiKeyStatus">Checking status...</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Sheet: Highway Travel Planner (Integration) -->
-  <div class="android-bottom-sheet" id="sheet-travel">
-    <div class="sheet-drag-handle"></div>
-    <div class="sheet-header">
-      <h3>🚗 Highway Travel Hazard Planner</h3>
-      <button class="sheet-close" data-close-sheet>&times;</button>
-    </div>
-    <div class="sheet-body">
-      <div class="travel-input-grid">
-        <div>
-          <label>Origin</label>
-          <input id="travelFrom" class="settings-input" value="Hyderabad">
-        </div>
-        <div>
-          <label>Destination</label>
-          <input id="travelTo" class="settings-input" value="Mumbai">
-        </div>
-      </div>
-      <button id="travelPlanBtn" class="primary-action-btn">Analyze Route Hazards</button>
-      <div id="travelOutput" class="sheet-advisory-box" style="margin-top:12px">
-        Enter points above to evaluate route weather hazards and rain intervals.
-      </div>
     </div>
   </div>
 

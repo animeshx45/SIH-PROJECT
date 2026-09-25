@@ -40,6 +40,21 @@
   --accent-cyan: #38BDF8;
   --accent-cyan-soft: rgba(56, 189, 248, 0.14);
 
+  /* SIH Indian Flag Tri-Colour Palette */
+  --sih-saffron: #FF9933;
+  --sih-saffron-bright: #FF7700;
+  --sih-saffron-glow: rgba(255, 153, 51, 0.45);
+  --sih-saffron-soft: rgba(255, 153, 51, 0.12);
+  --sih-white: #FFFFFF;
+  --sih-white-glow: rgba(255, 255, 255, 0.35);
+  --sih-green: #138808;
+  --sih-green-bright: #00DF82;
+  --sih-green-glow: rgba(0, 223, 130, 0.4);
+  --sih-green-soft: rgba(19, 136, 8, 0.15);
+  --sih-chakra-blue: #0A2540;
+  --sih-tricolor-flag: linear-gradient(90deg, #FF9933 0%, #FF9933 33.3%, #FFFFFF 33.3%, #FFFFFF 66.6%, #138808 66.6%, #138808 100%);
+  --sih-tricolor-gradient: linear-gradient(135deg, #FF9933 0%, #FFFFFF 50%, #00DF82 100%);
+
   /* Fonts & Radius */
   --font-main: 'Plus Jakarta Sans', 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --radius-xs: 8px;
@@ -751,14 +766,27 @@ html, body {
 
 /* 1. TOP APP BAR */
 .android-top-app-bar {
-  height: 52px;
+  position: relative;
+  height: 54px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 14px;
   background: var(--amoled-black);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   z-index: 50;
+}
+
+.android-top-app-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3.5px;
+  background: var(--sih-tricolor-flag);
+  z-index: 100;
+  box-shadow: 0 1px 6px rgba(255, 153, 51, 0.4);
 }
 
 .icon-touch-btn {
@@ -779,11 +807,38 @@ html, body {
   background: rgba(255, 255, 255, 0.08);
 }
 
+.top-app-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .top-brand-text {
   font-size: 20px;
   font-weight: 800;
   letter-spacing: -0.4px;
   color: #FFFFFF;
+}
+
+.sih-brand-accent {
+  background: var(--sih-tricolor-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+}
+
+.sih-tricolor-badge {
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 2.5px 8px;
+  border-radius: 9999px;
+  background: rgba(255, 153, 51, 0.12);
+  border: 1px solid rgba(255, 153, 51, 0.45);
+  color: #FF9933;
+  letter-spacing: 0.4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .top-app-actions {
@@ -1294,7 +1349,7 @@ html, body {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 223, 130, 0.45) 0%, rgba(0, 223, 130, 0.15) 50%, transparent 72%);
+  background: radial-gradient(circle, rgba(255, 153, 51, 0.45) 0%, rgba(255, 255, 255, 0.25) 35%, rgba(0, 223, 130, 0.22) 65%, transparent 75%);
   filter: blur(14px);
   animation: orbPulseGlow 3.5s ease-in-out infinite alternate;
 }
@@ -1304,13 +1359,13 @@ html, body {
   width: 82px;
   height: 82px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #84fab0 0%, #10dc78 45%, #009e54 100%);
-  box-shadow: 0 0 32px rgba(0, 223, 130, 0.75), inset 0 2px 5px rgba(255, 255, 255, 0.7);
+  background: radial-gradient(circle at 35% 30%, #FFB366 0%, #FFFFFF 15%, #00DF82 50%, #086638 100%);
+  box-shadow: 0 0 34px rgba(0, 223, 130, 0.75), 0 0 16px rgba(255, 153, 51, 0.5), inset 0 2px 5px rgba(255, 255, 255, 0.8);
   z-index: 2;
 }
 
 @keyframes orbPulseGlow {
-  0% { transform: scale(0.92); opacity: 0.7; }
+  0% { transform: scale(0.92); opacity: 0.75; }
   100% { transform: scale(1.18); opacity: 1; }
 }
 
@@ -1632,7 +1687,7 @@ html, body {
 
 .hrc-map-frame {
   position: relative;
-  height: 170px;
+  height: 340px;
   width: 100%;
 }
 
@@ -1872,7 +1927,7 @@ html, body {
 .ai-chat-feed {
   flex: 1;
   overflow-y: auto;
-  padding: 14px 14px 80px;
+  padding: 14px 14px 160px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -1973,26 +2028,78 @@ html, body {
   color: var(--accent-green);
 }
 
+.bubble-action-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 .listen-bubble-btn {
-  margin-top: 8px;
-  background: rgba(0, 223, 130, 0.12);
-  border: 1px solid rgba(0, 223, 130, 0.3);
-  color: var(--accent-green);
-  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(0, 223, 130, 0.15);
+  border: 1px solid rgba(0, 223, 130, 0.45);
+  color: #00DF82;
+  font-size: 12.5px;
   font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 8px;
+  padding: 7px 14px;
+  border-radius: 9999px;
   cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 223, 130, 0.2);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.listen-bubble-btn:hover {
+  background: rgba(0, 223, 130, 0.28);
+  border-color: #00DF82;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 223, 130, 0.35);
+}
+
+.listen-bubble-btn:active {
+  transform: scale(0.96);
+}
+
+.listen-bubble-btn.speaking {
+  background: rgba(239, 68, 68, 0.22) !important;
+  border-color: #EF4444 !important;
+  color: #EF4444 !important;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.5) !important;
+}
+
+.copy-bubble-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #94A3B8;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.copy-bubble-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
 }
 
 /* Floating Bottom Input Bar (Screen 9) */
 .ai-bottom-bar-wrap {
   position: absolute;
-  bottom: 74px;
+  bottom: 64px;
   left: 0;
   right: 0;
-  padding: 8px 14px;
-  background: linear-gradient(to top, var(--amoled-black) 80%, transparent 100%);
+  padding: 8px 14px 10px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.98) 75%, transparent 100%);
+  z-index: 40;
 }
 
 .ai-message-bar {
@@ -3389,9 +3496,37 @@ html, body {
   cursor: pointer;
 }
 
+.hrc-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hrc-mini-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.hrc-mini-btn:hover {
+  background: rgba(0, 223, 130, 0.2);
+  border-color: #00DF82;
+  color: #00DF82;
+}
+
 .hrc-map-frame {
   position: relative;
-  height: 180px;
+  height: 340px;
   width: 100%;
 }
 

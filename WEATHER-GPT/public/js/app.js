@@ -819,12 +819,16 @@ function setupAndroidNavigation() {
 
   // Top App Bar Icons (Settings & Notes from reference image design)
   document.getElementById('topSettingsBtn')?.addEventListener('click', () => {
-    openBottomSheet('sheet-settings');
+    switchTab('tab-settings');
   });
 
   document.getElementById('topNotesBtn')?.addEventListener('click', () => {
     openBottomSheet('sheet-telemetry');
   });
+
+  // Home Map Zoom Controls
+  document.getElementById('homeMapZoomInBtn')?.addEventListener('click', () => state.homeMap?.zoomIn());
+  document.getElementById('homeMapZoomOutBtn')?.addEventListener('click', () => state.homeMap?.zoomOut());
 
   // Bell icon in header -> Switch to Severe Alerts (tab-alerts)
   document.getElementById('topBellBtn')?.addEventListener('click', () => switchTab('tab-alerts'));
@@ -890,8 +894,10 @@ function setupAndroidNavigation() {
   document.getElementById('settingsUnitToggleBtn')?.addEventListener('click', () => {
     state.unit = state.unit === 'c' ? 'f' : 'c';
     const display = document.getElementById('settingsUnitDisplay');
-    if (display) display.textContent = state.unit === 'c' ? 'Celsius, km/h' : 'Fahrenheit, mph';
-    const unitSelect = document.getElementById('unitSelect');
+    const tag = document.getElementById('settingsUnitTag');
+    if (display) display.textContent = state.unit === 'c' ? 'Celsius (°C), km/h' : 'Fahrenheit (°F), mph';
+    if (tag) tag.textContent = state.unit === 'c' ? '°C' : '°F';
+    const unitSelect = document.getElementById('setupUnitSelect');
     if (unitSelect) unitSelect.value = state.unit;
     if (state.currentWeather) {
       renderHomeGlance(state.currentWeather, state.currentPlace.name);
@@ -899,6 +905,54 @@ function setupAndroidNavigation() {
       renderExtendedForecast(state.currentWeather);
     }
     api.updateSettings({ temperature_unit: state.unit }).catch(() => {});
+  });
+
+  // Language Cycle in Settings (English, Hindi, Telugu, Marathi, Kannada, Tamil)
+  const LANGUAGES_CYCLE = [
+    { code: 'en', label: 'English' },
+    { code: 'hi', label: 'हिन्दी (Hindi)' },
+    { code: 'te', label: 'తెలుగు (Telugu)' },
+    { code: 'mr', label: 'मराठी (Marathi)' },
+    { code: 'kn', label: 'ಕನ್ನಡ (Kannada)' },
+    { code: 'ta', label: 'தமிழ் (Tamil)' }
+  ];
+
+  document.getElementById('settingsLangBtn')?.addEventListener('click', async () => {
+    const currentIndex = LANGUAGES_CYCLE.findIndex(l => l.code === state.language);
+    const nextLang = LANGUAGES_CYCLE[(currentIndex + 1) % LANGUAGES_CYCLE.length];
+    state.language = nextLang.code;
+    applyLanguage(state.language);
+    const display = document.getElementById('settingsLangDisplay');
+    if (display) display.textContent = nextLang.label;
+    document.querySelectorAll('.drawer-lang-grid .lang-chip').forEach(c => {
+      c.classList.toggle('active', c.getAttribute('data-lang') === state.language);
+    });
+    try { await api.updateSettings({ language: state.language }); } catch {}
+  });
+
+  // Voice Auto-Speak Toggle in Settings
+  document.getElementById('settingsAutoSpeakBtn')?.addEventListener('click', () => {
+    state.autoSpeak = !state.autoSpeak;
+    const display = document.getElementById('settingsAutoSpeakDisplay');
+    const tag = document.getElementById('settingsAutoSpeakTag');
+    if (display) display.textContent = state.autoSpeak ? 'Auto-speak AI responses (Active)' : 'Auto-speak AI responses (Off)';
+    if (tag) {
+      tag.textContent = state.autoSpeak ? 'ON' : 'OFF';
+      tag.style.opacity = state.autoSpeak ? '1' : '0.6';
+    }
+  });
+
+  // Settings Notifications & Data & Help items
+  document.getElementById('settingsNotificationsBtn')?.addEventListener('click', () => {
+    alert(`🔔 Live Push Notifications Active\n\nInstant alerts enabled for flash flood risks, convective storms, and IMD yellow/orange/red bulletins for ${state.currentPlace.name}.`);
+  });
+
+  document.getElementById('settingsDataBtn')?.addEventListener('click', () => {
+    alert('💾 WeatherGPT Local Storage Engine\n\nHigh-performance SQLite database active. Regional 7-day model caches and sensor histories are synchronized for zero-latency offline access.');
+  });
+
+  document.getElementById('settingsHelpBtn')?.addEventListener('click', () => {
+    switchTab('tab-about');
   });
 }
 
@@ -1153,13 +1207,36 @@ function setupChat() {
     bubble.innerHTML = `
       <div class="bubble-content">
         ${html}
-        <button class="listen-bubble-btn" title="Listen with voice"><span>🔊</span> Listen</button>
+      </div>
+      <div class="bubble-action-bar">
+        <button class="listen-bubble-btn" title="Listen with voice">
+          <span class="lbb-icon">🔊</span>
+          <span class="lbb-text">Listen Audio Response</span>
+        </button>
+        <button class="copy-bubble-btn" title="Copy text">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span>Copy</span>
+        </button>
       </div>
     `;
-    bubble.querySelector('.listen-bubble-btn')?.addEventListener('click', () => {
-      const textToSpeak = rawText || bubble.querySelector('.bubble-content').textContent.replace('🔊 Listen', '').trim();
+
+    const listenBtn = bubble.querySelector('.listen-bubble-btn');
+    listenBtn?.addEventListener('click', () => {
+      const textToSpeak = rawText || bubble.querySelector('.bubble-content').textContent.trim();
       speakText(textToSpeak);
     });
+
+    const copyBtn = bubble.querySelector('.copy-bubble-btn');
+    copyBtn?.addEventListener('click', () => {
+      const textToCopy = rawText || bubble.querySelector('.bubble-content').textContent.trim();
+      navigator.clipboard?.writeText(textToCopy).then(() => {
+        copyBtn.innerHTML = '<span>✓ Copied</span>';
+        setTimeout(() => {
+          copyBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copy</span>';
+        }, 1800);
+      }).catch(() => {});
+    });
+
     feed.appendChild(bubble);
     bubble.scrollIntoView({ behavior: 'smooth', block: 'end' });
     return bubble;
@@ -1178,13 +1255,25 @@ function setupChat() {
       state.lastAiAnswer = res.answer || 'No response available.';
 
       if (typingBubble) {
-        typingBubble.querySelector('.bubble-content').innerHTML = `
-          ${renderMarkdown(state.lastAiAnswer)}
-          <button class="listen-bubble-btn" title="Listen with voice"><span>🔊</span> Listen</button>
-        `;
-        typingBubble.querySelector('.listen-bubble-btn')?.addEventListener('click', () => {
-          speakText(state.lastAiAnswer);
-        });
+        typingBubble.querySelector('.bubble-content').innerHTML = renderMarkdown(state.lastAiAnswer);
+        const actionRow = typingBubble.querySelector('.bubble-action-bar');
+        if (actionRow) {
+          actionRow.style.display = 'flex';
+          const listenBtn = actionRow.querySelector('.listen-bubble-btn');
+          listenBtn?.addEventListener('click', () => {
+            speakText(state.lastAiAnswer);
+          });
+          const copyBtn = actionRow.querySelector('.copy-bubble-btn');
+          copyBtn?.addEventListener('click', () => {
+            navigator.clipboard?.writeText(state.lastAiAnswer).then(() => {
+              copyBtn.innerHTML = '<span>✓ Copied</span>';
+              setTimeout(() => {
+                copyBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copy</span>';
+              }, 1800);
+            }).catch(() => {});
+          });
+        }
+        typingBubble.scrollIntoView({ behavior: 'smooth', block: 'end' });
       }
 
       if (res.placeName && res.placeName.toLowerCase() !== state.currentPlace.name.toLowerCase()) {
@@ -1195,9 +1284,6 @@ function setupChat() {
           }
         }).catch(() => {});
       }
-
-      const replayBar = document.getElementById('audioReplayBar');
-      if (replayBar) replayBar.style.display = 'block';
 
       if (state.autoSpeak && state.lastAiAnswer) {
         speakText(state.lastAiAnswer);
@@ -1442,12 +1528,18 @@ function updateSpeechUI(isSpeaking, textPreview = '') {
 
   // Update all bubble listen buttons across active chat
   document.querySelectorAll('.listen-bubble-btn').forEach(btn => {
+    const icon = btn.querySelector('.lbb-icon');
+    const text = btn.querySelector('.lbb-text');
     if (isSpeaking) {
       btn.classList.add('speaking');
-      btn.innerHTML = '<span style="color:#ef4444">⏹️</span> Stop';
+      if (icon) icon.textContent = '⏹️';
+      if (text) text.textContent = 'Stop Speaking';
+      else btn.innerHTML = '<span style="color:#ef4444">⏹️</span> Stop Speaking';
     } else {
       btn.classList.remove('speaking');
-      btn.innerHTML = '<span>🔊</span> Listen';
+      if (icon) icon.textContent = '🔊';
+      if (text) text.textContent = 'Listen Audio Response';
+      else btn.innerHTML = '<span>🔊</span> Listen Audio Response';
     }
   });
 
