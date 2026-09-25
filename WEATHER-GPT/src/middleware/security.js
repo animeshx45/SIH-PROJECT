@@ -12,8 +12,8 @@ export function applySecurityHeaders(req, res) {
     "script-src 'self' 'unsafe-inline' https://unpkg.com; " +
     "style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; " +
     "font-src 'self' https://fonts.gstatic.com data:; " +
-    "img-src 'self' data: blob: https://*.tile.openstreetmap.org https://tilecache.rainviewer.com https://unpkg.com; " +
-    "connect-src 'self' https://api.open-meteo.com https://air-quality-api.open-meteo.com https://geocoding-api.open-meteo.com https://api.rainviewer.com https://generativelanguage.googleapis.com;"
+    "img-src 'self' data: blob: https://*.tile.openstreetmap.org https://tile.openstreetmap.org https://tilecache.rainviewer.com https://unpkg.com; " +
+    "connect-src 'self' https://api.open-meteo.com https://air-quality-api.open-meteo.com https://geocoding-api.open-meteo.com https://api.rainviewer.com https://generativelanguage.googleapis.com https://*.tile.openstreetmap.org https://tile.openstreetmap.org;"
   );
 
   res.setHeader('X-Content-Type-Options', 'nosniff');

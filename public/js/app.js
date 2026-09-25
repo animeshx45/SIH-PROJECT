@@ -537,10 +537,10 @@ function renderExtendedForecast(data) {
 
 // ── 5. LEAFLET DUAL MAP SYSTEMS (Home Mini GIS + Radar Console) ───────
 const BASEMAP_TILES = {
-  dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-  osm: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  dark: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  osm: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
   satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-  topo: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png'
+  topo: 'https://tile.opentopomap.org/{z}/{x}/{y}.png'
 };
 
 /* ── 5A. HOME MINI LEAFLET MAP ── */
@@ -557,7 +557,6 @@ function initHomeMiniMap() {
   });
 
   L.tileLayer(BASEMAP_TILES.dark, {
-    subdomains: 'abcd',
     maxZoom: 19
   }).addTo(state.homeMap);
 
@@ -598,7 +597,6 @@ function initLeafletRadarMap() {
   });
 
   state.radarBasemapLayer = L.tileLayer(BASEMAP_TILES.dark, {
-    subdomains: 'abcd',
     maxZoom: 19
   }).addTo(state.map);
 
@@ -819,6 +817,15 @@ function setupAndroidNavigation() {
   document.getElementById('radarBackBtn')?.addEventListener('click', () => switchTab('tab-home'));
   document.getElementById('aiBackBtn')?.addEventListener('click', () => switchTab('tab-home'));
 
+  // Top App Bar Icons (Settings & Notes from reference image design)
+  document.getElementById('topSettingsBtn')?.addEventListener('click', () => {
+    openBottomSheet('sheet-settings');
+  });
+
+  document.getElementById('topNotesBtn')?.addEventListener('click', () => {
+    openBottomSheet('sheet-telemetry');
+  });
+
   // Bell icon in header -> Switch to Severe Alerts (tab-alerts)
   document.getElementById('topBellBtn')?.addEventListener('click', () => switchTab('tab-alerts'));
 
@@ -833,17 +840,48 @@ function setupAndroidNavigation() {
     }
   });
 
-  // Home Screen Quick Action Cards Handlers
+  // Home Screen Quick Action Cards Handlers (Matching Image 1)
   document.getElementById('cardCropAdvice')?.addEventListener('click', () => switchTab('tab-crop'));
   document.getElementById('cardTravelSafety')?.addEventListener('click', () => switchTab('tab-travel'));
   document.getElementById('cardSevereAlerts')?.addEventListener('click', () => switchTab('tab-alerts'));
   document.getElementById('cardRainTimeline')?.addEventListener('click', () => openBottomSheet('sheet-telemetry'));
 
+  // Home Bottom Input Capsule Handlers (Matching Image 1)
+  const homeCapsuleInput = document.getElementById('homeCapsuleInput');
+  const homeCapsuleSendBtn = document.getElementById('homeCapsuleSendBtn');
+  const homeCapsuleMicBtn = document.getElementById('homeCapsuleMicBtn');
+  const homeAttachmentBtn = document.getElementById('homeAttachmentBtn');
+
+  const executeHomePrompt = () => {
+    const q = homeCapsuleInput?.value.trim();
+    if (!q) return;
+    homeCapsuleInput.value = '';
+    switchTab('tab-ai');
+    const chatInput = document.getElementById('chatMessageInput');
+    if (chatInput) chatInput.value = q;
+    (window.askWeatherGPT || askWeatherGPT)(q);
+  };
+
+  homeCapsuleSendBtn?.addEventListener('click', executeHomePrompt);
+  homeCapsuleInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') executeHomePrompt();
+  });
+
+  homeAttachmentBtn?.addEventListener('click', () => {
+    openBottomSheet('sheet-telemetry');
+  });
+
+  homeCapsuleMicBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    switchTab('tab-ai');
+    document.getElementById('msgVoiceBtn')?.click();
+  });
+
   // Home Ask Bar & Mic Trigger -> Go to AI Assistant
   document.getElementById('homeAskBarTrigger')?.addEventListener('click', () => switchTab('tab-ai'));
   document.getElementById('openAiChatBtn')?.addEventListener('click', () => switchTab('tab-ai'));
 
-  // Open Location Picker from Weather Card
+  // Open Location Picker from Weather Capsule
   document.getElementById('openLocationPickerBtn')?.addEventListener('click', () => {
     openBottomSheet('sheet-city-picker');
   });
@@ -1287,6 +1325,9 @@ function setupVoice() {
     e.stopPropagation();
     toggleRecording();
   });
+
+  // Wire Floating Speech Stop Button
+  document.getElementById('floatingStopSpeechBtn')?.addEventListener('click', stopSpeaking);
 }
 
 // ── 14. CITY PICKER & DYNAMIC LOCATION SWITCHER ──────────────────────
@@ -1296,6 +1337,19 @@ function setupCityPicker() {
   const gpsBtn = document.getElementById('cityPickerGpsBtn');
   const resultsBox = document.getElementById('citySearchResults');
   const quickChips = document.querySelectorAll('#quickCityChips .city-chip');
+
+  // Real-time chip filter while typing
+  input?.addEventListener('input', () => {
+    const term = input.value.trim().toLowerCase();
+    quickChips.forEach(chip => {
+      const cityName = (chip.getAttribute('data-city') || chip.textContent).toLowerCase();
+      if (!term || cityName.includes(term)) {
+        chip.style.display = 'inline-block';
+      } else {
+        chip.style.display = 'none';
+      }
+    });
+  });
 
   const doSearch = async () => {
     const q = input?.value.trim();
@@ -1366,13 +1420,69 @@ function getLangCode(lang) {
   return map[lang] || 'en-IN';
 }
 
+function stopSpeaking() {
+  if (state.speechSynth) {
+    state.speechSynth.cancel();
+  }
+  state.isSpeaking = false;
+  updateSpeechUI(false);
+}
+
+function updateSpeechUI(isSpeaking, textPreview = '') {
+  const speechBar = document.getElementById('floatingSpeechBar');
+  const statusText = document.getElementById('fsbStatusText');
+  if (speechBar) {
+    if (isSpeaking) {
+      speechBar.classList.remove('hidden');
+      if (statusText) statusText.textContent = textPreview ? `Speaking: ${textPreview.slice(0, 34)}...` : 'WeatherGPT speaking...';
+    } else {
+      speechBar.classList.add('hidden');
+    }
+  }
+
+  // Update all bubble listen buttons across active chat
+  document.querySelectorAll('.listen-bubble-btn').forEach(btn => {
+    if (isSpeaking) {
+      btn.classList.add('speaking');
+      btn.innerHTML = '<span style="color:#ef4444">⏹️</span> Stop';
+    } else {
+      btn.classList.remove('speaking');
+      btn.innerHTML = '<span>🔊</span> Listen';
+    }
+  });
+
+  const listenLast = document.getElementById('listenLastAiBtn');
+  if (listenLast) {
+    listenLast.innerHTML = isSpeaking ? '<span>⏹️</span> Stop Speaking' : '<span>🔊</span> Listen to Response';
+  }
+}
+
 function speakText(text) {
   if (!state.speechSynth) return;
+  if (state.isSpeaking) {
+    stopSpeaking();
+    return;
+  }
+
   state.speechSynth.cancel();
   const clean = text.replace(/[*#_~`]/g, '');
   const utterance = new SpeechSynthesisUtterance(clean);
   utterance.lang = getLangCode(state.language);
   utterance.rate = 1.0;
+
+  state.isSpeaking = true;
+  updateSpeechUI(true, clean);
+
+  utterance.onend = () => {
+    state.isSpeaking = false;
+    updateSpeechUI(false);
+  };
+
+  utterance.onerror = (e) => {
+    state.isSpeaking = false;
+    updateSpeechUI(false);
+  };
+
   state.speechSynth.speak(utterance);
 }
 

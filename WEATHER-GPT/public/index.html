@@ -443,9 +443,9 @@
   <!-- ================================================================= -->
   <div class="main-app-shell" id="mainAppShell">
 
-    <!-- 1. ANDROID TOP APP BAR -->
+    <!-- 1. ANDROID TOP APP BAR (Pixel-perfect to reference design) -->
     <header class="android-top-app-bar" id="topAppBar">
-      <button class="icon-touch-btn" id="drawerOpenBtn" aria-label="Open Navigation Drawer">
+      <button class="icon-touch-btn" id="drawerOpenBtn" aria-label="Open Navigation Drawer" title="Menu">
         <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none">
           <line x1="4" y1="7" x2="20" y2="7"/>
           <line x1="4" y1="12" x2="20" y2="12"/>
@@ -458,37 +458,49 @@
       </div>
 
       <div class="top-app-actions">
-        <!-- Quick Role Switcher Pill -->
-        <button class="role-selector-pill" id="openSetupGateBtn" title="Switch Stakeholder Profile & Region">
+        <!-- Settings Gear Icon -->
+        <button class="icon-touch-btn" id="topSettingsBtn" aria-label="Settings" title="Settings & Preferences">
+          <svg viewBox="0 0 24 24" width="21" height="21" stroke="currentColor" stroke-width="1.9" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+
+        <!-- Document / Notes Icon -->
+        <button class="icon-touch-btn" id="topNotesBtn" aria-label="Notes & Briefings" title="Weather Briefings & Notes">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="1.9" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <line x1="10" y1="9" x2="8" y2="9"/>
+          </svg>
+        </button>
+
+        <!-- Role selector trigger retained in DOM for backward compatibility -->
+        <button class="role-selector-pill" id="openSetupGateBtn" style="display:none">
           <span id="topRoleIcon">🌾</span>
-          <span id="topRoleText">Farmer</span> • <b id="topCityText">Hyd</b> ▾
+          <span id="topRoleText">Farmer</span> • <b id="topCityText">Hyd</b>
         </button>
-
-        <!-- Notification Bell Icon (Opens Alerts Center) -->
-        <button class="icon-touch-btn" id="topBellBtn" aria-label="Notifications" title="Alerts & Notification Center">
-          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-          </svg>
-          <span class="bell-alert-badge" id="bellBadge">2</span>
-        </button>
-
-        <!-- Top GPS Quick Trigger -->
-        <button class="icon-touch-btn" id="topGpsBtn" title="Detect GPS Location" aria-label="Current Location">
-          <svg viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none">
-            <circle cx="12" cy="12" r="8"/>
-            <line x1="12" y1="2" x2="12" y2="6"/>
-            <line x1="12" y1="18" x2="12" y2="22"/>
-            <line x1="2" y1="12" x2="6" y2="12"/>
-            <line x1="18" y1="12" x2="22" y2="12"/>
-          </svg>
-        </button>
-
-        <button class="icon-touch-btn" id="topHistoryBtn" title="Chat History" aria-label="Session Log" style="display:none">
-          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
-        </button>
+        <button id="topBellBtn" style="display:none"></button>
+        <button id="topGpsBtn" style="display:none"></button>
+        <button id="topHistoryBtn" style="display:none"></button>
       </div>
     </header>
+
+    <!-- Floating Audio Speech Synthesis Status Bar with Stop Button -->
+    <div class="floating-speech-bar hidden" id="floatingSpeechBar">
+      <div class="fsb-left">
+        <span class="fsb-wave">🔊</span>
+        <span class="fsb-text" id="fsbStatusText">WeatherGPT speaking...</span>
+      </div>
+      <button class="fsb-stop-btn" id="floatingStopSpeechBtn" title="Stop speech synthesis">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
+          <rect x="5" y="5" width="14" height="14" rx="2"/>
+        </svg>
+        <span>Stop</span>
+      </button>
+    </div>
 
     <!-- 2. NATIVE ANDROID DRAWER BACKDROP & MENU (SCREEN 8) -->
     <div class="drawer-backdrop" id="androidDrawerBackdrop"></div>
@@ -677,137 +689,164 @@
     <main class="android-viewport" id="mainViewport">
 
       <!-- =============================================================== -->
-      <!-- TAB 1: HOME DASHBOARD (SCREEN 7)                                -->
+      <!-- TAB 1: HOME DASHBOARD (Exact Match to Reference Image 1)        -->
       <!-- =============================================================== -->
       <section class="tab-screen active" id="tab-home">
         <div class="home-scroll-container" id="homeScrollContainer">
           
-          <!-- Weather Location Glance Card (Matching Screen 7) -->
-          <div class="weather-hero-card" id="homeGlancePill">
-            <!-- Location Pin Dropdown Row -->
-            <div class="whc-top-row">
-              <button class="whc-loc-btn" id="openLocationPickerBtn" title="Switch Location">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#00DF82" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                <span id="glancePlace">Hyderabad</span>
-                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M6 9l6 6 6-6"/></svg>
-              </button>
-            </div>
-
-            <!-- Weather Illustration & Big Temperature Center Row -->
-            <div class="whc-temp-cluster">
-              <div class="whc-weather-artwork" id="weatherArtwork">
-                <!-- Glowing Sun behind Cloud Vector Graphic -->
-                <svg viewBox="0 0 100 80" width="90" height="72" fill="none">
-                  <circle cx="36" cy="32" r="22" fill="#ffeaa7"/>
-                  <circle cx="36" cy="32" r="28" fill="rgba(255,234,167,0.2)"/>
-                  <path d="M25,52 Q25,40 38,40 Q45,30 58,32 Q70,30 76,40 Q88,40 88,52 Q88,64 76,64 L25,64 Z" fill="#e2e8f0"/>
-                  <path d="M30,55 Q30,46 40,46 Q46,38 56,40 Q66,38 71,46 Q80,46 80,55 Q80,64 71,64 L30,64 Z" fill="#cbd5e1"/>
+          <!-- 1. Horizontal Weather Glance Capsule (Directly below Top App Bar) -->
+          <div class="weather-glance-capsule-wrap">
+            <div class="weather-glance-capsule" id="homeGlanceCapsule">
+              <!-- Location Pin & Name -->
+              <button class="capsule-city-btn" id="openLocationPickerBtn" title="Change Location (All India)">
+                <svg class="capsule-pin-icon" viewBox="0 0 24 24" width="16" height="16" fill="#00DF82">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                 </svg>
-              </div>
-
-              <div class="whc-temp-info">
-                <div class="whc-big-temp" id="glanceTemp">26°C</div>
-                <div class="whc-condition" id="glanceCondition">Overcast</div>
-                <div class="whc-feels" id="glanceFeels">Feels like 28°</div>
-              </div>
-            </div>
-
-            <!-- 3-Metric Horizontal Strip (Matching Screen 7) -->
-            <div class="whc-metric-row">
-              <div class="whc-metric-item">
-                <div class="whc-m-top">
-                  <span class="whc-m-icon">💧</span>
-                  <b id="glanceRain">3%</b>
-                </div>
-                <small>Humidity</small>
-              </div>
-
-              <div class="whc-metric-item">
-                <div class="whc-m-top">
-                  <span class="whc-m-icon">💨</span>
-                  <b id="glanceWind">72%</b>
-                </div>
-                <small>Wind</small>
-              </div>
-
-              <div class="whc-metric-item">
-                <div class="whc-m-top">
-                  <span class="whc-m-icon">☀️</span>
-                  <b id="glanceUv">Moderate</b>
-                </div>
-                <small>UV</small>
-              </div>
-            </div>
-          </div>
-
-          <!-- Ask anything search bar (Screen 7 Hero Ask Bar) -->
-          <div class="home-ask-bar-wrap">
-            <div class="home-ask-bar" id="homeAskBarTrigger">
-              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input type="text" id="homeQuickInput" placeholder="Ask anything about weather..." readonly>
-              <button class="home-mic-btn" id="homeQuickMicBtn" aria-label="Voice Query">
-                <svg viewBox="0 0 24 24" width="18" height="18" stroke="#00DF82" stroke-width="2.2" fill="none"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                <span id="glancePlace">Hyderabad</span>
+                <svg class="capsule-chevron-icon" viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M6 9l6 6 6-6"/></svg>
               </button>
+
+              <span class="capsule-divider">|</span>
+
+              <!-- Temperature & Icon -->
+              <div class="capsule-metric-item">
+                <span id="glanceWeatherIcon">🌤️</span>
+                <span id="glanceTemp" class="capsule-metric-val">26°C</span>
+              </div>
+
+              <span class="capsule-divider">|</span>
+
+              <!-- Weather Condition -->
+              <div class="capsule-metric-item">
+                <span id="glanceCondition" class="capsule-condition-val">Overcast</span>
+              </div>
+
+              <span class="capsule-divider">|</span>
+
+              <!-- Rain Percentage -->
+              <div class="capsule-metric-item">
+                <span>🌧️</span>
+                <span id="glanceRain" class="capsule-metric-val">3%</span>
+              </div>
             </div>
           </div>
 
-          <!-- 2-Column Quick Action Cards (Screen 7 Matching Grid) -->
+          <!-- 2. Center Hero Orb & Question (Exact Match to Reference Image 1) -->
+          <div class="home-center-hero-section">
+            <div class="hero-orb-outer" id="homeHeroOrb">
+              <div class="hero-orb-aura"></div>
+              <div class="hero-orb-core"></div>
+            </div>
+
+            <h2 class="home-hero-title">How can I help you <span class="text-accent-green">today?</span></h2>
+            <p class="home-hero-subtitle">Ask about weather forecasts, farming advice,<br>travel safety or live alerts.</p>
+          </div>
+
+          <!-- 3. 2x2 Quick Action Cards (Exact Match to Reference Image 1) -->
           <div class="home-actions-grid" id="quickActionCards">
             <!-- Card 1: Crop & Spray Advice -->
             <button class="grid-action-card" id="cardCropAdvice" data-target-tab="tab-crop">
-              <div class="gac-icon-circle green">
-                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 2a9 9 0 0 1 9 9v1a9 9 0 0 1-9 9 9 9 0 0 1-9-9v-1a9 9 0 0 1 9-9z"/><path d="M12 2v20"/><path d="M12 12c-3-2-5-1-6 2"/><path d="M12 8c3-2 5-1 6 2"/></svg>
+              <div class="gac-icon-circle">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="#00DF82" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                  <path d="M12 22v-9"/>
+                  <path d="M12 13a5 5 0 0 0 5-5c0-4-5-6-5-6s-5 2-5 6a5 5 0 0 0 5 5z"/>
+                  <path d="M12 17a4 4 0 0 1-4-4"/>
+                </svg>
               </div>
               <div class="gac-content">
                 <b>Crop &amp; Spray<br>Advice</b>
+              </div>
+              <div class="gac-chevron">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.2" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
               </div>
             </button>
 
             <!-- Card 2: Rain Timeline -->
             <button class="grid-action-card" id="cardRainTimeline" data-action="open-telemetry">
-              <div class="gac-icon-circle emerald">
-                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/><line x1="8" y1="19" x2="8" y2="21"/><line x1="8" y1="13" x2="8" y2="15"/><line x1="16" y1="19" x2="16" y2="21"/><line x1="16" y1="13" x2="16" y2="15"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="12" y1="15" x2="12" y2="17"/></svg>
+              <div class="gac-icon-circle">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="#00DF82" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                  <path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/>
+                  <line x1="8" y1="19" x2="8" y2="21"/>
+                  <line x1="8" y1="13" x2="8" y2="15"/>
+                  <line x1="16" y1="19" x2="16" y2="21"/>
+                  <line x1="16" y1="13" x2="16" y2="15"/>
+                  <line x1="12" y1="21" x2="12" y2="23"/>
+                  <line x1="12" y1="15" x2="12" y2="17"/>
+                </svg>
               </div>
               <div class="gac-content">
                 <b>Rain<br>Timeline</b>
+              </div>
+              <div class="gac-chevron">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.2" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
               </div>
             </button>
 
             <!-- Card 3: Travel Safety Risk -->
             <button class="grid-action-card" id="cardTravelSafety" data-target-tab="tab-travel">
-              <div class="gac-icon-circle green">
-                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              <div class="gac-icon-circle">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="#00DF82" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  <path d="M12 8v5"/>
+                  <path d="M12 16h.01"/>
+                </svg>
               </div>
               <div class="gac-content">
-                <b>Travel Safety<br>Risk</b>
+                <b>Travel<br>Safety Risk</b>
+              </div>
+              <div class="gac-chevron">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.2" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
               </div>
             </button>
 
             <!-- Card 4: Severe Alerts Status -->
             <button class="grid-action-card" id="cardSevereAlerts" data-target-tab="tab-alerts">
-              <div class="gac-icon-circle emerald">
-                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <div class="gac-icon-circle">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="#00DF82" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
               </div>
               <div class="gac-content">
                 <b>Severe Alerts<br>Status</b>
               </div>
+              <div class="gac-chevron">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.2" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
             </button>
           </div>
 
-          <!-- Hero AI Orb & Conversational Assistant Quick Access -->
-          <div class="home-assistant-banner" id="homeAssistantBanner">
-            <div class="hab-orb-mini" id="aiOrbWrapper">
-              <div class="ai-orb-core"></div>
-              <div class="ai-orb-ring ring-1"></div>
+          <!-- 4. Bottom Input Capsule (Exact Match to Reference Image 1) -->
+          <div class="home-bottom-input-wrap">
+            <div class="home-bottom-input-capsule">
+              <button class="hbic-plus-btn" id="homeAttachmentBtn" title="Meteorological Options & Data Sources" aria-label="Attachments">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" fill="none">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </button>
+
+              <input type="text" id="homeCapsuleInput" class="hbic-text-input" placeholder="Ask anything about weather..." autocomplete="off">
+
+              <button class="hbic-mic-btn" id="homeCapsuleMicBtn" title="Voice Input" aria-label="Voice Query">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                  <line x1="12" y1="19" x2="12" y2="23"/>
+                  <line x1="8" y1="23" x2="16" y2="23"/>
+                </svg>
+              </button>
+
+              <button class="hbic-send-btn" id="homeCapsuleSendBtn" title="Send query" aria-label="Send">
+                <svg viewBox="0 0 24 24" width="19" height="19" stroke="#000000" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                  <line x1="7" y1="17" x2="17" y2="7"/>
+                  <polyline points="7 7 17 7 17 17"/>
+                </svg>
+              </button>
             </div>
-            <div class="hab-text">
-              <h3>How can I help you today?</h3>
-              <p>Ask about weather forecasts, farming advice, travel safety or live alerts.</p>
-            </div>
-            <button class="hab-chat-btn" id="openAiChatBtn">Chat →</button>
           </div>
 
-          <!-- Live GIS Doppler Radar Preview Card -->
+          <!-- Live GIS Doppler Radar Card & Telemetry -->
           <div class="home-radar-card" id="homeRadarCard">
             <div class="hrc-header">
               <div class="hrc-title-cluster">
@@ -815,7 +854,7 @@
                 <b>Live GIS Doppler Radar</b>
                 <span class="hrc-city-tag" id="hrcCityTag">Hyderabad</span>
               </div>
-              <button class="hrc-expand-btn" id="hrcExpandBtn" title="Full Map">
+              <button class="hrc-expand-btn" id="hrcExpandBtn" title="Open Full Doppler Console">
                 <span>Console</span> ↗
               </button>
             </div>
@@ -826,6 +865,14 @@
           </div>
 
           <!-- Hidden helper anchor elements for existing event listeners -->
+          <div id="homeGlancePill" style="display:none">
+            <span id="glanceFeels">Feels like 28°</span>
+            <span id="glanceWind">72%</span>
+            <span id="glanceUv">Moderate</span>
+          </div>
+          <input type="text" id="homeQuickInput" style="display:none">
+          <button id="homeQuickMicBtn" style="display:none"></button>
+          <button id="openAiChatBtn" style="display:none"></button>
           <button id="glanceExpandBtn" style="display:none"></button>
           <div id="chatActiveCity" style="display:none">Hyderabad</div>
 
@@ -1957,10 +2004,10 @@
 
       <div id="citySearchResults" style="display:none;flex-direction:column;gap:6px;margin-bottom:14px"></div>
 
-      <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);letter-spacing:0.8px;margin-bottom:8px">POPULAR HUBS</div>
+      <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);letter-spacing:0.8px;margin-bottom:8px">POPULAR INDIAN CITIES &amp; HUBS</div>
       <div class="quick-city-grid" id="quickCityChips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
-        <button class="city-chip" data-city="Hyderabad" data-lat="17.3850" data-lon="78.4867">Hyderabad</button>
-        <button class="city-chip" data-city="Delhi" data-lat="28.6139" data-lon="77.2090">Delhi</button>
+        <button class="city-chip" data-city="Hyderabad" data-lat="17.3850" data-lon="78.4867">📍 Hyderabad</button>
+        <button class="city-chip" data-city="Delhi" data-lat="28.6139" data-lon="77.2090">Delhi NCR</button>
         <button class="city-chip" data-city="Mumbai" data-lat="19.0760" data-lon="72.8777">Mumbai</button>
         <button class="city-chip" data-city="Bengaluru" data-lat="12.9716" data-lon="77.5946">Bengaluru</button>
         <button class="city-chip" data-city="Chennai" data-lat="13.0827" data-lon="80.2707">Chennai</button>
@@ -1972,6 +2019,25 @@
         <button class="city-chip" data-city="Visakhapatnam" data-lat="17.6868" data-lon="83.2185">Vizag</button>
         <button class="city-chip" data-city="Chandigarh" data-lat="30.7333" data-lon="76.7794">Chandigarh</button>
         <button class="city-chip" data-city="Kochi" data-lat="9.9312" data-lon="76.2673">Kochi</button>
+        <button class="city-chip" data-city="Srinagar" data-lat="34.0837" data-lon="74.7973">Srinagar</button>
+        <button class="city-chip" data-city="Shimla" data-lat="31.1048" data-lon="77.1734">Shimla</button>
+        <button class="city-chip" data-city="Guwahati" data-lat="26.1445" data-lon="91.7362">Guwahati</button>
+        <button class="city-chip" data-city="Patna" data-lat="25.5941" data-lon="85.1376">Patna</button>
+        <button class="city-chip" data-city="Bhopal" data-lat="23.2599" data-lon="77.4126">Bhopal</button>
+        <button class="city-chip" data-city="Indore" data-lat="22.7196" data-lon="75.8577">Indore</button>
+        <button class="city-chip" data-city="Nagpur" data-lat="21.1458" data-lon="79.0882">Nagpur</button>
+        <button class="city-chip" data-city="Bhubaneswar" data-lat="20.2961" data-lon="85.8245">Bhubaneswar</button>
+        <button class="city-chip" data-city="Dehradun" data-lat="30.3165" data-lon="78.0322">Dehradun</button>
+        <button class="city-chip" data-city="Ranchi" data-lat="23.3441" data-lon="85.3096">Ranchi</button>
+        <button class="city-chip" data-city="Raipur" data-lat="21.2514" data-lon="81.6296">Raipur</button>
+        <button class="city-chip" data-city="Varanasi" data-lat="25.3176" data-lon="82.9739">Varanasi</button>
+        <button class="city-chip" data-city="Amritsar" data-lat="31.6340" data-lon="74.8723">Amritsar</button>
+        <button class="city-chip" data-city="Surat" data-lat="21.1702" data-lon="72.8311">Surat</button>
+        <button class="city-chip" data-city="Coimbatore" data-lat="11.0168" data-lon="76.9558">Coimbatore</button>
+        <button class="city-chip" data-city="Vijayawada" data-lat="16.5062" data-lon="80.6480">Vijayawada</button>
+        <button class="city-chip" data-city="Warangal" data-lat="17.9689" data-lon="79.5941">Warangal</button>
+        <button class="city-chip" data-city="Thiruvananthapuram" data-lat="8.5241" data-lon="76.9366">Trivandrum</button>
+        <button class="city-chip" data-city="Goa" data-lat="15.2993" data-lon="74.1240">Goa</button>
       </div>
     </div>
   </div>

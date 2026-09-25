@@ -183,16 +183,17 @@ OPERATIONAL METEOROLOGICAL TELEMETRY:
   * Active IMD Alerts: ${alerts}
 
 CORE CAPABILITIES & RESPONSE GUIDELINES:
-1. Ground every answer in the live atmospheric telemetry provided above. Always quote exact figures (${temp}, ${rainProbToday}, ${windSpeed}, ${usAqi}).
-2. For questions regarding rain, storms, or umbrella: clearly state probability, expected hours, and rain gear advice.
-3. For tomorrow or multi-day outlook: provide clear day-by-day temperature highs/lows and rain chances.
-4. For crop/farming spraying: evaluate wind (< 15 km/h is safe for foliar spray) and rain chance (< 35% needed to prevent chemical wash-off).
-5. For highway travel/driving: assess wet-road hydroplaning hazard, fog/visibility, and crosswinds.
-6. For cyclones and disasters: explain IMD warning stages (Green/Yellow/Orange/Red), port signals 1-11, and emergency safety rules.
-7. For air quality: explain health impact, sensitive group precautions, and mask guidelines based on the telemetry.
-8. If the user asks general meteorological science (e.g., how heat index works, El Niño/La Niña, atmospheric pressure, monsoons): explain clearly and scientifically as an expert meteorologist.
-9. LANGUAGE: Formulate your entire response fluently in the requested language code: ${language} (en = English, hi = Hindi, te = Telugu, mr = Marathi, kn = Kannada, ta = Tamil).
-10. TONE: Authoritative yet accessible, structured with markdown bolding and bullet points. Never mention Gemini or Google; your identity is WeatherGPT.`;
+1. STRICT RELEVANCE & BREVITY: Answer ONLY the specific question asked by the user directly, concisely, and accurately. Do NOT dump unrelated atmospheric parameters. For instance, if the user asks about rain or umbrella, answer with rain chance, timing, and advice—do NOT dump AQI or pressure or barometric details unless specifically asked. Keep responses between 2 to 4 crisp bullet points.
+2. Ground every answer in the live atmospheric telemetry provided above. Always quote exact figures (${temp}, ${rainProbToday}, ${windSpeed}, ${usAqi}).
+3. For questions regarding rain, storms, or umbrella: clearly state probability, expected hours, and rain gear advice.
+4. For tomorrow or multi-day outlook: provide clear day-by-day temperature highs/lows and rain chances.
+5. For crop/farming spraying: evaluate wind (< 15 km/h is safe for foliar spray) and rain chance (< 35% needed to prevent chemical wash-off).
+6. For highway travel/driving: assess wet-road hydroplaning hazard, fog/visibility, and crosswinds.
+7. For cyclones and disasters: explain IMD warning stages (Green/Yellow/Orange/Red), port signals 1-11, and emergency safety rules.
+8. For air quality: explain health impact, sensitive group precautions, and mask guidelines based on the telemetry.
+9. If the user asks general meteorological science (e.g., how heat index works, El Niño/La Niña, atmospheric pressure, monsoons): explain clearly and scientifically as an expert meteorologist.
+10. LANGUAGE COMPLIANCE: Formulate your entire response 100% naturally and fluently in the requested language code: ${language} (en = English, hi = Hindi, te = Telugu, mr = Marathi, kn = Kannada, ta = Tamil). Never mix random languages.
+11. TONE: Authoritative yet accessible, structured with markdown bolding and bullet points. Never mention Gemini or Google; your identity is WeatherGPT.`;
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
@@ -323,6 +324,27 @@ function generateMeteorologicalExpertResponse(prompt, weather, language, placeNa
 • हवा की गति: **${wind} किमी/घंटा**, बादलों का आवरण: **${cloud}%**.
 • **परामर्श**: ${willRainToday || willRainTomorrow ? '✅ बारिश के प्रबल आसार हैं। यात्रा या बाहर निकलते समय छाता अथवा रेनकोट अवश्य साथ रखें।' : '☀️ आज भारी बारिश की संभावना कम है। सामान्य दिनचर्या जारी रख सकते हैं।'}`;
     }
+    if (language === 'mr') {
+      return `🌧️ **${placeName} पाऊस अंदाज व विश्लेषण**:
+• आज पाऊस शक्यता: **${rainProbToday}%** (${rainLevel} संभाव्यता), अपेक्षित पाऊस: **${rainSumToday} mm**.
+• उद्याचा पाऊस अंदाज: **${tomorrowRain}%** (कमाल तापमान: **${tomorrowMax}°C**).
+• वाऱ्याचा वेग: **${wind} किमी/तास**, ढगांचे प्रमाण: **${cloud}%**.
+• **सल्ला**: ${willRainToday || willRainTomorrow ? '✅ पाऊस पडण्याची शक्यता जास्त आहे. बाहेर जाताना छत्री किंवा रेनकोट सोबत ठेवा.' : '☀️ आज पाऊस पडण्याची शक्यता कमी आहे. दैनंदिन कामे सुरळीत करता येतील.'}`;
+    }
+    if (language === 'kn') {
+      return `🌧️ **${placeName} ಮಳೆ ಮುನ್ಸೂಚನೆ ಮತ್ತು ವಿಶ್ಲೇಷಣೆ**:
+• ಇಂದಿನ ಮಳೆ ಸಂಭವನೀಯತೆ: **${rainProbToday}%**, ನಿರೀಕ್ಷಿತ ಮಳೆ: **${rainSumToday} mm**.
+• ನಾಳೆಯ ಮಳೆ ಸಂಭವನೀಯತೆ: **${tomorrowRain}%** (ಗರಿಷ್ಠ ತಾಪಮಾನ: **${tomorrowMax}°C**).
+• ಗಾಳಿಯ ವೇಗ: **${wind} km/h**, ಮೋಡದ ಪ್ರಮಾಣ: **${cloud}%**.
+• **ಸಲಹೆ**: ${willRainToday || willRainTomorrow ? '✅ ಮಳೆಯಾಗುವ ಸಾಧ್ಯತೆ ಹೆಚ್ಚಾಗಿದೆ. ಕೊಡೆ ಅಥವಾ ರೇನ್‌ಕೋಟ್ ಜೊತೆಯಲ್ಲಿರಲಿ.' : '☀️ ಇಂದು ಭಾರಿ ಮಳೆಯ ಲಕ್ಷಣವಿಲ್ಲ. ಸಾಮಾನ್ಯ ಕಾರ್ಯಗಳಲ್ಲಿ ಮುಂದುವರಿಯಬಹುದು.'}`;
+    }
+    if (language === 'ta') {
+      return `🌧️ **${placeName} மழை முன்னறிவிப்பு மற்றும் ஆய்வு**:
+• இன்றைய மழை வாய்ப்பு: **${rainProbToday}%**, எதிர்பார்க்கப்படும் மழை அளவு: **${rainSumToday} mm**.
+• நாளைய மழை வாய்ப்பு: **${tomorrowRain}%** (அதிகபட்ச வெப்பநிலை: **${tomorrowMax}°C**).
+• காற்றின் வேகம்: **${wind} km/h**, மேகமூட்டம்: **${cloud}%**.
+• **பரிந்துரை**: ${willRainToday || willRainTomorrow ? '✅ மழை பெய்ய அதிக வாய்ப்புள்ளது. வெளியே செல்லும்போது குடை எடுத்துச் செல்லவும்.' : '☀️ மழை பெய்ய வாய்ப்பு குறைவு. அன்றாடப் பணிகளைத் தொடரலாம்.'}`;
+    }
     return `🌧️ **Precipitation Analysis for ${placeName}**:
 • Today Rain Probability: **${rainProbToday}%** (${rainLevel} likelihood, ~**${rainSumToday} mm** expected).
 • Tomorrow Outlook: **${tomorrowRain}%** rain chance with highs of **${tomorrowMax}°C** / lows of **${tomorrowMin}°C**.
@@ -345,6 +367,27 @@ function generateMeteorologicalExpertResponse(prompt, weather, language, placeNa
 • **परसों (Day 3)**: अधिकतम **${day3Max}°C** | न्यूनतम **${day3Min}°C** | बारिश की संभावना **${day3Rain}%**.
 • वर्तमान आर्द्रता: **${humidity}%**, वायु गुणवत्ता सूचकांक (AQI): **${usAqi}**.
 • **परामर्श**: ${tomorrowRain > 50 ? 'कल बारिश की संभावना अधिक है, सतर्क रहें।' : 'आगामी 2-3 दिनों में मौसम सामान्य और कार्य अनुकूल रहने का अनुमान है।'}`;
+    }
+    if (language === 'mr') {
+      return `📅 **${placeName} आगामी हवामान अंदाज**:
+• **उद्या**: कमाल **${tomorrowMax}°C** | किमान **${tomorrowMin}°C** | पाऊस शक्यता **${tomorrowRain}%** | वाऱ्याचा वेग **${wind} किमी/तास**.
+• **परवा (Day 3)**: कमाल **${day3Max}°C** | किमान **${day3Min}°C** | पाऊस शक्यता **${day3Rain}%**.
+• हवेची गुणवत्ता (AQI): **${usAqi}**.
+• **सल्ला**: ${tomorrowRain > 50 ? 'उद्या पाऊस पडण्याची शक्यता जास्त आहे.' : 'हवामान सामान्य व कार्य अनुकूल राहील.'}`;
+    }
+    if (language === 'kn') {
+      return `📅 **${placeName} ಮುಂಬರುವ ದಿನಗಳ ಹವಾಮಾನ ಮುನ್ಸೂಚನೆ**:
+• **ನಾಳೆ**: ಗರಿಷ್ಠ **${tomorrowMax}°C** | ಕನಿಷ್ಠ **${tomorrowMin}°C** | ಮಳೆ ಸಾಧ್ಯತೆ **${tomorrowRain}%**.
+• **ನಾಡದ್ದು (Day 3)**: ಗರಿಷ್ಠ **${day3Max}°C** | ಕನಿಷ್ಠ **${day3Min}°C** | ಮಳೆ ಸಾಧ್ಯತೆ **${day3Rain}%**.
+• ವಾಯು ಗುಣಮಟ್ಟ (AQI): **${usAqi}**.
+• **ಸಲಹೆ**: ${tomorrowRain > 50 ? 'ನಾಳೆ ಮಳೆ ಬರುವ ಸಾಧ್ಯತೆ ಇದೆ.' : 'ಮುಂದಿನ ದಿನಗಳಲ್ಲಿ ಹವಾಮಾನ ಸಾಮಾನ್ಯವಾಗಿರುತ್ತದೆ.'}`;
+    }
+    if (language === 'ta') {
+      return `📅 **${placeName} அடுத்தடுத்த நாட்களுக்கான வானிலை அறிக்கை**:
+• **நாளை**: அதிகபட்சம் **${tomorrowMax}°C** | குறைந்தபட்சம் **${tomorrowMin}°C** | மழை வாய்ப்பு **${tomorrowRain}%**.
+• **நாளை மறுநாள் (Day 3)**: அதிகபட்சம் **${day3Max}°C** | குறைந்தபட்சம் **${day3Min}°C** | மழை வாய்ப்பு **${day3Rain}%**.
+• காற்றின் தரம் (AQI): **${usAqi}**.
+• **பரிந்துரை**: ${tomorrowRain > 50 ? 'நாளை மழை பெய்ய வாய்ப்புள்ளது.' : 'வானிலை இயல்பாக இருக்கும்.'}`;
     }
     return `📅 **Extended Meteorological Outlook for ${placeName}**:
 • **Tomorrow**: High **${tomorrowMax}°C** | Low **${tomorrowMin}°C** | Rain Probability **${tomorrowRain}%** | Wind **${wind} km/h**.
@@ -378,6 +421,21 @@ function generateMeteorologicalExpertResponse(prompt, weather, language, placeNa
 • **मुख्य फसल दिशा-निर्देश**:
   - कीटनाशक एवं उर्वरक छिड़काव के लिए हवा की गति 15 किमी/घंटा से कम और धूप खिली होनी चाहिए।
   - सिंचाई: ${rainProbToday > 60 ? 'बारिश के आसार हैं, अतः अनावश्यक सिंचाई रोकें।' : 'मिट्टी में नमी के अनुसार हल्की सिंचाई जारी रखें।'}`;
+    }
+    if (language === 'mr') {
+      return `🌾 **शेतकरी कृषी हवामान सल्ला (${placeName})**:
+• **फवारणी (Foliar Spray) स्थिती**: ${canSpray ? '✅ **अनुकूल वेळ (Safe Window)**' : '⚠️ **फवारणी पुढे ढकला**'} — ${wind >= 15 ? `वाऱ्याचा वेग (${wind} किमी/तास) 15 पेक्षा जास्त असल्याने फवारणी उडून जाईल` : (rainProbToday >= 40 ? `पावसाची शक्यता (${rainProbToday}%) असल्याने औषध वाहून जाण्याचा धोका आहे` : 'हवामान फवारणीसाठी योग्य आहे')}.
+• **हवामान नोंदी**: तापमान **${temp}°C**, वाऱ्याचा वेग **${wind} किमी/तास**, पाऊस शक्यता **${rainProbToday}%**, आर्द्रता **${humidity}%**.`;
+    }
+    if (language === 'kn') {
+      return `🌾 **ರೈತ ಕೃಷಿ ಹವಾಮಾನ ಸಲಹೆ (${placeName})**:
+• **ಔಷಧ ಸಿಂಪಡಣೆ (Spraying) ಸ್ಥಿತಿ**: ${canSpray ? '✅ **ಅನುಕೂಲಕರ ಸಮಯ**' : '⚠️ **ಮುಂದೂಡಿ**'} — ${wind >= 15 ? `ಗಾಳಿಯ ವೇಗ (${wind} km/h) ಹೆಚ್ಚಾಗಿದೆ` : (rainProbToday >= 40 ? `ಮಳೆಯಿಂದ (${rainProbToday}%) ಔಷಧ ಕೊಚ್ಚಿಹೋಗುವ ಸಾಧ್ಯತೆ ಇದೆ` : 'ಹವಾಮಾನ ಅನುಕೂಲವಾಗಿದೆ')}.
+• **ಹವಾಮಾನ ವಿವರ**: ತಾಪಮಾನ **${temp}°C**, ಗಾಳಿಯ ವೇಗ **${wind} km/h**, ಮಳೆ ಸಾಧ್ಯತೆ **${rainProbToday}%**, ತೇವಾಂಶ **${humidity}%**.`;
+    }
+    if (language === 'ta') {
+      return `🌾 **விவசாய வானிலை மற்றும் பயிர் தெளிப்பு ஆலோசனை (${placeName})**:
+• **மருந்து தெளிப்பு (Spraying) நிலை**: ${canSpray ? '✅ **சாதகமான நேரம்**' : '⚠️ **ஒத்திவைக்கவும்**'} — ${wind >= 15 ? `காற்றின் வேகம் (${wind} km/h) அதிகமாக உள்ளது` : (rainProbToday >= 40 ? `மழை வாய்ப்பு (${rainProbToday}%) உள்ளதால் மருந்து அடித்துச் செல்லப்படலாம்` : 'வானிலை சாதகமாக உள்ளது')}.
+• **வானிலை அளவீடுகள்**: வெப்பநிலை **${temp}°C**, காற்றின் வேகம் **${wind} km/h**, மழை வாய்ப்பு **${rainProbToday}%**, ஈரப்பதம் **${humidity}%**.`;
     }
     return `🌾 **Agromet Advisory & Spray Window for ${placeName}**:
 • **Foliar Spray Feasibility**: ${canSpray ? '✅ **RECOMMENDED / SAFE WINDOW**' : '⚠️ **POSTPONE SPRAYING**'}
